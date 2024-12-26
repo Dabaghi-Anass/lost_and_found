@@ -1,4 +1,4 @@
-import { loginUser } from "@/api/auth";
+import { loginUser, loginUserWithGoogle } from "@/api/auth";
 import GoogleIcon from "@/assets/icons/Google.png";
 import BgImageDark from "@/assets/images/bg_auth_dark.png";
 import BgImageLight from "@/assets/images/bg_auth_light.png";
@@ -37,7 +37,7 @@ export default function LoginScreen() {
     }
   }
   async function handleGoogleLogin() {
-    const user: User | undefined = await loginUser(userName, password);
+    const user: User | undefined = await loginUserWithGoogle();
     if (!user) {
       alert("Invalid credentials");
     } else {
