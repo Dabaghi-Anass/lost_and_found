@@ -42,7 +42,7 @@ body {
 	}
 
 	.dark {
-		--background: 250 42% 0%;
+		--background: 250 25% 15%;
 		--foreground: 250 19% 98%;
 		--muted: 220 40% 20%;
 		--muted-foreground: 220 9% 64%;

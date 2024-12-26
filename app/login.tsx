@@ -1,4 +1,4 @@
-import FacebookIcon from "@/assets/icons/Facebook.png";
+import { loginUser } from "@/api/auth";
 import GoogleIcon from "@/assets/icons/Google.png";
 import BgImageDark from "@/assets/images/bg_auth_dark.png";
 import BgImageLight from "@/assets/images/bg_auth_light.png";
@@ -6,7 +6,10 @@ import { AppButton } from "@/components/app/AppButton";
 import { Input } from "@/components/Input";
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import Separator from '@/components/separator';
+import { auth } from "@/database/fire_base";
 import { Link, useRouter } from "expo-router";
+import { User } from "firebase/auth";
+import { useEffect, useState } from "react";
 import { ColorSchemeName, Image, Text, useColorScheme, View } from "react-native";
 
 function BgImageComponent() {
@@ -15,6 +18,36 @@ function BgImageComponent() {
 }
 export default function LoginScreen() {
   const router = useRouter();
+  const [userName, setUserName] = useState<string>("anass.debbaghi123@gmail.com");
+  const [password, setPassword] = useState<string>("Anassking1");
+
+  const isValid = (): boolean => {
+    if (userName.length === 0 || password.length === 0) return false;
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    return emailRegex.test(userName);
+  }
+
+  async function handleLogin() {
+    if (!isValid()) return;
+    const user: User | undefined = await loginUser(userName, password);
+    if (!user) {
+      alert("Invalid credentials");
+    } else {
+      router.push("/home");
+    }
+  }
+  async function handleGoogleLogin() {
+    const user: User | undefined = await loginUser(userName, password);
+    if (!user) {
+      alert("Invalid credentials");
+    } else {
+      router.push("/home");
+    }
+  }
+
+  useEffect(() => {
+    console.log(JSON.stringify({ currrentUser: auth.currentUser }, null, 2));
+  })
   return (
     <ParallaxScrollView
       HEADER_HEIGHT={300}
@@ -26,24 +59,32 @@ export default function LoginScreen() {
         <Text className="text-2xl font-bold text-center mb-8 text-foreground">
           Who Are You Sweet Heart?
         </Text>
-        <View className="flex gap-4 mt-4">
-          <Input placeholder="email or phone number" className="text-foreground" placeholderTextColor="gray" />
-          <Input placeholder="password" className="text-foreground" placeholderTextColor="gray" />
+        <Text className="text-2xl font-bold text-center mb-8 text-foreground">
+          {userName + "\n"}
+          {password}
+        </Text>
+        <View className="flex gap-4 mt-4 ">
+          <Input placeholder="email or phone number"
+            value={userName}
+            onChangeText={setUserName}
+            className="border border-foreground rounded"
+            inputClasses="text-foreground" placeholderTextColor="gray" />
+          <Input placeholder="password"
+            value={password}
+            onChangeText={setPassword}
+            className="border border-foreground rounded"
+            inputClasses="text-foreground" placeholderTextColor="gray" />
         </View>
         <View className="mt-4">
-          <AppButton onPress={() => {
-            router.navigate("/home");
-          }} variant="primary">Login</AppButton>
+          <AppButton
+            disabled={!isValid()}
+            onPress={handleLogin} variant="primary">Login</AppButton>
         </View>
         <Separator text="Or" />
         <View className="gap-4">
-          <AppButton variant="outline" className="rounded-full flex flex-row gap-4 outline-btn">
+          <AppButton variant="outline" className="rounded-full flex flex-row gap-4 outline-btn" onPress={handleGoogleLogin}>
             <Image source={GoogleIcon} width={40} height={40} />
             <Text className="text-foreground">Continue With Google</Text>
-          </AppButton>
-          <AppButton variant="outline" className="rounded-full flex flex-row gap-4 outline-btn">
-            <Image source={FacebookIcon} width={40} height={40} />
-            <Text className="text-foreground">Continue With Facebook</Text>
           </AppButton>
         </View>
         <View className="flex flex-row items-center justify-center mt-8">

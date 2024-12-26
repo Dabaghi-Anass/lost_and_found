@@ -26,12 +26,12 @@ export default function LoginScreen() {
           Join Our Community
         </Text>
         <View className="flex gap-4 mt-4">
-          <Input className="text-foreground" placeholder="first name" placeholderTextColor="gray" />
-          <Input placeholder="last name" className="text-foreground" placeholderTextColor="gray" />
-          <Input placeholder="phone number" className="text-foreground" placeholderTextColor="gray" />
-          <Input placeholder="email" className="text-foreground" placeholderTextColor="gray" />
-          <Input placeholder="password" className="text-foreground" placeholderTextColor="gray" />
-          <Input placeholder="confirm password" className="text-foreground" placeholderTextColor="gray" />
+          <Input className="border border-foreground rounded" inputClasses="text-foreground" placeholder="first name" placeholderTextColor="gray" />
+          <Input className="border border-foreground rounded" placeholder="last name" inputClasses="text-foreground" placeholderTextColor="gray" />
+          <Input className="border border-foreground rounded" placeholder="phone number" inputClasses="text-foreground" placeholderTextColor="gray" />
+          <Input className="border border-foreground rounded" placeholder="email" inputClasses="text-foreground" placeholderTextColor="gray" />
+          <Input className="border border-foreground rounded" placeholder="password" inputClasses="text-foreground" placeholderTextColor="gray" />
+          <Input className="border border-foreground rounded" placeholder="confirm password" inputClasses="text-foreground" placeholderTextColor="gray" />
         </View>
         <View className="mt-4 ">
           <AppButton disabled={true} variant="primary">Create New Account</AppButton>

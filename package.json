@@ -20,6 +20,7 @@
     "@react-native-firebase/app": "^21.6.1",
     "@react-navigation/bottom-tabs": "^7.0.0",
     "@react-navigation/native": "^7.0.0",
+    "@reduxjs/toolkit": "^2.5.0",
     "@rn-primitives/slot": "^1.1.0",
     "@rn-primitives/types": "^1.1.0",
     "class-variance-authority": "^0.7.1",
@@ -50,6 +51,7 @@
     "react-native-svg": "15.8.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
+    "react-redux": "^9.2.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7"
   },
