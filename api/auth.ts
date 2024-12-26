@@ -22,9 +22,14 @@ export async function loginUser(
 export async function loginUserWithGoogle(): Promise<User | undefined> {
 	try {
 		const provider = new GoogleAuthProvider();
-		const cred = await signInWithPopup(auth, provider);
-		return cred.user;
+		const result = await signInWithPopup(auth, provider);
+		const credential = GoogleAuthProvider.credentialFromResult(result);
+		console.log({
+			credential,
+		});
+		return result.user;
 	} catch (e: any) {
+		console.log(e);
 		return undefined;
 	}
 }

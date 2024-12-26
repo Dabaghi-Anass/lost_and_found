@@ -1,7 +1,6 @@
 import { initializeApp, type FirebaseOptions } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-
 const apiKey = "AIzaSyBgcY1lLBTPmSV3K1x59JSdc0uTo0P4L4w";
 const authDomain = "lost-and-found-master-1b6c7.firebaseapp.com";
 const projectId = "lost-and-found-master-1b6c7";

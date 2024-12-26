@@ -7,11 +7,11 @@ import { Input } from "@/components/Input";
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import Separator from '@/components/separator';
 import { auth } from "@/database/fire_base";
+import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
 import { Link, useRouter } from "expo-router";
 import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { ColorSchemeName, Image, Text, useColorScheme, View } from "react-native";
-
 function BgImageComponent() {
   const theme: ColorSchemeName = useColorScheme();
   return <Image source={theme === "dark" ? BgImageDark : BgImageLight} style={{ width: '100%', height: 300 }} />;
@@ -45,9 +45,18 @@ export default function LoginScreen() {
     }
   }
 
+  async function testGoogleSignIn() {
+    await GoogleSignin.hasPlayServices();
+    const userInfo = await GoogleSignin.signIn();
+    console.log(userInfo);
+  }
+  useEffect(() => {
+    GoogleSignin.configure();
+  }, [])
+
   useEffect(() => {
     console.log(JSON.stringify({ currrentUser: auth.currentUser }, null, 2));
-  })
+  }, [auth.currentUser])
   return (
     <ParallaxScrollView
       HEADER_HEIGHT={300}
@@ -82,6 +91,7 @@ export default function LoginScreen() {
         </View>
         <Separator text="Or" />
         <View className="gap-4">
+          <GoogleSigninButton onPress={testGoogleSignIn} />
           <AppButton variant="outline" className="rounded-full flex flex-row gap-4 outline-btn" onPress={handleGoogleLogin}>
             <Image source={GoogleIcon} width={40} height={40} />
             <Text className="text-foreground">Continue With Google</Text>
