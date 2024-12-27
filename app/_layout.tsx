@@ -16,6 +16,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/Ubuntu-Regular.ttf'),
+    Galada: require('../assets/fonts/Galada-Regular.ttf'),
   });
 
   useEffect(() => {

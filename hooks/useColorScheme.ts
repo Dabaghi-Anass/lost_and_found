@@ -4,7 +4,6 @@ import { useStorageState } from "./useStorageState";
 enum ColorScheme {
 	light = "light",
 	dark = "dark",
-	system = "system",
 }
 export function useColorScheme() {
 	const defaultScheme = useRNColorScheme();

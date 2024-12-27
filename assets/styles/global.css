@@ -12,6 +12,13 @@ body {
 	border: 1px solid rgb(0, 0, 0);
 }
 
+.font-secondary {
+	font-family: "Galada", serif;
+	font-weight: 400;
+	font-style: normal;
+	line-height: 2;
+}
+
 @layer base {
 	:root {
 		--background: 250 30% 100%;

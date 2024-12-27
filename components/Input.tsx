@@ -15,8 +15,8 @@ const Input = forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
       {label && <Text className={cn('text-base', labelClasses)}>{label}</Text>}
       <TextInput
         className={cn(
-          inputClasses,
-          'border border-input py-4 px-4 rounded-lg'
+          'border border-input py-4 px-4 rounded-lg',
+          inputClasses
         )}
         {...props}
       />

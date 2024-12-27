@@ -2,12 +2,12 @@ import { loginUser, loginUserWithGoogle } from "@/api/auth";
 import GoogleIcon from "@/assets/icons/Google.png";
 import BgImageDark from "@/assets/images/bg_auth_dark.png";
 import BgImageLight from "@/assets/images/bg_auth_light.png";
-import { AppButton } from "@/components/app/AppButton";
+import { AppButton } from "@/components/AppButton";
 import { Input } from "@/components/Input";
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import Separator from '@/components/separator';
 import { auth } from "@/database/fire_base";
-import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
+// import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
 import { Link, useRouter } from "expo-router";
 import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
@@ -45,14 +45,16 @@ export default function LoginScreen() {
     }
   }
 
-  async function testGoogleSignIn() {
-    await GoogleSignin.hasPlayServices();
-    const userInfo = await GoogleSignin.signIn();
-    console.log(userInfo);
-  }
-  useEffect(() => {
-    GoogleSignin.configure();
-  }, [])
+  // async function testGoogleSignIn() {
+  //   await GoogleSignin.hasPlayServices();
+  //   const userInfo = await GoogleSignin.signIn();
+  //   console.log(userInfo);
+  // }
+  // useEffect(() => {
+  //   GoogleSignin.configure({
+  //     webClientId: "1084224482940-0tca57vop8urajama857sq3bgedjkctg.apps.googleusercontent.com"
+  //   });
+  // }, [])
 
   useEffect(() => {
     console.log(JSON.stringify({ currrentUser: auth.currentUser }, null, 2));
@@ -91,7 +93,6 @@ export default function LoginScreen() {
         </View>
         <Separator text="Or" />
         <View className="gap-4">
-          <GoogleSigninButton onPress={testGoogleSignIn} />
           <AppButton variant="outline" className="rounded-full flex flex-row gap-4 outline-btn" onPress={handleGoogleLogin}>
             <Image source={GoogleIcon} width={40} height={40} />
             <Text className="text-foreground">Continue With Google</Text>

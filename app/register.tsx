@@ -2,7 +2,7 @@ import FacebookIcon from "@/assets/icons/Facebook.png";
 import GoogleIcon from "@/assets/icons/Google.png";
 import BgImageDark from "@/assets/images/bg_auth_dark.png";
 import BgImageLight from "@/assets/images/bg_auth_light.png";
-import { AppButton } from "@/components/app/AppButton";
+import { AppButton } from "@/components/AppButton";
 import { Input } from "@/components/Input";
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import Separator from "@/components/separator";
