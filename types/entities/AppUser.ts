@@ -1,83 +1,49 @@
-import { AppUser, FoundItem, LostItem, Profile } from "../entities.types";
+import { AppUser, Item, Profile } from "../entities.types";
 import { Role } from "../utils.types";
-import { BaseClass } from "./BaseClass";
 
-export class AppUserFactory extends BaseClass implements AppUser {
+export class AppUserBuilder implements AppUser {
 	authUserId: string;
 	profile: Profile;
-	foundItems: FoundItem[];
-	lostItems: LostItem[];
+	items: Item[];
 	role?: Role | undefined;
-	id: number;
-	createdAt: Date;
-	updatedAt: Date;
 
 	constructor(
 		authUserId: string,
 		profile: Profile,
-		foundItems: FoundItem[],
-		lostItems: LostItem[],
-		id: number,
-		createdAt: Date,
-		updatedAt: Date,
+		items: Item[],
 		role?: Role
 	) {
-		super(id, createdAt, updatedAt);
 		this.authUserId = authUserId;
 		this.profile = profile;
-		this.foundItems = foundItems;
-		this.lostItems = lostItems;
-		this.id = id;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
+		this.items = items;
 		this.role = role;
 	}
 
-	builder(): AppUserFactory {
+	builder(): AppUserBuilder {
 		return this;
 	}
 
-	setRole(role: Role): AppUserFactory {
+	setRole(role: Role): AppUserBuilder {
 		this.role = role;
 		return this;
 	}
 
-	setAuthUserId(authUserId: string): AppUserFactory {
+	setAuthUserId(authUserId: string): AppUserBuilder {
 		this.authUserId = authUserId;
 		return this;
 	}
 
-	setProfile(profile: Profile): AppUserFactory {
+	setProfile(profile: Profile): AppUserBuilder {
 		this.profile = profile;
 		return this;
 	}
 
-	setFoundItems(foundItems: FoundItem[]): AppUserFactory {
-		this.foundItems = foundItems;
+	setItems(Items: Item[]): AppUserBuilder {
+		this.items = Items;
 		return this;
 	}
 
-	setLostItems(lostItems: LostItem[]): AppUserFactory {
-		this.lostItems = lostItems;
-		return this;
-	}
-
-	setId(id: number): AppUserFactory {
-		this.id = id;
-		return this;
-	}
-
-	setCreatedAt(createdAt: Date): AppUserFactory {
-		this.createdAt = createdAt;
-		return this;
-	}
-
-	setUpdatedAt(updatedAt: Date): AppUserFactory {
-		this.updatedAt = updatedAt;
-		return this;
-	}
-
-	build(): AppUser {
+	build(): AppUserBuilder {
 		return this;
 	}
 
@@ -89,12 +55,8 @@ export class AppUserFactory extends BaseClass implements AppUser {
 		return this.profile;
 	}
 
-	getFoundItems(): FoundItem[] {
-		return this.foundItems;
-	}
-
-	getLostItems(): LostItem[] {
-		return this.lostItems;
+	getItems(): Item[] {
+		return this.items;
 	}
 
 	getRole(): Role | undefined {

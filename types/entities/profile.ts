@@ -1,32 +1,19 @@
 import { Profile } from "../entities.types";
-import { BaseClass } from "./BaseClass";
-
-export class ProfileFactory extends BaseClass implements Profile {
+export class ProfileBuilder implements Profile {
 	firstName: string;
 	lastName: string;
 	phoneNumber: string;
 	imageUri: string;
-	id: string;
-	createdAt: Date;
-	updatedAt: Date;
-
 	constructor(
 		firstName: string,
 		lastName: string,
 		phoneNumber: string,
-		imageUri: string,
-		id: string,
-		createdAt: Date,
-		updatedAt: Date
+		imageUri: string
 	) {
-		super(id, createdAt, updatedAt);
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phoneNumber = phoneNumber;
 		this.imageUri = imageUri;
-		this.id = id;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
 	}
 
 	getFullName(): string {
@@ -49,7 +36,7 @@ export class ProfileFactory extends BaseClass implements Profile {
 		return this.imageUri;
 	}
 
-	builder(): ProfileFactory {
+	builder(): ProfileBuilder {
 		return this;
 	}
 
@@ -57,22 +44,22 @@ export class ProfileFactory extends BaseClass implements Profile {
 		return this;
 	}
 
-	setFirstName(firstName: string): ProfileFactory {
+	setFirstName(firstName: string): ProfileBuilder {
 		this.firstName = firstName;
 		return this;
 	}
 
-	setLastName(lastName: string): ProfileFactory {
+	setLastName(lastName: string): ProfileBuilder {
 		this.lastName = lastName;
 		return this;
 	}
 
-	setPhoneNumber(phoneNumber: string): ProfileFactory {
+	setPhoneNumber(phoneNumber: string): ProfileBuilder {
 		this.phoneNumber = phoneNumber;
 		return this;
 	}
 
-	setImageUri(imageUri: string): ProfileFactory {
+	setImageUri(imageUri: string): ProfileBuilder {
 		this.imageUri = imageUri;
 		return this;
 	}

@@ -1,28 +1,22 @@
-import { GeolocationCoordinates, ItemStatus, Role } from "./utils.types";
-
-interface BaseEntity {
-	id: string;
-	createdAt: Date;
-	updatedAt: Date;
-}
+import { GeolocationCoordinates, Role } from "./utils.types";
+export type OptionType = "lost" | "found";
 
 /*-----------------entities------------------*/
-interface AppUser extends BaseEntity {
+interface AppUser {
 	authUserId: string;
 	profile: Profile;
-	foundItems: Array<FoundItem>;
-	lostItems: Array<LostItem>;
+	items: Array<Item>;
 	role?: Role;
 }
 
-interface Profile extends BaseEntity {
+interface Profile {
 	firstName: string;
 	lastName: string;
 	phoneNumber: string;
 	imageUri: string;
 }
 
-interface Item extends BaseEntity {
+interface ItemDetails {
 	title: string;
 	description: string;
 	color?: string;
@@ -30,21 +24,13 @@ interface Item extends BaseEntity {
 	images: Array<string>;
 }
 
-interface FoundItem extends BaseEntity {
-	item: Item;
-	status: ItemStatus;
+interface Item {
+	type: OptionType;
+	item: ItemDetails;
 	delivred: boolean;
-	foundAt: Date;
-	founderId: string;
+	found_lost_at: Date;
+	ownerId: string;
 	geoCoordinates: GeolocationCoordinates;
 }
 
-interface LostItem extends BaseEntity {
-	item: Item;
-	status: ItemStatus;
-	delivred: boolean;
-	lostAt: Date;
-	ownerId: string;
-}
-
-export { AppUser, BaseEntity, FoundItem, Item, LostItem, Profile };
+export { AppUser, Item, ItemDetails, Profile };

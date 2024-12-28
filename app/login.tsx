@@ -1,4 +1,4 @@
-import { loginUser, loginUserWithGoogle } from "@/api/auth";
+// import { loginUser, loginUserWithGoogle } from "@/api/auth";
 import GoogleIcon from "@/assets/icons/Google.png";
 import BgImageDark from "@/assets/images/bg_auth_dark.png";
 import BgImageLight from "@/assets/images/bg_auth_light.png";
@@ -6,11 +6,10 @@ import { AppButton } from "@/components/AppButton";
 import { Input } from "@/components/Input";
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import Separator from '@/components/separator';
-import { auth } from "@/database/fire_base";
+// import { auth } from "@/database/fire_base";
 // import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
 import { Link, useRouter } from "expo-router";
-import { User } from "firebase/auth";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ColorSchemeName, Image, Text, useColorScheme, View } from "react-native";
 function BgImageComponent() {
   const theme: ColorSchemeName = useColorScheme();
@@ -28,21 +27,21 @@ export default function LoginScreen() {
   }
 
   async function handleLogin() {
-    if (!isValid()) return;
-    const user: User | undefined = await loginUser(userName, password);
-    if (!user) {
-      alert("Invalid credentials");
-    } else {
-      router.push("/home");
-    }
+    // if (!isValid()) return;
+    // const user: User | undefined = await loginUser(userName, password);
+    // if (!user) {
+    //   alert("Invalid credentials");
+    // } else {
+    //   router.push("/home");
+    // }
   }
   async function handleGoogleLogin() {
-    const user: User | undefined = await loginUserWithGoogle();
-    if (!user) {
-      alert("Invalid credentials");
-    } else {
-      router.push("/home");
-    }
+    // const user: User | undefined = await loginUserWithGoogle();
+    // if (!user) {
+    //   alert("Invalid credentials");
+    // } else {
+    //   router.push("/home");
+    // }
   }
 
   // async function testGoogleSignIn() {
@@ -56,9 +55,6 @@ export default function LoginScreen() {
   //   });
   // }, [])
 
-  useEffect(() => {
-    console.log(JSON.stringify({ currrentUser: auth.currentUser }, null, 2));
-  }, [auth.currentUser])
   return (
     <ParallaxScrollView
       HEADER_HEIGHT={300}

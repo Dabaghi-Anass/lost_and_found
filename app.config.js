@@ -11,7 +11,6 @@ export default {
 		ios: {
 			supportsTablet: true,
 			bundleIdentifier: "com.anass.lostandfound",
-			googleServicesFile: process.env.GOOGLE_SERVICES_INFOPLIST,
 		},
 		android: {
 			adaptiveIcon: {
@@ -19,7 +18,7 @@ export default {
 				backgroundColor: "#ffffff",
 			},
 			package: "com.anass.lostandfound",
-			googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
+			googleServicesFile: "./google-services.json",
 		},
 		web: {
 			bundler: "metro",
@@ -27,7 +26,8 @@ export default {
 			favicon: "./assets/images/favicon.png",
 		},
 		plugins: [
-			"@react-native-google-signin/google-signin",
+			"@react-native-firebase/app",
+			"@react-native-firebase/auth",
 			"expo-router",
 			[
 				"expo-splash-screen",

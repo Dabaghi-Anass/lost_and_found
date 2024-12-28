@@ -48,8 +48,8 @@ export default function TabLayout() {
         <Tabs.Screen
           name="declare-item/[option]"
           options={{
-            href: null,
-            tabBarIcon: () => <AntDesign name="find" size={24} color={Colors[colorScheme ?? 'light'].text} />
+            // href: null,
+            tabBarIcon: () => <AntDesign name="find" size={35} style={{ height: 80 }} color={Colors[colorScheme ?? 'light'].text} />
           }}
         />
 

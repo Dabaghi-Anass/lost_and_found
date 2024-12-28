@@ -5,16 +5,20 @@ import ScrollScreen from '@/components/scroll-screen';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { OptionType } from '@/types/entities.types';
+import { ItemDetailsBuilder } from '@/types/entities/ItemDetails';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
+import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Location from 'expo-location';
 import { useLocalSearchParams } from "expo-router";
+// import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { Image, Text, TouchableNativeFeedback, View } from 'react-native';
-type OptionType = "lost" | "found";
+
 interface FormData {
   type: OptionType;
   category: string;
@@ -38,14 +42,7 @@ export default function DeclareItemScreen() {
     description: '',
     color: '#6366f1',
     location: '',
-    images: [
-      "https://firebasestorage.googleapis.com/v0/b/anass-dabaghi-portfolio.appspot.com/o/projects%20images%2Fperspective.jpg?alt=media&token=514f2aa2-4181-4edb-87cd-457632648762",
-      "https://firebasestorage.googleapis.com/v0/b/anass-dabaghi-portfolio.appspot.com/o/projects%20images%2FCapture2.PNG?alt=media&token=c08aa4c4-e299-4575-ab99-1e2fc40d6fe9",
-      "https://firebasestorage.googleapis.com/v0/b/anass-dabaghi-portfolio.appspot.com/o/projects%20images%2FWhatsApp%20Image%202023-07-13%20at%2012.15.32.jpeg?alt=media&token=ff66097e-882f-4555-ad99-4fd2851abc03",
-      "https://firebasestorage.googleapis.com/v0/b/anass-dabaghi-portfolio.appspot.com/o/projects%20images%2Faimate.PNG?alt=media&token=12a8a933-1fcb-442d-aa07-c125e29fd8b6",
-      "https://firebasestorage.googleapis.com/v0/b/anass-dabaghi-portfolio.appspot.com/o/projects%20images%2FWhatsApp%20Image%202023-07-13%20at%2013.44.03.jpeg?alt=media&token=94b24f4d-8741-4a6d-b39c-a9ae0c0af033",
-      "https://firebasestorage.googleapis.com/v0/b/anass-dabaghi-portfolio.appspot.com/o/projects%20images%2FScreenshot%20from%202024-08-07%2015-40-18.png?alt=media&token=c9581925-b004-423f-a017-5b25236adbe9",
-    ],
+    images: [],
     coordinates: null,
     date: new Date(),
   });
@@ -59,8 +56,20 @@ export default function DeclareItemScreen() {
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
 
-  const handleSubmit = () => {
-    console.log({ formData });
+  const handleSubmit = async () => {
+    // const imagesUrls = await uploadImagesToServer(formData.images);
+    // console.log(imagesUrls);
+    const item = ItemDetailsBuilder
+      .builder()
+      .setColor(formData.color)
+      .setCategory(formData.category)
+      .setDescription(formData.description)
+      .setTitle(formData.title)
+      .setImages([...formData.images])
+      .build();
+
+    // const newItem = await saveItemDetails(item);
+    // console.log(item);
   };
 
   useEffect(() => {
@@ -72,7 +81,7 @@ export default function DeclareItemScreen() {
     <ScrollScreen className="flex-1 bg-muted px-4 py-6">
       <View className="rounded-xl flex-1 max-h-[80vh] overflow-hidden">
         <LinearGradient
-          className='h-full max-h-[70vh]'
+          className='h-full max-h-full px-2'
           colors={['#233dfc', '#1e98fc']}
           start={[1, 0.9]}
         >
@@ -81,7 +90,7 @@ export default function DeclareItemScreen() {
               {formData.type === 'lost' ? 'Report Lost Item' : 'Report Found Item'}
             </Text>
           </View>
-          <View className="p-4 bg-background rounded-t-2xl h-full flex justify-between">
+          <View className="p-4 bg-background rounded-lg  h-[68vh] flex justify-between">
             <FormStatusHeader step={step} />
 
             {step === 1 && <ChooseItemTypeForm formData={formData} onFormData={updateFormData} />}
@@ -147,18 +156,70 @@ function FormStatusHeader({ step }: { step: number }) {
 }
 
 function ImagesUploadForm({ formData, onFormData }: { formData: FormData, onFormData: (key: keyof FormData, data: any) => void }) {
+  const handleUploadImagesFromStorage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const uploadedImages = await Promise.all(
+        result.assets.map(async (asset: any) => {
+          const formData = new FormData();
+          formData.append('file', {
+            uri: asset.uri,
+            type: asset.type,
+            name: asset.fileName,
+          });
+          const response = await fetch('http://192.168.137.1:3000/upload-file', {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to upload image');
+          }
+
+          const data = await response.text();
+          return data;
+        })
+      );
+      console.log(uploadedImages);
+      onFormData('images', [...formData.images, ...uploadedImages]);
+    }
+  };
   return <View className="image-upload-form space-y-4 h-[60%] flex flex-start gap-4">
-    <ImagesPreview images={formData.images} onSelect={(index) => {
-      const images = [...formData.images];
-      //swap the selected image with the first image
-      [images[0], images[index + 1]] = [images[index + 1], images[0]];
-      onFormData('images', images);
-    }} />
+    <ImagesPreview
+      images={formData.images}
+      onSelect={(index) => {
+        const images = [...formData.images];
+        [images[0], images[index + 1]] = [images[index + 1], images[0]];
+        onFormData('images', images);
+      }}
+      onDelete={(index) => {
+        const images = [...formData.images];
+        images.splice(index + 1, 1);
+        onFormData('images', images);
+      }}
+
+    />
     <AppButton
-      onPress={() => console.log('Upload image')}
+      onPress={() => {
+        handleUploadImagesFromStorage()
+      }}
       variant="primary"
       className="px-4 py-2 rounded-md">
-      Upload Image
+      Upload Images
     </AppButton>
 
   </View>
@@ -316,7 +377,8 @@ function ItemDetailsForm({ formData, onFormData }: { formData: FormData, onFormD
       <Text className="font-bold mb-2 text-foreground text-xl">Title</Text>
       <Input
         value={formData.title}
-        onChangeText={(value) => onFormData('title', value)}
+        style={{ color: Colors[colorTheme ?? 'light'].text }}
+        onChangeText={(value: string) => onFormData('title', value)}
         placeholderTextColor="gray"
         placeholder="Brief title of the item"
       />
@@ -326,6 +388,7 @@ function ItemDetailsForm({ formData, onFormData }: { formData: FormData, onFormD
       <Text className="font-bold mb-2 text-foreground text-xl">Description</Text>
       <Input
         value={formData.description}
+        style={{ color: Colors[colorTheme ?? 'light'].text }}
         onChangeText={(value) => onFormData('description', value)}
         placeholderTextColor="gray"
         placeholder="Detailed description of the item"
@@ -354,10 +417,21 @@ function ItemDetailsForm({ formData, onFormData }: { formData: FormData, onFormD
     </View>
   </View>
 }
-function ImagesPreview({ images, onSelect }: { images: string[], onSelect?: (index: number) => void }) {
+function ImagesPreview({ images, onSelect, onDelete }: {
+  images: string[],
+  onDelete: (index: number) => void
+  onSelect?: (index: number) => void,
+}) {
+  const [indexesToDelete, setIndexesToDelete] = useState<string[]>([]);
+  const addToToBeDeleted = (index: string) => {
+    setIndexesToDelete([...indexesToDelete, index]);
+  }
+  const removeFromBeDeleted = (index: string) => {
+    setIndexesToDelete(indexesToDelete.filter((i) => i !== index));
+  }
   return (<View className='flex flex-col gap-2'>
     <Image
-      source={{ uri: images[0] }}
+      source={{ uri: images[0] ?? "/assets/images/unknown-item.jpg" }}
       style={{
         width: "100%",
         aspectRatio: 16 / 9,
@@ -366,18 +440,31 @@ function ImagesPreview({ images, onSelect }: { images: string[], onSelect?: (ind
     />
     <View className="flex-row gap-2 flex-wrap">
       {images.slice(1).map((image, i) => (
-        <TouchableNativeFeedback onPress={() => onSelect?.(i)}>
-          <Image
-            key={image + i}
-            className='border-2 border-white shadow-lg'
-            source={{ uri: image }}
-            style={{
-              width: 60,
-              height: 60,
-              borderRadius: 8,
-            }}
-          />
-        </TouchableNativeFeedback>
+        <View>
+          {indexesToDelete.includes(`${image}withIndex${i}`) && (
+            <AppButton onPress={() => onDelete(i)} variant="destructive" size="sm" className="absolute -top-2 -right-4 z-10 border border-foreground">
+              <MaterialIcons name="delete" size={20} color="white" />
+            </AppButton>
+          )}
+
+          <TouchableNativeFeedback
+            onLongPress={() => addToToBeDeleted(`${image}withIndex${i}`)}
+            onPress={() => {
+              onSelect?.(i);
+              removeFromBeDeleted(`${image}withIndex${i}`);
+            }}>
+            <Image
+              key={image + i}
+              className='border-2 border-white shadow-lg'
+              source={{ uri: image }}
+              style={{
+                width: 60,
+                height: 60,
+                borderRadius: 8,
+              }}
+            />
+          </TouchableNativeFeedback>
+        </View>
       ))}
     </View>
   </View>

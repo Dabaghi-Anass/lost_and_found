@@ -1,93 +1,74 @@
-import { Item } from "../entities.types";
-import { BaseClass } from "./BaseClass";
+import { Item, ItemDetails, OptionType } from "../entities.types";
+import { GeolocationCoordinates, ItemStatus } from "../utils.types";
 
-export class ItemFactory extends BaseClass implements Item {
-	title: string;
-	description: string;
-	color?: string | undefined;
-	category: string;
-	images: string[];
+export class ItemBuilder implements Item {
+	item: ItemDetails;
+	delivred: boolean;
+	lostAt: Date;
+	ownerId: string;
+	found_lost_at: Date;
+	type: OptionType;
+	geoCoordinates: GeolocationCoordinates;
 
 	constructor(
-		title: string,
-		description: string,
-		category: string,
-		images: string[],
-		id: number,
-		createdAt: Date,
-		updatedAt: Date,
-		color?: string
+		item: ItemDetails,
+		status: ItemStatus,
+		delivred: boolean,
+		lostAt: Date,
+		ownerId: string,
+		geoCoordinates: GeolocationCoordinates,
+		found_lost_at: Date,
+		type: OptionType
 	) {
-		super(id, createdAt, updatedAt);
-		this.title = title;
-		this.description = description;
-		this.category = category;
-		this.images = images;
-		this.color = color;
+		this.found_lost_at = found_lost_at;
+		this.geoCoordinates = geoCoordinates;
+		this.item = item;
+		this.type = type;
+		this.delivred = delivred;
+		this.lostAt = lostAt;
+		this.ownerId = ownerId;
 	}
 
-	builder(): ItemFactory {
+	builder(): ItemBuilder {
 		return this;
 	}
 
-	setTitle(title: string): ItemFactory {
-		this.title = title;
+	setItem(item: ItemDetails): ItemBuilder {
+		this.item = item;
+		return this;
+	}
+	setDelivred(delivred: boolean): ItemBuilder {
+		this.delivred = delivred;
 		return this;
 	}
 
-	setDescription(description: string): ItemFactory {
-		this.description = description;
+	setLostAt(lostAt: Date): ItemBuilder {
+		this.lostAt = lostAt;
 		return this;
 	}
 
-	setCategory(category: string): ItemFactory {
-		this.category = category;
+	setOwnerId(ownerId: string): ItemBuilder {
+		this.ownerId = ownerId;
 		return this;
 	}
 
-	setImages(images: string[]): ItemFactory {
-		this.images = images;
+	build(): ItemBuilder {
 		return this;
 	}
 
-	setColor(color: string): ItemFactory {
-		this.color = color;
-		return this;
+	getOwnerId(): string {
+		return this.ownerId;
 	}
 
-	build(): Item {
-		return this;
+	getItem(): ItemDetails {
+		return this.item;
 	}
 
-	getTitle(): string {
-		return this.title;
+	getDelivred(): boolean {
+		return this.delivred;
 	}
 
-	getDescription(): string {
-		return this.description;
-	}
-
-	getCategory(): string {
-		return this.category;
-	}
-
-	getImages(): string[] {
-		return this.images;
-	}
-
-	getColor(): string | undefined {
-		return this.color;
-	}
-
-	getId(): number {
-		return this.id;
-	}
-
-	getCreatedAt(): Date {
-		return this.createdAt;
-	}
-
-	getUpdatedAt(): Date {
-		return this.updatedAt;
+	getLostAt(): Date {
+		return this.lostAt;
 	}
 }
