@@ -1,11 +1,11 @@
+import { Check } from '@/lib/icons/Check';
+import { cn } from '@/lib/utils';
 import * as CheckboxPrimitive from '@rn-primitives/checkbox';
 import * as React from 'react';
 import { Platform } from 'react-native';
-import { Check } from '@/lib/icons/Check';
-import { cn } from '@/lib/utils';
 
-const Checkbox = React.forwardRef<CheckboxPrimitive.RootRef, CheckboxPrimitive.RootProps>(
-  ({ className, ...props }, ref) => {
+const Checkbox = React.forwardRef<CheckboxPrimitive.RootRef, CheckboxPrimitive.RootProps & { checkSize?: number }>(
+  ({ className, checkSize, ...props }, ref) => {
     return (
       <CheckboxPrimitive.Root
         ref={ref}
@@ -18,7 +18,7 @@ const Checkbox = React.forwardRef<CheckboxPrimitive.RootRef, CheckboxPrimitive.R
       >
         <CheckboxPrimitive.Indicator className={cn('items-center justify-center h-full w-full')}>
           <Check
-            size={12}
+            size={checkSize || 20}
             strokeWidth={Platform.OS === 'web' ? 2.5 : 3.5}
             className='text-primary-foreground'
           />

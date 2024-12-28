@@ -32,6 +32,8 @@ export default function TabLayout() {
               display: 'flex',
               flexDirection: 'row',
               justifyContent: 'center',
+              alignItems: 'center',
+              height: 80,
             },
           }),
         }}>
@@ -39,7 +41,8 @@ export default function TabLayout() {
           name="home"
           options={{
             tabBarShowLabel: false,
-            tabBarIcon: () => <AntDesign name="home" size={28} color={Colors[colorScheme ?? 'light'].text} />
+            tabBarLabel: () => null,
+            tabBarIcon: () => (<AntDesign name="home" size={35} style={{ height: 80 }} color={Colors[colorScheme ?? 'light'].text} />)
           }}
         />
         <Tabs.Screen

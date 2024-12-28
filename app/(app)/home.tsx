@@ -8,7 +8,7 @@ export default function HomeScreen() {
   const router = useRouter();
   return <Screen className="bg-background">
     <TouchableNativeFeedback onPress={() => {
-      router.push('/declare-item/lost' as RelativePathString);
+      router.replace('/declare-item/lost' as RelativePathString);
     }}>
       <LinearGradient
         className="w-full flex items-center justify-center bg-accent h-1/2"
@@ -18,7 +18,7 @@ export default function HomeScreen() {
       </LinearGradient>
     </TouchableNativeFeedback >
     <TouchableNativeFeedback onPress={() => {
-      router.push('/declare-item/found' as RelativePathString);
+      router.replace('/declare-item/found' as RelativePathString);
     }}>
       <LinearGradient
         className="w-full flex items-center justify-center bg-accent h-1/2"
