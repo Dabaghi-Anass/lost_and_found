@@ -16,3 +16,9 @@ export const NAV_THEME = {
 		text: "hsl(0 0% 98%)", // foreground
 	},
 };
+
+export enum FirebaseCollections {
+	ITEMS = "items",
+	USERS = "users",
+	LOST_ITEMS = "lost_items",
+}

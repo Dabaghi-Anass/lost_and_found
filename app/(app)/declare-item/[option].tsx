@@ -1,3 +1,4 @@
+import { saveItemDetails, uploadImagesToServer } from '@/api/database';
 import { AppButton } from '@/components/AppButton';
 import AppColorPicker from '@/components/color-picker';
 import { Input } from '@/components/Input';
@@ -57,19 +58,22 @@ export default function DeclareItemScreen() {
 
 
   const handleSubmit = async () => {
-    // const imagesUrls = await uploadImagesToServer(formData.images);
-    // console.log(imagesUrls);
-    const item = ItemDetailsBuilder
-      .builder()
-      .setColor(formData.color)
-      .setCategory(formData.category)
-      .setDescription(formData.description)
-      .setTitle(formData.title)
-      .setImages([...formData.images])
-      .build();
+    try {
+      const imagesUrls = await uploadImagesToServer(formData.images);
+      const item = ItemDetailsBuilder
+        .builder()
+        .setColor(formData.color)
+        .setCategory(formData.category)
+        .setDescription(formData.description)
+        .setTitle(formData.title)
+        .setImages([...formData.images])
+        .build();
 
-    // const newItem = await saveItemDetails(item);
-    // console.log(item);
+      const newItem = await saveItemDetails(item);
+      console.log(newItem);
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   useEffect(() => {
@@ -172,29 +176,9 @@ function ImagesUploadForm({ formData, onFormData }: { formData: FormData, onForm
     if (!result.canceled) {
       const uploadedImages = await Promise.all(
         result.assets.map(async (asset: any) => {
-          const formData = new FormData();
-          formData.append('file', {
-            uri: asset.uri,
-            type: asset.type,
-            name: asset.fileName,
-          });
-          const response = await fetch('http://192.168.137.1:3000/upload-file', {
-            method: 'POST',
-            body: formData,
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to upload image');
-          }
-
-          const data = await response.text();
-          return data;
+          return asset.uri;
         })
       );
-      console.log(uploadedImages);
       onFormData('images', [...formData.images, ...uploadedImages]);
     }
   };
@@ -440,7 +424,7 @@ function ImagesPreview({ images, onSelect, onDelete }: {
     />
     <View className="flex-row gap-2 flex-wrap">
       {images.slice(1).map((image, i) => (
-        <View>
+        <View key={`${image}withIndex${i}`}>
           {indexesToDelete.includes(`${image}withIndex${i}`) && (
             <AppButton onPress={() => onDelete(i)} variant="destructive" size="sm" className="absolute -top-2 -right-4 z-10 border border-foreground">
               <MaterialIcons name="delete" size={20} color="white" />
@@ -454,7 +438,7 @@ function ImagesPreview({ images, onSelect, onDelete }: {
               removeFromBeDeleted(`${image}withIndex${i}`);
             }}>
             <Image
-              key={image + i}
+
               className='border-2 border-white shadow-lg'
               source={{ uri: image }}
               style={{
@@ -470,4 +454,3 @@ function ImagesPreview({ images, onSelect, onDelete }: {
   </View>
   );
 }
-
