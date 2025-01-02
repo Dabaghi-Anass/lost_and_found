@@ -1,14 +1,17 @@
 import { VariantProps } from "class-variance-authority";
-import { Pressable } from "react-native";
+import { ActivityIndicator, Pressable } from "react-native";
 import { Button, buttonVariants } from "./ui/button";
 import { Text } from "./ui/text";
 
 type ButtonProps = React.ComponentPropsWithoutRef<typeof Pressable> &
-  VariantProps<typeof buttonVariants>;
+  VariantProps<typeof buttonVariants> & { loading?: boolean };
 
-export function AppButton({ children, ...props }: React.PropsWithChildren<ButtonProps>) {
+export function AppButton({ children, loading, ...props }: React.PropsWithChildren<ButtonProps>) {
   return <>
     <Button {...props}>
+      {loading &&
+        <ActivityIndicator color="white" size={20} />
+      }
       {typeof children == "string" ?
         <Text>
           {children}

@@ -6,11 +6,12 @@ import { cn } from '../lib/utils';
 export interface InputProps
   extends React.ComponentPropsWithoutRef<typeof TextInput> {
   label?: string;
+  error?: string;
   labelClasses?: string;
   inputClasses?: string;
 }
 const Input = forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
-  ({ className, label, labelClasses, inputClasses, ...props }, ref) => (
+  ({ className, label, labelClasses, error, inputClasses, ...props }, ref) => (
     <View className={cn('flex flex-col gap-1.5', className)}>
       {label && <Text className={cn('text-base', labelClasses)}>{label}</Text>}
       <TextInput
@@ -20,6 +21,7 @@ const Input = forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
         )}
         {...props}
       />
+      {error && <Text className={cn('text-base', "bg-red-600 text-white p-2 rounded capitalize")}>{error}</Text>}
     </View>
   )
 );

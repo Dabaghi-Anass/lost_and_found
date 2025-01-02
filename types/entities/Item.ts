@@ -1,36 +1,33 @@
 import { Item, ItemDetails, OptionType } from "../entities.types";
-import { GeolocationCoordinates, ItemStatus } from "../utils.types";
+import { GeolocationCoordinates } from "../utils.types";
 
 export class ItemBuilder implements Item {
 	item: ItemDetails;
 	delivred: boolean;
-	lostAt: Date;
 	ownerId: string;
 	found_lost_at: Date;
 	type: OptionType;
 	geoCoordinates: GeolocationCoordinates;
+	location: string;
 
-	constructor(
-		item: ItemDetails,
-		status: ItemStatus,
-		delivred: boolean,
-		lostAt: Date,
-		ownerId: string,
-		geoCoordinates: GeolocationCoordinates,
-		found_lost_at: Date,
-		type: OptionType
-	) {
-		this.found_lost_at = found_lost_at;
-		this.geoCoordinates = geoCoordinates;
-		this.item = item;
-		this.type = type;
-		this.delivred = delivred;
-		this.lostAt = lostAt;
-		this.ownerId = ownerId;
+	constructor() {
+		this.item = {
+			category: "",
+			color: "",
+			description: "",
+			images: [],
+			title: "",
+		};
+		this.delivred = false;
+		this.ownerId = "";
+		this.found_lost_at = new Date();
+		this.type = "lost";
+		this.geoCoordinates = { latitude: 0, longitude: 0 };
+		this.location = "";
 	}
 
-	builder(): ItemBuilder {
-		return this;
+	static builder(): ItemBuilder {
+		return new ItemBuilder();
 	}
 
 	setItem(item: ItemDetails): ItemBuilder {
@@ -43,12 +40,26 @@ export class ItemBuilder implements Item {
 	}
 
 	setLostAt(lostAt: Date): ItemBuilder {
-		this.lostAt = lostAt;
+		this.found_lost_at = lostAt;
 		return this;
 	}
 
 	setOwnerId(ownerId: string): ItemBuilder {
 		this.ownerId = ownerId;
+		return this;
+	}
+
+	setType(type: OptionType): ItemBuilder {
+		this.type = type;
+		return this;
+	}
+
+	setLocation(location: string): ItemBuilder {
+		this.location = location;
+		return this;
+	}
+	setGeoCoordinates(geoCoordinates: GeolocationCoordinates): ItemBuilder {
+		this.geoCoordinates = geoCoordinates;
 		return this;
 	}
 
@@ -69,6 +80,18 @@ export class ItemBuilder implements Item {
 	}
 
 	getLostAt(): Date {
-		return this.lostAt;
+		return this.found_lost_at;
+	}
+
+	getType(): OptionType {
+		return this.type;
+	}
+
+	getGeoCoordinates(): GeolocationCoordinates {
+		return this.geoCoordinates;
+	}
+
+	getFoundLostAt(): Date {
+		return this.found_lost_at;
 	}
 }

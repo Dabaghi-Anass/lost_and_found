@@ -17,6 +17,7 @@ interface Profile {
 }
 
 interface ItemDetails {
+	id?: string;
 	title: string;
 	description: string;
 	color?: string;
@@ -25,12 +26,14 @@ interface ItemDetails {
 }
 
 interface Item {
+	id?: string;
 	type: OptionType;
 	item: ItemDetails;
 	delivred: boolean;
 	found_lost_at: Date;
 	ownerId: string;
-	geoCoordinates: GeolocationCoordinates;
+	location: string;
+	geoCoordinates?: GeolocationCoordinates;
 }
 
 export { AppUser, Item, ItemDetails, Profile };
