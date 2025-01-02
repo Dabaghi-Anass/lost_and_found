@@ -84,8 +84,7 @@ export default function DeclareItemScreen() {
         .setLocation(formData.location)
         .setGeoCoordinates(formData.coordinates)
         .build();
-      const savedItem = await saveItem(item);
-      console.log({ savedItem });
+      await saveItem(item);
     } catch (error) {
       Alert.alert('Error', 'An error occurred while saving the item');
     }
@@ -94,6 +93,7 @@ export default function DeclareItemScreen() {
       text: 'OK',
       onPress: () => {
         router.replace("/(app)/home")
+        setStep(1);
         setFormData({
           type: option || "lost",
           category: '',
