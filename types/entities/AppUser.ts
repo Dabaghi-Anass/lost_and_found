@@ -5,7 +5,7 @@ export class AppUserBuilder implements AppUser {
 	authUserId: string;
 	profile: Profile;
 	items: Item[];
-	role?: Role | undefined;
+	role?: Role;
 
 	constructor(
 		authUserId: string,
@@ -16,11 +16,11 @@ export class AppUserBuilder implements AppUser {
 		this.authUserId = authUserId;
 		this.profile = profile;
 		this.items = items;
-		this.role = role;
+		this.role = role || Role.USER;
 	}
 
-	builder(): AppUserBuilder {
-		return this;
+	static builder(): AppUserBuilder {
+		return new AppUserBuilder("", {} as Profile, [], undefined);
 	}
 
 	setRole(role: Role): AppUserBuilder {

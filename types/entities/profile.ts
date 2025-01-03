@@ -36,8 +36,8 @@ export class ProfileBuilder implements Profile {
 		return this.imageUri;
 	}
 
-	builder(): ProfileBuilder {
-		return this;
+	static builder(): ProfileBuilder {
+		return new ProfileBuilder("", "", "", "");
 	}
 
 	build(): Profile {

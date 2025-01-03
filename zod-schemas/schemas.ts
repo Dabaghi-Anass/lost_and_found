@@ -16,3 +16,22 @@ export const ItemSchema = z.object({
 	ownerId: z.string().optional(),
 	geoCoordinates: z.string(),
 });
+
+export const UserSchema = z
+	.object({
+		email: z.string().email(),
+		password: z.string().min(8),
+		firstName: z.string().min(3),
+		lastName: z.string().min(3),
+		phoneNumber: z.string().min(5),
+		confirmPassword: z.string().min(8),
+	})
+	.refine(
+		({ password, confirmPassword }) => {
+			return password === confirmPassword;
+		},
+		{
+			message: "must match the password",
+			path: ["confirmPassword"],
+		}
+	);

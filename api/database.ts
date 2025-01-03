@@ -1,10 +1,13 @@
 import { firestore } from "@/database/fire_base";
 import { FirebaseCollections } from "@/lib/constants";
-import { Item, ItemDetails } from "@/types/entities.types";
+import { AppUser, Item, ItemDetails, Profile } from "@/types/entities.types";
 import { ImagePickerAsset } from "expo-image-picker";
 import {
 	addDoc,
 	collection,
+	doc,
+	getDoc,
+	getDocs,
 	runTransaction,
 	Transaction,
 } from "firebase/firestore";
@@ -33,6 +36,7 @@ export async function saveItemDetails(item: ItemDetails): Promise<ItemDetails> {
 		return await Promise.reject(e);
 	}
 }
+
 export async function saveItem(item: Item): Promise<Item> {
 	try {
 		let itemToSaveClone: Item = {} as Item;
@@ -63,5 +67,110 @@ export async function saveItem(item: Item): Promise<Item> {
 	} catch (e: any) {
 		console.error(e);
 		return await Promise.reject(e);
+	}
+}
+
+export async function saveUser(user: AppUser): Promise<AppUser> {
+	try {
+		let userToSaveClone: AppUser = {} as AppUser;
+		await runTransaction(firestore, async (transaction: Transaction) => {
+			const profilesCollection = collection(
+				firestore,
+				FirebaseCollections.PROFILES
+			);
+			const usersCollection = collection(
+				firestore,
+				FirebaseCollections.USERS
+			);
+			const profileRef = await addDoc(profilesCollection, {
+				...(user.profile as Profile),
+			});
+			user.id = profileRef.id;
+			user.profile.id = profileRef.id;
+			const userToSave = {
+				...user,
+				profileId: profileRef.id,
+			} as any;
+			delete userToSave.profile;
+			await addDoc(usersCollection, userToSave);
+
+			userToSaveClone = { ...userToSave, profile: user.profile };
+		});
+		return Promise.resolve(userToSaveClone);
+	} catch (e: any) {
+		console.error(e);
+		return await Promise.reject(e);
+	}
+}
+
+export async function fetchItemDetailsById(id: string): Promise<ItemDetails> {
+	try {
+		const itemsCollection = collection(
+			firestore,
+			FirebaseCollections.ITEMS
+		);
+		const docRef = doc(itemsCollection, id);
+		const docSnap = await getDoc(docRef);
+		if (docSnap.exists()) {
+			return docSnap.data() as ItemDetails;
+		} else {
+			throw new Error("No such document!");
+		}
+	} catch (e: any) {
+		console.error(e);
+		return Promise.reject(e);
+	}
+}
+
+export async function fetchItemById(id: string): Promise<Item> {
+	try {
+		const itemsCollection = collection(
+			firestore,
+			FirebaseCollections.LOST_ITEMS
+		);
+		const docRef = doc(itemsCollection, id);
+		const docSnap = await getDoc(docRef);
+		if (docSnap.exists()) {
+			return docSnap.data() as Item;
+		} else {
+			throw new Error("No such document!");
+		}
+	} catch (e: any) {
+		console.error(e);
+		return Promise.reject(e);
+	}
+}
+
+export async function fetchAllItems(): Promise<Item[]> {
+	console.log("Fetching all items from database");
+	try {
+		const itemsCollection = collection(
+			firestore,
+			FirebaseCollections.LOST_ITEMS
+		);
+		const querySnapshot = await getDocs(itemsCollection);
+		const items = await Promise.all(
+			querySnapshot.docs.map(async (doc) => {
+				const data = doc.data();
+
+				if (data) {
+					data.item = await fetchItemDetailsById(data.item as string);
+					data.found_lost_at = new Date(
+						data.found_lost_at.seconds * 1000
+					);
+					const itemData = {
+						id: doc.id,
+						...(data as Item),
+					};
+					return itemData;
+				} else {
+					throw new Error(`Document ${doc.id} has no data`);
+				}
+			})
+		);
+		return items;
+	} catch (e: any) {
+		console.error("Error fetching items:", e);
+		return Promise.reject(e);
 	}
 }

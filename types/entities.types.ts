@@ -3,6 +3,7 @@ export type OptionType = "lost" | "found";
 
 /*-----------------entities------------------*/
 interface AppUser {
+	id?: string;
 	authUserId: string;
 	profile: Profile;
 	items: Array<Item>;
@@ -14,6 +15,7 @@ interface Profile {
 	lastName: string;
 	phoneNumber: string;
 	imageUri: string;
+	id?: string;
 }
 
 interface ItemDetails {

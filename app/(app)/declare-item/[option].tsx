@@ -92,7 +92,7 @@ export default function DeclareItemScreen() {
     Alert.alert('Success', 'Item has been saved successfully', [{
       text: 'OK',
       onPress: () => {
-        router.replace("/(app)/home")
+        router.replace("/(app)/items");
         setStep(1);
         setFormData({
           type: option || "lost",
@@ -129,6 +129,7 @@ export default function DeclareItemScreen() {
           colors={['#233dfc', '#1e98fc']}
           start={[1, 0.9]}
         >
+
           <View className="p-4 py-6 h-20">
             <Text className="text-white text-3xl font-bold">
               {formData.type === 'lost' ? 'Report Lost Item' : 'Report Found Item'}

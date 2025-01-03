@@ -21,4 +21,5 @@ export enum FirebaseCollections {
 	ITEMS = "items",
 	USERS = "users",
 	LOST_ITEMS = "lost_items",
+	PROFILES = "profiles",
 }
