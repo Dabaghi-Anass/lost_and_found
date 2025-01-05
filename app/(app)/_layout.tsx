@@ -1,5 +1,4 @@
 import { HapticTab } from '@/components/HapticTab';
-import NavBar from '@/components/NavBar';
 import ScrollScreen from '@/components/scroll-screen';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
@@ -18,8 +17,9 @@ export default function TabLayout() {
   const user = useSelector((state: any) => state.currentUser);
   return (
     <ScrollScreen>
-      <NavBar title={currentScreenName} user={user} />
+      {/* <NavBar title={currentScreenName} user={user} /> */}
       <Tabs
+        initialRouteName='items'
         screenOptions={{
           tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
           headerShown: false,
@@ -53,6 +53,14 @@ export default function TabLayout() {
             tabBarShowLabel: false,
             tabBarLabel: () => null,
             tabBarIcon: () => (<AntDesign name="find" size={35} style={{ height: 80 }} color={Colors[colorScheme ?? 'light'].text} />)
+          }}
+        />
+        <Tabs.Screen
+          name="profile/[id]"
+          options={{
+            tabBarShowLabel: false,
+            tabBarLabel: () => null,
+            tabBarIcon: () => (<AntDesign name="user" size={35} style={{ height: 80 }} color={Colors[colorScheme ?? 'light'].text} />)
           }}
         />
         <Tabs.Screen

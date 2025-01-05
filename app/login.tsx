@@ -52,7 +52,6 @@ export default function LoginScreen() {
     setLoading(false);
   }
   const initUser = async () => {
-    console.log({ userId });
     const user = await getUserById(userId);
     if (user) {
       dispatch(setCurrentUser(user));

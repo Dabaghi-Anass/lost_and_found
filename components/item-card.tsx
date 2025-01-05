@@ -15,7 +15,6 @@ const ItemCard: React.FC<ItemCardProps> = ({
   onViewDetails,
   onViewProfile,
 }) => {
-  console.log(JSON.stringify(item, null, 2));
   const { id, item: itemDetails, location, ownerId, type, found_lost_at } = item
   const formatDate = (dateString: string) => {
     try {

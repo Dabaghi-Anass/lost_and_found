@@ -1,7 +1,12 @@
-import { AppButton } from '@/components/AppButton';
+import { fetchItemById } from '@/api/database';
+import { colorLightness } from '@/lib/utils';
+import { Item } from '@/types/entities.types';
+import { format, parseISO } from 'date-fns';
+import { useLocalSearchParams } from 'expo-router';
 import { Calendar, MapPin, MessageCircle, Package2, Share2, Tag } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   Linking,
@@ -11,39 +16,29 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-
 const { width } = Dimensions.get('window');
 
 export default function ItemDetailsScreen() {
   const [selectedImage, setSelectedImage] = useState(0);
-
-  const item = {
-    category: "documents",
-    color: "#c20041",
-    description: "hello how are you my name is abderrahim",
-    images: [
-      "https://res.cloudinary.com/dnf11wb1l/image/upload/v1735895128/1000125077_bwjz8t.jpg",
-      "https://res.cloudinary.com/dnf11wb1l/image/upload/v1735895128/1000125066_jh5r9s.jpg",
-      "https://res.cloudinary.com/dnf11wb1l/image/upload/v1735895128/1000125053_n1slti.jpg"
-    ],
-    title: "test item",
-    delivered: false,
-    found_lost_at: "January 9, 2025 at 2:22:00 PM UTC+1",
-    geoCoordinates: {
-      latitude: 34.0350905,
-      longitude: -4.9763377
-    },
-    id: "HkJKxmItxSQYP3hHzIyE",
-    location: "22MF+X9G, Fes, Morocco, Ville Nouvelle",
-    type: "found"
+  const [loading, setLoading] = useState<boolean>(false);
+  const { itemId } = useLocalSearchParams()
+  const [item, setItem] = useState<Item | null>(null)
+  const formatDate = (dateString: string) => {
+    try {
+      return format(parseISO(dateString), 'PPp');
+    } catch (error) {
+      console.error('Error parsing date:', error);
+      return dateString;
+    }
   };
 
   const openMap = () => {
+    if (!item) return
     const scheme = Platform.select({
       ios: 'maps:0,0?q=',
       android: 'geo:0,0?q='
     });
-    const latLng = `${item.geoCoordinates.latitude},${item.geoCoordinates.longitude}`;
+    const latLng = `${item.geoCoordinates?.latitude},${item.geoCoordinates?.longitude}`;
     const label = item.location;
     const url = Platform.select({
       ios: `${scheme}${label}@${latLng}`,
@@ -54,20 +49,40 @@ export default function ItemDetailsScreen() {
   };
 
   const handleShare = async () => {
+    if (!item) return
     try {
       await Share.share({
-        message: `Check out this ${item.type} item: ${item.title} at ${item.location}`,
+        message: `Check out this ${item.type} item: ${item.item.title} at ${item.location}`,
       });
     } catch (error) {
       console.error(error);
     }
   };
 
+  useEffect(() => {
+
+    const fetchItem = async () => {
+      try {
+        const fetchedItem = await fetchItemById(itemId as string)
+        if (fetchedItem) {
+          setItem(fetchedItem)
+          setLoading(false)
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    setLoading(true)
+    fetchItem()
+  }, [itemId])
+  if (!item || loading) return <View className='flex-1 items-center justify-center'>
+    <ActivityIndicator size="large" color="#000" />
+  </View>
   return (
     <ScrollView style={styles.container}>
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: item.images[selectedImage] }}
+          source={{ uri: item.item.images[selectedImage] }}
           style={styles.mainImage}
         />
         <ScrollView
@@ -75,7 +90,7 @@ export default function ItemDetailsScreen() {
           showsHorizontalScrollIndicator={false}
           style={styles.thumbnailContainer}
         >
-          {item.images.map((image, index) => (
+          {item.item.images.map((image, index) => (
             <TouchableOpacity
               key={index}
               onPress={() => setSelectedImage(index)}
@@ -95,19 +110,21 @@ export default function ItemDetailsScreen() {
 
       <View style={styles.detailsContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.title}>{item.item.title}</Text>
           <View style={styles.badgeContainer}>
             <View style={styles.badge}>
               <Tag width={16} height={16} color="#666" />
-              <Text style={styles.badgeText}>{item.category}</Text>
+              <Text style={styles.badgeText}>{item.item.category}</Text>
             </View>
-            <View style={[styles.badge, { backgroundColor: item.color }]}>
-              <Text style={[styles.badgeText, { color: '#fff' }]}>Color</Text>
+            <View style={[styles.badge, {
+              backgroundColor: item.item.color,
+            }]}>
+              <Text style={[styles.badgeText, { color: colorLightness(item.item.color as string) > 50 ? "black" : "white" }]}>Color</Text>
             </View>
             <View style={styles.badge}>
               <Package2 width={16} height={16} color="#666" />
               <Text style={styles.badgeText}>
-                {item.delivered ? 'Delivered' : 'Not Delivered'}
+                {item.delivred ? 'Delivered' : 'Not Delivered'}
               </Text>
             </View>
           </View>
@@ -119,37 +136,33 @@ export default function ItemDetailsScreen() {
         <View style={styles.separator} />
 
         {/* Location */}
-        <TouchableOpacity style={styles.infoRow} >
+        <TouchableOpacity style={styles.infoRow} onPress={openMap}>
+          <MapPin width={20} height={20} color="#666" />
           <View style={styles.infoContent}>
-            <View className='flex-row py-4 gap-2 items-start'>
-              <MapPin width={20} height={20} color="#666" />
-              <Text style={[styles.infoLabel, {
-                width: 80,
-              }]} >Location</Text>
-              <AppButton variant="primary" size="sm" onPress={openMap}>view on map</AppButton>
-            </View>
+            <Text style={styles.infoLabel}>Location</Text>
             <Text style={styles.infoText}>{item.location}</Text>
             <Text style={styles.infoText}>
-              {item.geoCoordinates.latitude}, {item.geoCoordinates.longitude}
+              {item.geoCoordinates?.latitude}, {item.geoCoordinates?.longitude}
             </Text>
           </View>
         </TouchableOpacity>
-
 
         {/* Date */}
         <View style={styles.infoRow}>
           <Calendar width={20} height={20} color="#666" />
           <View style={styles.infoContent}>
-            <Text style={styles.infoLabel}>Date Found/Lost</Text>
-            <Text style={styles.infoText}>{item.found_lost_at}</Text>
+            <Text style={styles.infoLabel}>Date {
+              item.type
+            }</Text>
+            <Text style={styles.infoText}>{formatDate(item.found_lost_at.toISOString())}</Text>
           </View>
         </View>
 
         {/* Description */}
-        {item.description && (
+        {item.item.description && (
           <View style={styles.description}>
             <Text style={styles.infoLabel}>Description</Text>
-            <Text style={styles.infoText}>{item.description}</Text>
+            <Text style={styles.infoText}>{item.item.description}</Text>
           </View>
         )}
 
@@ -181,6 +194,8 @@ const styles = StyleSheet.create({
   mainImage: {
     width: '100%',
     height: width * 0.75,
+    alignSelf: 'center',
+    objectFit: "scale-down"
   },
   thumbnailContainer: {
     padding: 16,
@@ -200,6 +215,8 @@ const styles = StyleSheet.create({
   thumbnailImage: {
     width: '100%',
     height: '100%',
+    objectFit: "scale-down"
+
   },
   detailsContainer: {
     padding: 16,
@@ -261,6 +278,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 4,
+    textTransform: 'capitalize',
   },
   infoText: {
     fontSize: 14,

@@ -8,8 +8,10 @@ import {
 	doc,
 	getDoc,
 	getDocs,
+	query,
 	runTransaction,
 	Transaction,
+	where,
 } from "firebase/firestore";
 import { uploadAsset } from "./cloudinary";
 
@@ -103,6 +105,51 @@ export async function saveUser(user: AppUser): Promise<AppUser> {
 	}
 }
 
+export async function fetchItemById(itemId: string): Promise<Item | undefined> {
+	const itemsCollection = collection(
+		firestore,
+		FirebaseCollections.LOST_ITEMS
+	);
+	const q = query(itemsCollection, where("id", "==", itemId));
+	const querySnapshot = await getDocs(q);
+
+	if (querySnapshot.empty) {
+		console.log("No matching documents found.");
+		return Promise.resolve(undefined);
+	}
+
+	const docs: any = [];
+	querySnapshot.forEach((doc) => docs.push(doc));
+	const item = docs[0].data();
+	item.item = await fetchItemDetailsById(item.item);
+	item.found_lost_at = new Date(item.found_lost_at.seconds * 1000);
+	return item as Item;
+}
+
+export async function fetchUserById(
+	userId: string
+): Promise<AppUser | undefined> {
+	const usersCollection = collection(firestore, FirebaseCollections.USERS);
+	const q = query(usersCollection, where("id", "==", userId));
+	const querySnapshot = await getDocs(q);
+
+	if (querySnapshot.empty) {
+		console.log("No matching documents found.");
+		return Promise.resolve(undefined);
+	}
+
+	const docs: any = [];
+	querySnapshot.forEach((doc) => docs.push(doc));
+	const user = docs[0].data();
+	user.profile = await fetchProfileById(user.profileId);
+	user.items = await Promise.all(
+		user.items.map((itemId: string) => {
+			return fetchItemById(itemId);
+		})
+	);
+	return user as AppUser;
+}
+
 export async function fetchItemDetailsById(id: string): Promise<ItemDetails> {
 	try {
 		const itemsCollection = collection(
@@ -122,16 +169,16 @@ export async function fetchItemDetailsById(id: string): Promise<ItemDetails> {
 	}
 }
 
-export async function fetchItemById(id: string): Promise<Item> {
+export async function fetchProfileById(id: string): Promise<Profile> {
 	try {
 		const itemsCollection = collection(
 			firestore,
-			FirebaseCollections.LOST_ITEMS
+			FirebaseCollections.PROFILES
 		);
 		const docRef = doc(itemsCollection, id);
 		const docSnap = await getDoc(docRef);
 		if (docSnap.exists()) {
-			return docSnap.data() as Item;
+			return docSnap.data() as Profile;
 		} else {
 			throw new Error("No such document!");
 		}
@@ -142,7 +189,6 @@ export async function fetchItemById(id: string): Promise<Item> {
 }
 
 export async function fetchAllItems(): Promise<Item[]> {
-	console.log("Fetching all items from database");
 	try {
 		const itemsCollection = collection(
 			firestore,

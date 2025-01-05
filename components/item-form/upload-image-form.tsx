@@ -19,8 +19,8 @@ export function ImagesUploadForm({ formData, onFormData, onAssetsUploaded }: {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      aspect: [16, 9],
       allowsMultipleSelection: true,
-      quality: 1,
     });
     if (!result.canceled) {
       const uploadedImages = result.assets.map((asset: ImagePicker.ImagePickerAsset) => {

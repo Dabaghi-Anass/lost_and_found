@@ -2,8 +2,8 @@ import { fetchAllItems } from "@/api/database";
 import ItemCard from "@/components/item-card";
 import { useSearch } from "@/hooks/use-search";
 import { Item } from "@/types/entities.types";
-import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -20,30 +20,25 @@ const LostItemPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const filtredItems = useSearch(items, searchQuery);
   const router = useRouter()
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const fetchedItems = await fetchAllItems();
+  const fetchItems = useCallback(() => {
+    setLoading(true);
+    try {
+      fetchAllItems().then(fetchedItems => {
         setItems(fetchedItems);
-      } catch (err) {
-        setError("Failed to fetch items.");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchItems();
+      })
+    } catch (err) {
+      setError("Failed to fetch items.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }, []);
-
-
+  useFocusEffect(fetchItems);
 
   if (loading) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color="#3182CE" />
-        <Text>Loading items...</Text>
       </View>
     );
   }
@@ -68,8 +63,7 @@ const LostItemPage: React.FC = () => {
         {filtredItems.map((item, index) => (<ItemCard key={index}
           item={item}
           onViewDetails={(_) => {
-            console.log(JSON.stringify(item, null, 2));
-            router.push("/(app)/item-details/" + item.id as any)
+            router.navigate("/(app)/item-details/" + item.id as any)
           }}
           onViewProfile={(_) => { }} />))}
       </ScrollView>
