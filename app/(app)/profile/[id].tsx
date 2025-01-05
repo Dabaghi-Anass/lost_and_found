@@ -6,7 +6,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function UserProfile({ onItemPress }: { user: AppUser; onItemPress: (id: string) => void }) {
+export default function UserProfile() {
   const { id } = useLocalSearchParams();
   const [user, setUser] = useState<AppUser | null>(null);
 
