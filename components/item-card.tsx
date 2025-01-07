@@ -48,7 +48,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
           <Entypo name="location-pin" size={14} color="#6B7280" />
           <Text style={styles.locationText}>{location}</Text>
         </View>
-        <Text style={styles.dateText}>{formatDate(found_lost_at.toISOString())}</Text>
+        <Text style={styles.dateText}>{formatDate(new Date(found_lost_at).toISOString())}</Text>
       </View>
       <View style={styles.footer}>
         <TouchableOpacity onPress={() => onViewProfile(ownerId)}>

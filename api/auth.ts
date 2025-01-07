@@ -1,13 +1,10 @@
-import { auth, firestore } from "@/database/fire_base";
-import { FirebaseCollections } from "@/lib/constants";
-import { AppUser } from "@/types/entities.types";
+import { auth } from "@/database/fire_base";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
 	createUserWithEmailAndPassword,
 	signInWithEmailAndPassword,
 	User,
 } from "firebase/auth";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { fetchProfileById } from "./database";
 
 export async function loginUser(
 	email: string,
@@ -22,7 +19,7 @@ export async function loginUser(
 }
 
 export async function logoutUser(): Promise<void> {
-	await auth.signOut();
+	await Promise.all([AsyncStorage.removeItem("userID"), auth.signOut()]);
 }
 
 export async function registerUser(

@@ -42,7 +42,7 @@ const buttonTextVariants = cva(
         destructive: 'text-destructive-foreground font-semibold',
         outline: 'group-active:text-accent-foreground font-semibold',
         secondary: 'text-secondary-foreground font-semibold group-active:text-secondary-foreground',
-        ghost: 'group-active:text-accent-foreground font-semibold',
+        ghost: 'group-active:text-accent-foreground font-semibold bg-gray-100 p-4 rounded-md flex items-center justify-center',
         link: 'text-primary group-active:underline',
       },
       size: {

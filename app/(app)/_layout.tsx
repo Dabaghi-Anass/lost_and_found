@@ -1,4 +1,5 @@
 import { HapticTab } from '@/components/HapticTab';
+import NavBar from '@/components/NavBar';
 import ScrollScreen from '@/components/scroll-screen';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
@@ -14,7 +15,7 @@ export default function TabLayout() {
 
   return (
     <ScrollScreen>
-      {/* <NavBar title={currentScreenName} user={user} /> */}
+      <NavBar />
       <Tabs
         initialRouteName='items'
         screenOptions={{
@@ -49,13 +50,14 @@ export default function TabLayout() {
           options={{
             tabBarShowLabel: false,
             tabBarLabel: () => null,
-            tabBarIcon: () => (<AntDesign name="find" size={35} style={{ height: 80 }} color={Colors[colorScheme ?? 'light'].text} />)
+            tabBarIcon: () => (<AntDesign name="find" size={30} style={{ height: 70 }} color={Colors[colorScheme ?? 'light'].text} />)
           }}
         />
         <Tabs.Screen
           name="profile/[id]"
           options={{
             tabBarShowLabel: false,
+            href: null,
             tabBarLabel: () => null,
             tabBarIcon: () => (<AntDesign name="user" size={35} style={{ height: 80 }} color={Colors[colorScheme ?? 'light'].text} />)
           }}

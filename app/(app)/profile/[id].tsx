@@ -1,19 +1,30 @@
+import { logoutUser } from '@/api/auth';
 import { fetchUserById } from '@/api/database';
+import { AppButton } from '@/components/AppButton';
+import { ConfirmationModal } from '@/components/confirmation-modal';
 import ItemMinifiedCard from '@/components/item-minified-card';
-import { useStorageState } from '@/hooks/useStorageState';
 import { AppUser } from '@/types/entities.types';
-import { Feather } from '@expo/vector-icons';
+import { AntDesign, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSelector } from 'react-redux';
 
 export default function UserProfile() {
   const { id } = useLocalSearchParams();
   const [user, setUser] = useState<AppUser | null>(null);
-  const [storedId, setStoredId] = useStorageState('userId', '');
-
+  const currentUser = useSelector((state: any) => state.user);
+  const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
+  function openConfirmationModal() {
+    setConfirmationModalVisible(true);
+  }
   const handleMessage = () => {
     console.log('Message user:', user?.profile.id);
+  };
+  const handleLogout = () => {
+    logoutUser().then(() => {
+      router.replace('/login');
+    })
   };
 
   const handleEmail = () => {
@@ -26,14 +37,16 @@ export default function UserProfile() {
     setUser(user);
   }
   useEffect(() => {
-    console.log({ storedId })
-    if (id) {
-      getUserById(id as string);
-    } else if (!id) {
-      getUserById(storedId);
-    }
+    (async () => {
+      if (id) {
+        getUserById(id as string);
+      } else if (!id) {
+        setUser(currentUser);
+      }
+    })()
   }, [id]);
 
+  if (!user) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Loading...</Text></View>;
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -66,7 +79,7 @@ export default function UserProfile() {
           <Text style={styles.sectionTitle}>Contact Information</Text>
           <View style={styles.contactInfo}>
             <Feather name="mail" size={16} color="#666" />
-            <Text style={styles.contactText}>{user?.profile.firstName.toLowerCase()}.{user?.profile.lastName.toLowerCase()}@example.com</Text>
+            <Text style={styles.contactText}>{user.email}</Text>
           </View>
         </View>
 
@@ -83,6 +96,29 @@ export default function UserProfile() {
           ))}
         </View>
       </View>
+      {currentUser.id === user.id &&
+        <View className='flex flex-row items-center justify-center py-8 px-4 gap-4'>
+          <AppButton variant="outline" className='gap-4'>
+            <Text className='text-foreground text-xl'>edit profile</Text>
+            <FontAwesome5 name="user-edit" size={20} color="#444" />
+          </AppButton>
+          <ConfirmationModal
+            title='Logout'
+            description='Are you sure you want to logout?'
+            trigger={<AppButton variant="destructive" className='gap-4' onPress={openConfirmationModal}>
+              <Text className='text-white text-xl'>logout</Text>
+              <AntDesign name="logout" size={20} color="white" />
+            </AppButton>}
+            open={confirmationModalVisible}
+            onAccept={() => {
+              handleLogout();
+            }}
+            onClose={() => {
+              setConfirmationModalVisible(false);
+            }}
+          />
+        </View>
+      }
     </ScrollView>
   );
 }
@@ -90,7 +126,7 @@ export default function UserProfile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: 'white',
   },
   header: {
     height: 200,
@@ -108,7 +144,6 @@ const styles = StyleSheet.create({
     borderColor: 'white',
   },
   content: {
-    backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     marginTop: -50,

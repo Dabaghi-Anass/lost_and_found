@@ -1,6 +1,7 @@
 import { useColorScheme } from '@/hooks/useColorScheme';
 // import 'dotenv/config';
 import { store } from '@/redux/store';
+import { PortalHost } from '@rn-primitives/portal';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -39,6 +40,7 @@ export default function RootLayout() {
           <Stack.Screen name="+not-found" />
         </Stack>
         <StatusBar style="auto" />
+        <PortalHost />
       </View>
     </Provider>
   );

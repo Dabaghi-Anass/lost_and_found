@@ -154,7 +154,7 @@ export default function ItemDetailsScreen() {
             <Text style={styles.infoLabel}>Date {
               item.type
             }</Text>
-            <Text style={styles.infoText}>{formatDate(item.found_lost_at.toISOString())}</Text>
+            <Text style={styles.infoText}>{formatDate(new Date(item.found_lost_at).toISOString())}</Text>
           </View>
         </View>
 
