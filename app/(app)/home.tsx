@@ -2,10 +2,13 @@ import Screen from "@/components/screen";
 import { LinearGradient } from 'expo-linear-gradient';
 import { RelativePathString, useRouter } from "expo-router";
 import { Text, TouchableNativeFeedback } from "react-native";
+import { useSelector } from "react-redux";
 
 
 export default function HomeScreen() {
   const router = useRouter();
+  const currentUser = useSelector((state: any) => state.currentUser);
+  console.log({ currentUser });
   return <Screen className="bg-background">
     <TouchableNativeFeedback onPress={() => {
       router.replace('/declare-item/lost' as RelativePathString);

@@ -5,16 +5,13 @@ import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { MaterialIcons } from '@expo/vector-icons';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { useRoute } from '@react-navigation/native';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
-import { useSelector } from 'react-redux';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const { name: currentScreenName } = useRoute();
-  const user = useSelector((state: any) => state.currentUser);
+
   return (
     <ScrollScreen>
       {/* <NavBar title={currentScreenName} user={user} /> */}

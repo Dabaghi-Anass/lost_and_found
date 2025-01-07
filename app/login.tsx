@@ -1,12 +1,12 @@
 // import { loginUser, loginUserWithGoogle } from "@/api/auth";
-import { getUserByAuthUserId, getUserById, loginUser } from "@/api/auth";
+import { loginUser } from "@/api/auth";
+import { getUserByAuthUserId } from "@/api/database";
 import BgImageDark from "@/assets/images/bg_auth_dark.png";
 import BgImageLight from "@/assets/images/bg_auth_light.png";
 import { AppButton } from "@/components/AppButton";
 import { Input } from "@/components/Input";
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import Separator from '@/components/separator';
-import { useStorageState } from "@/hooks/useStorageState";
 import { setCurrentUser } from "@/redux/global/current-user";
 // import { auth } from "@/database/fire_base";
 // import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
@@ -26,7 +26,6 @@ export default function LoginScreen() {
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>();
   const [error, setError] = useState<string | null>(null);
-  const [userId, setUserId] = useStorageState("userID", "");
   const isValid = (): boolean => {
     if (userName.length === 0 || password.length === 0) return false;
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -44,26 +43,18 @@ export default function LoginScreen() {
       setError("Invalid Email Or Password");
     } else {
       setError(null);
-      setUserId(user.uid);
-      dispatch(setCurrentUser(getUserByAuthUserId(user.uid)));
+      const userDocument = await getUserByAuthUserId(user.uid);
+      dispatch(setCurrentUser(userDocument));
       setLoading(false);
       router.push("/home");
     }
     setLoading(false);
   }
-  const initUser = async () => {
-    const user = await getUserById(userId);
-    if (user) {
-      dispatch(setCurrentUser(user));
-      router.push("/home");
-    }
-  }
+
   useEffect(() => {
     setError(null);
   }, [userName, password]);
-  useEffect(() => {
-    initUser()
-  }, []);
+
   return (
     <ParallaxScrollView
       HEADER_HEIGHT={300}

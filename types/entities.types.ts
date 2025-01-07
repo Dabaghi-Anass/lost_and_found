@@ -5,6 +5,7 @@ export type OptionType = "lost" | "found";
 interface AppUser {
 	id?: string;
 	authUserId: string;
+	email: string;
 	profile: Profile;
 	items: Array<Item>;
 	role?: Role;

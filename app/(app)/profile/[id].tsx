@@ -1,5 +1,6 @@
 import { fetchUserById } from '@/api/database';
 import ItemMinifiedCard from '@/components/item-minified-card';
+import { useStorageState } from '@/hooks/useStorageState';
 import { AppUser } from '@/types/entities.types';
 import { Feather } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -9,7 +10,7 @@ import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } 
 export default function UserProfile() {
   const { id } = useLocalSearchParams();
   const [user, setUser] = useState<AppUser | null>(null);
-
+  const [storedId, setStoredId] = useStorageState('userId', '');
 
   const handleMessage = () => {
     console.log('Message user:', user?.profile.id);
@@ -25,7 +26,12 @@ export default function UserProfile() {
     setUser(user);
   }
   useEffect(() => {
-    getUserById("hN5cfc867bM4IBd6TRYW");
+    console.log({ storedId })
+    if (id) {
+      getUserById(id as string);
+    } else if (!id) {
+      getUserById(storedId);
+    }
   }, [id]);
 
   return (

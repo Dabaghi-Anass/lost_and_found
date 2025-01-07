@@ -1,7 +1,8 @@
-import { firestore } from "@/database/fire_base";
+import { auth, firestore } from "@/database/fire_base";
 import { FirebaseCollections } from "@/lib/constants";
 import { AppUser, Item, ItemDetails, Profile } from "@/types/entities.types";
 import { ImagePickerAsset } from "expo-image-picker";
+import { User } from "firebase/auth";
 import {
 	addDoc,
 	collection,
@@ -105,6 +106,35 @@ export async function saveUser(user: AppUser): Promise<AppUser> {
 	}
 }
 
+export async function fetchItemsById(
+	items: string[]
+): Promise<Item[] | undefined> {
+	const itemsCollection = collection(
+		firestore,
+		FirebaseCollections.LOST_ITEMS
+	);
+	const q = query(itemsCollection, where("id", "in", items));
+	const querySnapshot = await getDocs(q);
+
+	if (querySnapshot.empty) {
+		console.log("No matching documents found.");
+		return Promise.resolve(undefined);
+	}
+
+	const docs: any = [];
+	querySnapshot.forEach((doc) => docs.push(doc));
+	const itemsData = await Promise.all(
+		docs.map(async (doc: any) => {
+			const data = doc.data();
+			data.item = await fetchItemDetailsById(data.item as string);
+			data.found_lost_at = data.found_lost_at.seconds * 1000;
+			return data as Item;
+		})
+	);
+
+	return itemsData;
+}
+
 export async function fetchItemById(itemId: string): Promise<Item | undefined> {
 	const itemsCollection = collection(
 		firestore,
@@ -122,8 +152,37 @@ export async function fetchItemById(itemId: string): Promise<Item | undefined> {
 	querySnapshot.forEach((doc) => docs.push(doc));
 	const item = docs[0].data();
 	item.item = await fetchItemDetailsById(item.item);
-	item.found_lost_at = new Date(item.found_lost_at.seconds * 1000);
+	item.found_lost_at = item.found_lost_at.seconds * 1000;
 	return item as Item;
+}
+
+export async function getUserByAuthUserId(
+	userId: string
+): Promise<AppUser | undefined> {
+	const usersCollection = collection(firestore, FirebaseCollections.USERS);
+	const q = query(usersCollection, where("authUserId", "==", userId));
+
+	const querySnapshot = await getDocs(q);
+
+	if (querySnapshot.empty) {
+		console.log("No matching documents found.");
+		return Promise.resolve(undefined);
+	}
+
+	const docs: any = [];
+	querySnapshot.forEach((doc) => docs.push(doc));
+	return docs[0].data() as AppUser;
+}
+
+export async function fetchAuthUserById(
+	itemId: string
+): Promise<User | undefined> {
+	try {
+		return Promise.resolve(auth.currentUser || undefined);
+	} catch (e: any) {
+		console.error(e);
+		return Promise.reject(e);
+	}
 }
 
 export async function fetchUserById(
@@ -142,11 +201,7 @@ export async function fetchUserById(
 	querySnapshot.forEach((doc) => docs.push(doc));
 	const user = docs[0].data();
 	user.profile = await fetchProfileById(user.profileId);
-	user.items = await Promise.all(
-		user.items.map((itemId: string) => {
-			return fetchItemById(itemId);
-		})
-	);
+	user.items = await fetchItemsById(user.items);
 	return user as AppUser;
 }
 
@@ -169,19 +224,26 @@ export async function fetchItemDetailsById(id: string): Promise<ItemDetails> {
 	}
 }
 
-export async function fetchProfileById(id: string): Promise<Profile> {
+export async function fetchProfileById(
+	id: string
+): Promise<Profile | undefined> {
 	try {
-		const itemsCollection = collection(
+		const usersCollection = collection(
 			firestore,
 			FirebaseCollections.PROFILES
 		);
-		const docRef = doc(itemsCollection, id);
-		const docSnap = await getDoc(docRef);
-		if (docSnap.exists()) {
-			return docSnap.data() as Profile;
-		} else {
-			throw new Error("No such document!");
+		const q = query(usersCollection, where("id", "==", id));
+		const querySnapshot = await getDocs(q);
+
+		if (querySnapshot.empty) {
+			console.log("No matching documents found.");
+			return Promise.resolve(undefined);
 		}
+
+		const docs: any = [];
+		querySnapshot.forEach((doc) => docs.push(doc));
+		const profile = docs[0].data();
+		return profile as Profile;
 	} catch (e: any) {
 		console.error(e);
 		return Promise.reject(e);
@@ -201,9 +263,7 @@ export async function fetchAllItems(): Promise<Item[]> {
 
 				if (data) {
 					data.item = await fetchItemDetailsById(data.item as string);
-					data.found_lost_at = new Date(
-						data.found_lost_at.seconds * 1000
-					);
+					data.found_lost_at = data.found_lost_at.seconds * 1000;
 					const itemData = {
 						id: doc.id,
 						...(data as Item),

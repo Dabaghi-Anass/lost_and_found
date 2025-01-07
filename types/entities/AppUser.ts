@@ -3,6 +3,7 @@ import { Role } from "../utils.types";
 
 export class AppUserBuilder implements AppUser {
 	authUserId: string;
+	email: string;
 	profile: Profile;
 	items: Item[];
 	role?: Role;
@@ -11,16 +12,18 @@ export class AppUserBuilder implements AppUser {
 		authUserId: string,
 		profile: Profile,
 		items: Item[],
+		email: string,
 		role?: Role
 	) {
 		this.authUserId = authUserId;
 		this.profile = profile;
 		this.items = items;
 		this.role = role || Role.USER;
+		this.email = email;
 	}
 
 	static builder(): AppUserBuilder {
-		return new AppUserBuilder("", {} as Profile, [], undefined);
+		return new AppUserBuilder("", {} as Profile, [], "", undefined);
 	}
 
 	setRole(role: Role): AppUserBuilder {
@@ -42,6 +45,10 @@ export class AppUserBuilder implements AppUser {
 		this.items = Items;
 		return this;
 	}
+	setEmail(email: string): AppUserBuilder {
+		this.email = email;
+		return this;
+	}
 
 	build(): AppUserBuilder {
 		return this;
@@ -57,6 +64,10 @@ export class AppUserBuilder implements AppUser {
 
 	getItems(): Item[] {
 		return this.items;
+	}
+
+	getEmail(): string {
+		return this.email;
 	}
 
 	getRole(): Role | undefined {

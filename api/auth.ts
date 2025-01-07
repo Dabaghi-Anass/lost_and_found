@@ -6,14 +6,8 @@ import {
 	signInWithEmailAndPassword,
 	User,
 } from "firebase/auth";
-import {
-	collection,
-	doc,
-	getDoc,
-	getDocs,
-	query,
-	where,
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { fetchProfileById } from "./database";
 
 export async function loginUser(
 	email: string,
@@ -45,30 +39,4 @@ export async function registerUser(
 	} catch (error: any) {
 		return undefined;
 	}
-}
-
-export async function getUserById(
-	userId: string
-): Promise<AppUser | undefined> {
-	const user = await getDoc(
-		doc(firestore, FirebaseCollections.USERS, userId)
-	);
-	return user.data() as AppUser;
-}
-export async function getUserByAuthUserId(
-	userId: string
-): Promise<AppUser | undefined> {
-	const usersCollection = collection(firestore, FirebaseCollections.USERS);
-	const q = query(usersCollection, where("authUserId", "==", userId));
-
-	const querySnapshot = await getDocs(q);
-
-	if (querySnapshot.empty) {
-		console.log("No matching documents found.");
-		return Promise.resolve(undefined);
-	}
-
-	const docs: any = [];
-	querySnapshot.forEach((doc) => docs.push(doc));
-	return docs[0].data() as AppUser;
 }
