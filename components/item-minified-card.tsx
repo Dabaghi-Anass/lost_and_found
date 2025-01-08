@@ -1,3 +1,4 @@
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { Item } from '@/types/entities.types';
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
@@ -11,17 +12,17 @@ interface ItemCardProps {
 export default function ItemMinifiedCard({ item, onPress }: ItemCardProps) {
   const mainImage = item.item.images[0] || 'https://via.placeholder.com/150';
   const formattedDate = new Date(item.found_lost_at).toLocaleDateString();
-
+  const theme = useColorScheme()
   return (
     <TouchableOpacity
-      style={styles.container}
+      style={[styles.container, { backgroundColor: theme == 'light' ? 'hsl(250,30%,100%)' : 'hsl(250,25%,20%)' }]}
       onPress={() => onPress(item.id as string)}
       activeOpacity={0.7}
     >
       <Image source={{ uri: mainImage }} style={styles.image} />
       <View style={styles.content}>
         <View style={styles.header}>
-          <Text style={styles.title} numberOfLines={1}>
+          <Text style={styles.title} className='text-foreground' numberOfLines={1}>
             {item.item.title}
           </Text>
           <View style={[styles.badge, { backgroundColor: item.item.color }]}>
@@ -29,20 +30,20 @@ export default function ItemMinifiedCard({ item, onPress }: ItemCardProps) {
           </View>
         </View>
 
-        <Text style={styles.description} numberOfLines={2}>
+        <Text style={styles.description} className='text-foreground' numberOfLines={2}>
           {item.item.description}
         </Text>
 
         <View style={styles.footer}>
           <View style={styles.footerItem}>
-            <Feather name="map-pin" size={14} color="#666" />
-            <Text style={styles.footerText} numberOfLines={1}>
+            <Feather name="map-pin" size={14} color={theme === "dark" ? "white" : "#111"} />
+            <Text style={styles.footerText} className='text-foreground' numberOfLines={1}>
               {item.location}
             </Text>
           </View>
           <View style={styles.footerItem}>
-            <Feather name="calendar" size={14} color="#666" />
-            <Text style={styles.footerText}>{formattedDate}</Text>
+            <Feather name="calendar" size={14} color={theme === "dark" ? "white" : "#111"} />
+            <Text style={styles.footerText} className='text-foreground'>{formattedDate}</Text>
           </View>
         </View>
       </View>
@@ -53,18 +54,9 @@ export default function ItemMinifiedCard({ item, onPress }: ItemCardProps) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: 'white',
-    borderRadius: 12,
-    marginBottom: 12,
+    borderRadius: 5,
     padding: 12,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    elevation: 1,
   },
   image: {
     width: 80,
@@ -85,7 +77,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
     flex: 1,
     marginRight: 8,
   },
@@ -101,7 +92,6 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
-    color: '#666',
     marginBottom: 8,
   },
   footer: {
@@ -114,7 +104,6 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 12,
-    color: '#666',
     marginLeft: 4,
     maxWidth: 200,
   },

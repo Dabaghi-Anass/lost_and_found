@@ -15,7 +15,7 @@ export default function HomeScreen() {
     const user = await fetchUserById(userId);
     if (user) {
       dispatch(setCurrentUser(user));
-      router.replace("/home");
+      router.replace("/items");
     } else {
       console.log("User Not Found");
       router.replace("/login");

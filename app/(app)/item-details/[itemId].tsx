@@ -1,5 +1,4 @@
 import { fetchItemById } from '@/api/database';
-import { colorLightness } from '@/lib/utils';
 import { Item } from '@/types/entities.types';
 import { format, parseISO } from 'date-fns';
 import { useLocalSearchParams } from 'expo-router';
@@ -118,8 +117,9 @@ export default function ItemDetailsScreen() {
             </View>
             <View style={[styles.badge, {
               backgroundColor: item.item.color,
+              width: 16,
+              height: 16,
             }]}>
-              <Text style={[styles.badgeText, { color: colorLightness(item.item.color as string) > 50 ? "black" : "white" }]}>Color</Text>
             </View>
             <View style={styles.badge}>
               <Package2 width={16} height={16} color="#666" />
@@ -234,6 +234,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 8,
     marginBottom: 8,
+    alignItems: 'center',
   },
   badge: {
     flexDirection: 'row',

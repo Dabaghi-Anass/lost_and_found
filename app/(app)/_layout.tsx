@@ -63,6 +63,14 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
+          name="edit-profile"
+          options={{
+            tabBarShowLabel: false,
+            href: null,
+            tabBarLabel: () => null,
+          }}
+        />
+        <Tabs.Screen
           name="declare-item/[option]"
           options={{
             // href: null,

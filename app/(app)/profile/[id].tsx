@@ -1,13 +1,17 @@
 import { logoutUser } from '@/api/auth';
 import { fetchUserById } from '@/api/database';
+import bgPattern from "@/assets/images/pattern.png";
 import { AppButton } from '@/components/AppButton';
 import { ConfirmationModal } from '@/components/confirmation-modal';
 import ItemMinifiedCard from '@/components/item-minified-card';
+import ScrollScreen from '@/components/scroll-screen';
+import { Badge } from '@/components/ui/badge';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { AppUser } from '@/types/entities.types';
 import { AntDesign, Feather, FontAwesome5 } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
+import { Link, router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Linking, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 export default function UserProfile() {
@@ -15,6 +19,7 @@ export default function UserProfile() {
   const [user, setUser] = useState<AppUser | null>(null);
   const currentUser = useSelector((state: any) => state.user);
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
+  const theme = useColorScheme();
   function openConfirmationModal() {
     setConfirmationModalVisible(true);
   }
@@ -48,162 +53,84 @@ export default function UserProfile() {
 
   if (!user) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Loading...</Text></View>;
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
+    <ScrollScreen className='flex-1'>
+      <View className='bg-transparent flex items-center justify-center py-4 px-4 relative' >
+        <Image source={bgPattern} className='absolute top-0 left-0 right-0' />
         <Image
           source={{ uri: user?.profile.imageUri }}
-          style={styles.avatar}
+          className='w-32 h-32 rounded-full border-4 border-white'
         />
       </View>
-      <View style={styles.content}>
-        <Text style={styles.name}>{user?.profile.firstName} {user?.profile.lastName}</Text>
-        {user?.role &&
-          <Text
-            style={styles.role}
-          >{user?.role.charAt(0).toUpperCase() + user?.role.slice(1)} • {user?.items.length} items
-          </Text>
-        }
-
-        <View style={styles.actionButtons}>
-          <TouchableOpacity style={[styles.button, styles.messageButton]} onPress={handleMessage}>
-            <Feather name="message-square" size={20} color="white" />
-            <Text style={styles.buttonText}>Message</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, styles.emailButton]} onPress={handleEmail}>
-            <Feather name="mail" size={20} color="white" />
-            <Text style={styles.buttonText}>Email</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Contact Information</Text>
-          <View style={styles.contactInfo}>
-            <Feather name="mail" size={16} color="#666" />
-            <Text style={styles.contactText}>{user.email}</Text>
+      <View className='bg-background h-full rounded-t-3xl p-4'>
+        <View className='flex-row w-min items-center justify-between'>
+          <Text className='text-foreground text-4xl font-bold font-secondary capitalize max-w-sm text-center'>{user?.profile.firstName} {user?.profile.lastName}</Text>
+          <View className='p-2 gap-4 flex-row items-center justify-center'>
+            <Badge variant="secondary">
+              <Text className='text-secondary-foreground capitalize'>{user.role}</Text>
+            </Badge>
+            <Badge variant="default">
+              <Text className='text-primary-foreground'>{user?.items.length} items</Text>
+            </Badge>
           </View>
         </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Items ({user?.items.length})</Text>
-          {user?.items.map((item) => (
-            <ItemMinifiedCard
-              key={item.id}
-              item={item}
-              onPress={() => {
-                router.push(`/item-details/${item.id}`);
+        <View className='flex-row items-center justify-center gap-4 mt-4'>
+          <AppButton variant="primary" onPress={handleMessage} size="sm">
+            <Feather name="message-square" size={20} color="white" />
+            <Text className='text-lg text-primary-foreground'>Message</Text>
+          </AppButton>
+          <AppButton size="sm" onPress={handleEmail}>
+            <Feather name="mail" size={20} color="#111" />
+            <Text className='text-lg'>Email</Text>
+          </AppButton>
+        </View>
+        {currentUser.id === user.id &&
+          <View className='flex flex-row items-center justify-center py-8 px-4 gap-4'>
+            <Link href="/edit-profile" asChild>
+              <AppButton variant="outline" className='p-4 gap-4'>
+                <Text className='text-foreground text-xl'>edit profile</Text>
+                <FontAwesome5 name="user-edit" size={20} color={theme === 'dark' ? "white" : "#555"} />
+              </AppButton>
+            </Link>
+            <ConfirmationModal
+              title='Logout'
+              description='Are you sure you want to logout?'
+              trigger={<AppButton variant="destructive" className='gap-4' onPress={openConfirmationModal}>
+                <Text className='text-white text-xl'>logout</Text>
+                <AntDesign name="logout" size={20} color="white" />
+              </AppButton>}
+              open={confirmationModalVisible}
+              onAccept={() => {
+                handleLogout();
+              }}
+              onClose={() => {
+                setConfirmationModalVisible(false);
               }}
             />
-          ))}
+          </View>
+        }
+        <View className='items-center justify-center gap-4 m-5'>
+          <Text className="text-foreground text-xl font-semibold">Contact Information</Text>
+          <View className='flex-row items-center justify-center gap-4'>
+            <Feather name="mail" size={16} color={theme === "dark" ? "white" : "black"} />
+            <Text className="text-foreground text-lg">{user.email}</Text>
+          </View>
         </View>
+        {user.items?.length > 0 &&
+          <View className='items-center justify-center gap-2'>
+            <Text className='text-xl font-bold text-foreground'>Items ({user.items.length})</Text>
+            {user.items.map((item) => (
+              <ItemMinifiedCard
+                key={item.id}
+                item={item}
+                onPress={() => {
+                  router.push(`/item-details/${item.id}`);
+                }}
+              />
+            ))}
+          </View>
+        }
+
       </View>
-      {currentUser.id === user.id &&
-        <View className='flex flex-row items-center justify-center py-8 px-4 gap-4'>
-          <AppButton variant="outline" className='gap-4'>
-            <Text className='text-foreground text-xl'>edit profile</Text>
-            <FontAwesome5 name="user-edit" size={20} color="#444" />
-          </AppButton>
-          <ConfirmationModal
-            title='Logout'
-            description='Are you sure you want to logout?'
-            trigger={<AppButton variant="destructive" className='gap-4' onPress={openConfirmationModal}>
-              <Text className='text-white text-xl'>logout</Text>
-              <AntDesign name="logout" size={20} color="white" />
-            </AppButton>}
-            open={confirmationModalVisible}
-            onAccept={() => {
-              handleLogout();
-            }}
-            onClose={() => {
-              setConfirmationModalVisible(false);
-            }}
-          />
-        </View>
-      }
-    </ScrollView>
+    </ScrollScreen>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  header: {
-    height: 200,
-    backgroundColor: '#4a90e295',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-start',
-    paddingBottom: 70,
-    paddingHorizontal: 20,
-  },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 4,
-    borderColor: 'white',
-  },
-  content: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    marginTop: -50,
-    paddingTop: 60,
-    paddingHorizontal: 20,
-  },
-  name: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  role: {
-    fontSize: 16,
-    color: '#666',
-    marginTop: 4,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    flex: 1,
-    marginHorizontal: 5,
-  },
-  messageButton: {
-    backgroundColor: '#4a90e2',
-  },
-  emailButton: {
-    backgroundColor: '#50c878',
-  },
-  buttonText: {
-    color: 'white',
-    marginLeft: 8,
-    fontWeight: '600',
-  },
-  section: {
-    marginTop: 30,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 15,
-  },
-  contactInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  contactText: {
-    marginLeft: 10,
-    fontSize: 16,
-    color: '#333',
-  },
-});
-
