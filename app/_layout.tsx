@@ -1,13 +1,13 @@
 import { useColorScheme } from '@/hooks/useColorScheme';
 // import 'dotenv/config';
 import { store } from '@/redux/store';
-import { PortalHost } from '@rn-primitives/portal';
+import { PortalHost } from "@rn-primitives/portal";
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Drawer } from 'expo-router/drawer';
 import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { Linking, View } from "react-native";
+import { Linking, StatusBar, View } from "react-native";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 import { Provider } from 'react-redux';
 import "../assets/styles/global.css";
@@ -47,18 +47,20 @@ export default function RootLayout() {
     return null;
   }
   return (
-    <Provider store={store}>
-      <View className={`${colorScheme} w-full h-full`} >
-        <Stack initialRouteName='index'>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="register" options={{ headerShown: false }} />
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="(app)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-        <PortalHost />
-      </View>
-    </Provider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Provider store={store}>
+        <View className={`${colorScheme} w-full h-full`} >
+          <Drawer>
+            <Drawer.Screen name="index" options={{ headerShown: false }} />
+            <Drawer.Screen name="register" options={{ headerShown: false }} />
+            <Drawer.Screen name="login" options={{ headerShown: false }} />
+            <Drawer.Screen name="(app)" options={{ headerShown: false }} />
+            <Drawer.Screen name="+not-found" />
+          </Drawer>
+          <StatusBar animated={true} barStyle="default" />
+          <PortalHost />
+        </View>
+      </Provider>
+    </GestureHandlerRootView>
   );
 }

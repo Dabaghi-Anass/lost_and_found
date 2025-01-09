@@ -1,13 +1,13 @@
 import { fetchAllItems } from "@/api/database";
 import { Input } from "@/components/Input";
 import ItemCard from "@/components/item-card";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSearch } from "@/hooks/use-search";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Item } from "@/types/entities.types";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
-  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -37,14 +37,6 @@ const LostItemPage: React.FC = () => {
   }, []);
   useFocusEffect(fetchItems);
 
-  if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#3182CE" />
-      </View>
-    );
-  }
-
   if (error) {
     return (
       <View style={styles.centered}>
@@ -54,22 +46,25 @@ const LostItemPage: React.FC = () => {
   }
 
   return (
-    <View className="flex-1 p-2 bg-background">
+    <View className="flex-1 p-2 bg-background items-start justify-start">
+      <LoadingSpinner visible={loading} />
       <Input
-        placeholder="Search by title..."
+        placeholder="Search by title, category, color, owner name, anything..."
         placeholderTextColor={theme === "dark" ? "#ddd" : "#444"}
         value={searchQuery}
         onChangeText={setSearchQuery}
-        className="mb-4"
+        className="mb-4 w-full"
         inputClasses="border-gray-600"
       />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} className="h-full">
         {filtredItems.map((item, index) => (<ItemCard key={index}
           item={item}
           onViewDetails={(_) => {
             router.navigate("/(app)/item-details/" + item.id as any)
           }}
-          onViewProfile={(_) => { }} />))}
+          onViewProfile={(id) => {
+            router.navigate("/(app)/profile/" + id as any)
+          }} />))}
       </ScrollView>
     </View>
   );

@@ -6,6 +6,7 @@ import { ConfirmationModal } from '@/components/confirmation-modal';
 import ItemMinifiedCard from '@/components/item-minified-card';
 import ScrollScreen from '@/components/scroll-screen';
 import { Badge } from '@/components/ui/badge';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { AppUser } from '@/types/entities.types';
 import { AntDesign, Feather, FontAwesome5 } from '@expo/vector-icons';
@@ -60,7 +61,7 @@ export default function UserProfile() {
     })()
   }, [id]);
 
-  if (!user) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Loading...</Text></View>;
+  if (!user) return <LoadingSpinner visible={true} />
   return (
     <ScrollScreen className='flex-1'>
       <View className='bg-transparent flex items-center justify-center py-4 px-4 relative' >
@@ -136,12 +137,12 @@ export default function UserProfile() {
               Linking.openURL(`tel:${user?.profile?.phoneNumber}`)
             }}
           >
-            <Feather name="phone-call" size={20} color="#fff" />
-            <Text className='text-foreground text-xl font-bold'>Call {user?.profile?.firstName}</Text>
+            <Feather name="phone-call" size={20} color="#333" />
+            <Text className='text-accent-foreground text-xl font-bold'>Call {user?.profile?.firstName}</Text>
           </AppButton>
           <AppButton variant="primary" onPress={handleShareProfile}>
             <Share2 size={20} color="white" />
-            <Text className='text-foreground text-xl font-bold'>Share Profile</Text>
+            <Text className='text-white text-xl font-bold'>Share Profile</Text>
           </AppButton>
         </View>
         {user.items?.length > 0 &&
