@@ -94,7 +94,7 @@ export default function DeclareItemScreen() {
     Alert.alert('Success', 'Item has been saved successfully', [{
       text: 'OK',
       onPress: () => {
-        router.replace("/(app)/items");
+        router.replace("/items");
         setStep(1);
         setFormData({
           type: option || "lost",
@@ -125,7 +125,7 @@ export default function DeclareItemScreen() {
 
   return (
     <ScrollScreen className={`flex-1 bg-muted px-4 py-6 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
-      <View className="rounded-xl flex-1 max-h-[80vh] overflow-hidden">
+      <View className="rounded-xl flex-1 overflow-hidden">
         <LinearGradient
           className='h-full max-h-full px-2'
           colors={['#233dfc', '#1e98fc']}
@@ -136,7 +136,7 @@ export default function DeclareItemScreen() {
               {formData.type === 'lost' ? 'Report Lost Item' : 'Report Found Item'}
             </Text>
           </View>
-          <View className="p-4 bg-background rounded-lg  h-[68vh] flex justify-between">
+          <View className="p-4 bg-background rounded-lg  h-[75vh] flex justify-between">
             <FormStatusHeader step={step} />
             {step === 1 && <ChooseItemTypeForm
               formData={formData}

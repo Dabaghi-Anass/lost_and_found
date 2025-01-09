@@ -1,4 +1,4 @@
-import { FormData } from '@/app/(app)/declare-item/[option]';
+import { FormData } from '@/app/declare-item/[option]';
 import { Checkbox } from '@/components/ui/checkbox';
 import React from 'react';
 import { Text, TouchableNativeFeedback, View } from 'react-native';

@@ -1,4 +1,4 @@
-import { FormData } from '@/app/(app)/declare-item/[option]';
+import { FormData } from '@/app/declare-item/[option]';
 import { AppButton } from '@/components/AppButton';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';

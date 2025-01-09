@@ -1,4 +1,4 @@
-import { SubFormProps } from '@/app/(app)/declare-item/[option]';
+import { SubFormProps } from '@/app/declare-item/[option]';
 import { AppButton } from '@/components/AppButton';
 import { Input } from '@/components/Input';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';

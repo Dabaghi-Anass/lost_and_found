@@ -1,4 +1,4 @@
-import { SubFormProps } from '@/app/(app)/declare-item/[option]';
+import { SubFormProps } from '@/app/declare-item/[option]';
 import AppColorPicker from '@/components/color-picker';
 import { Input } from '@/components/Input';
 import { Colors } from '@/constants/Colors';

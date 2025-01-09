@@ -2,7 +2,7 @@ import { View } from "react-native";
 import Spinner from 'react-native-loading-spinner-overlay';
 export function LoadingSpinner({ visible }: { visible: boolean }) {
   return (
-    <View className="flex-1 justify-center items-center">
+    <View className="flex-1 justify-center items-center bg-background">
       <Spinner
         visible={visible}
         textContent={'Loading...'}

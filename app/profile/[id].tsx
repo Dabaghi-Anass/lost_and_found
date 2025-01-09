@@ -98,7 +98,7 @@ export default function UserProfile() {
             <Link href="/edit-profile" asChild>
               <AppButton variant="outline" className='p-4 gap-4'>
                 <Text className='text-foreground text-xl'>edit profile</Text>
-                <FontAwesome5 name="user-edit" size={20} color={theme === 'dark' ? "white" : "#555"} />
+                <FontAwesome5 name="user-edit" size={20} color={theme === 'dark' ? "white" : "#222"} />
               </AppButton>
             </Link>
             <ConfirmationModal

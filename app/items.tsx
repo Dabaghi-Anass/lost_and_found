@@ -60,10 +60,10 @@ const LostItemPage: React.FC = () => {
         {filtredItems.map((item, index) => (<ItemCard key={index}
           item={item}
           onViewDetails={(_) => {
-            router.navigate("/(app)/item-details/" + item.id as any)
+            router.navigate("/item-details/" + item.id as any)
           }}
           onViewProfile={(id) => {
-            router.navigate("/(app)/profile/" + id as any)
+            router.navigate("/profile/" + id as any)
           }} />))}
       </ScrollView>
     </View>

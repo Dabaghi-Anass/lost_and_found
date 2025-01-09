@@ -1,4 +1,5 @@
 import { fetchItemById } from '@/api/database';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Item } from '@/types/entities.types';
 import { Feather } from '@expo/vector-icons';
@@ -7,7 +8,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Calendar, MapPin, Package2, Share2, Tag } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
   Dimensions,
   Image,
   Linking,
@@ -81,9 +81,7 @@ export default function ItemDetailsScreen() {
     setLoading(true)
     fetchItem()
   }, [itemId])
-  if (!item || loading) return <View className='flex-1 items-center justify-center'>
-    <ActivityIndicator size="large" color="#000" />
-  </View>
+  if (!item || loading) return <LoadingSpinner visible={!item || loading} />
   return (
     <ScrollView className='bg-background h-full'>
       <View style={[styles.imageContainer, {
@@ -196,7 +194,7 @@ export default function ItemDetailsScreen() {
             style={[styles.primaryButton, {
               backgroundColor: "green"
             }]}>
-            <Feather name="phone-call" width={30} height={20} color="#fff" />
+            <Feather name="phone-call" size={20} color="#fff" />
             <Text className='text-foreground' style={styles.primaryButtonText}>Call Owner</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.secondaryButton} onPress={handleShare}>
