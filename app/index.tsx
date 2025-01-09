@@ -3,7 +3,7 @@ import { fetchUserById } from '@/api/database';
 import Screen from '@/components/screen';
 import { setCurrentUser } from '@/redux/global/current-user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Text } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -31,6 +31,10 @@ export default function HomeScreen() {
       else router.replace("/login");
     })()
   }, []);
+
+  useFocusEffect(() => {
+    router.replace("/items");
+  })
   if (loading) return <Screen className='flex justify-center items-center'>
     <ActivityIndicator color="#111" size="large" />
   </Screen>;

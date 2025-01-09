@@ -119,11 +119,15 @@ export default function ItemDetailsScreen() {
         <View style={styles.header}>
           <Text className='text-foreground' style={styles.title}>{item.item.title}</Text>
           <View style={styles.badgeContainer}>
-            <View style={styles.badge}>
+            <View style={[styles.badge, {
+              backgroundColor: theme === "dark" ? "#2c2536" : "#f4f4f5",
+            }]}>
               <Tag width={16} height={16} color="#666" />
               <Text className='text-foreground' style={styles.badgeText}>{item.item.category}</Text>
             </View>
-            <View style={styles.badge}>
+            <View style={[styles.badge, {
+              backgroundColor: theme === "dark" ? "#2c2536" : "#f4f4f5",
+            }]}>
               <Package2 width={16} height={16} color="#666" />
               <Text className='text-foreground' style={styles.badgeText}>
                 {item.delivred ? 'Delivered' : 'Not Delivered'}
@@ -149,7 +153,7 @@ export default function ItemDetailsScreen() {
               source={{ uri: item.owner.imageUri || "" }}
               style={{ width: 50, height: 50, borderRadius: 100, borderColor: "white", borderWidth: 2 }}
             />
-            <Text className='text-xl font-secondary text-foreground'>{item.owner.firstName + " " + item.owner.lastName}</Text>
+            <Text className='text-xl font-secondary text-foreground'>{item.owner?.firstName + " " + item.owner?.lastName}</Text>
           </TouchableOpacity>
         }
         <View style={styles.separator} />
@@ -260,7 +264,6 @@ const styles = StyleSheet.create({
   badge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f4f4f5',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
