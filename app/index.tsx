@@ -13,6 +13,7 @@ export default function HomeScreen() {
   const initUser = async (userId: string) => {
     setLoading(true);
     const user = await fetchUserById(userId);
+    console.log({ user })
     if (user) {
       dispatch(setCurrentUser(user));
       router.replace("/items");

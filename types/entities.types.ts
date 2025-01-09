@@ -15,7 +15,7 @@ interface Profile {
 	firstName: string;
 	lastName: string;
 	phoneNumber: string;
-	imageUri: string;
+	imageUri?: string | null;
 	id?: string;
 }
 
@@ -35,6 +35,7 @@ interface Item {
 	delivred: boolean;
 	found_lost_at: Date;
 	ownerId: string;
+	owner: Profile;
 	location: string;
 	geoCoordinates?: GeolocationCoordinates;
 }

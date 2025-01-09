@@ -3,6 +3,7 @@ import { AntDesign, Entypo } from '@expo/vector-icons';
 import { format, parseISO } from 'date-fns';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 interface ItemCardProps {
   item: Item;
@@ -15,7 +16,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
   onViewDetails,
   onViewProfile,
 }) => {
-  const { id, item: itemDetails, location, ownerId, type, found_lost_at } = item
+  const { id, item: itemDetails, location, ownerId, type, found_lost_at, owner } = item
   const formatDate = (dateString: string) => {
     try {
       return format(parseISO(dateString), 'PPp');
@@ -24,7 +25,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
       return dateString;
     }
   };
-
+  console.log({ item })
   return (
     <View style={styles.card} className='card'>
       <View style={styles.imageContainer}>
@@ -53,7 +54,16 @@ const ItemCard: React.FC<ItemCardProps> = ({
       <View style={styles.footer}>
         <TouchableOpacity onPress={() => onViewProfile(ownerId)}>
           <View style={styles.avatar}>
-            <AntDesign name="user" size={20} color="#6B7280" />
+            <TouchableOpacity onPress={() => onViewProfile(ownerId)}>
+              <Avatar alt="user image">
+                <AvatarImage source={{
+                  uri: owner?.imageUri as any
+                }} />
+                <AvatarFallback>
+                  <AntDesign name="user" size={20} color="#6B7280" />
+                </AvatarFallback>
+              </Avatar>
+            </TouchableOpacity>
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => onViewDetails(id as string)}>

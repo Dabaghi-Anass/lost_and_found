@@ -57,7 +57,7 @@ export default function UserProfile() {
       <View className='bg-transparent flex items-center justify-center py-4 px-4 relative' >
         <Image source={bgPattern} className='absolute top-0 left-0 right-0' />
         <Image
-          source={{ uri: user?.profile.imageUri }}
+          source={{ uri: user?.profile.imageUri || 'https://via.placeholder.com/150' }}
           className='w-32 h-32 rounded-full border-4 border-white'
         />
       </View>
@@ -108,11 +108,17 @@ export default function UserProfile() {
             />
           </View>
         }
-        <View className='items-center justify-center gap-4 m-5'>
-          <Text className="text-foreground text-xl font-semibold">Contact Information</Text>
-          <View className='flex-row items-center justify-center gap-4'>
-            <Feather name="mail" size={16} color={theme === "dark" ? "white" : "black"} />
-            <Text className="text-foreground text-lg">{user.email}</Text>
+        <View className='items-start justify-center gap-8 m-5'>
+          <Text className="text-foreground text-2xl font-semibold">Contact Information</Text>
+          <View className='items-start justify-center gap-4'>
+            <View className='flex-row items-center justify-center gap-4'>
+              <Feather name="phone" size={20} color={theme === "dark" ? "white" : "black"} />
+              <Text className="text-foreground text-xl">{user.profile.phoneNumber}</Text>
+            </View>
+            <View className='flex-row items-center justify-center gap-4'>
+              <Feather name="mail" size={20} color={theme === "dark" ? "white" : "black"} />
+              <Text className="text-foreground text-xl">{user.email}</Text>
+            </View>
           </View>
         </View>
         {user.items?.length > 0 &&

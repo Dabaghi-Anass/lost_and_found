@@ -87,6 +87,7 @@ export async function saveUser(user: AppUser): Promise<AppUser> {
 			);
 			const profileRef = await addDoc(profilesCollection, {
 				...(user.profile as Profile),
+				id: doc(profilesCollection).id,
 			});
 			user.id = profileRef.id;
 			user.profile.id = profileRef.id;
@@ -109,6 +110,7 @@ export async function saveUser(user: AppUser): Promise<AppUser> {
 export async function fetchItemsById(
 	items: string[]
 ): Promise<Item[] | undefined> {
+	if (items.length === 0) return Promise.resolve([]);
 	const itemsCollection = collection(
 		firestore,
 		FirebaseCollections.LOST_ITEMS
@@ -117,7 +119,7 @@ export async function fetchItemsById(
 	const querySnapshot = await getDocs(q);
 
 	if (querySnapshot.empty) {
-		console.log("No matching documents found.");
+		console.log("[items] No matching documents found.");
 		return Promise.resolve(undefined);
 	}
 
@@ -144,7 +146,7 @@ export async function fetchItemById(itemId: string): Promise<Item | undefined> {
 	const querySnapshot = await getDocs(q);
 
 	if (querySnapshot.empty) {
-		console.log("No matching documents found.");
+		console.log("[item] No matching documents found.");
 		return Promise.resolve(undefined);
 	}
 
@@ -152,6 +154,9 @@ export async function fetchItemById(itemId: string): Promise<Item | undefined> {
 	querySnapshot.forEach((doc) => docs.push(doc));
 	const item = docs[0].data();
 	item.item = await fetchItemDetailsById(item.item);
+	if (item.ownerId) {
+		item.owner = await fetchProfileById(item.ownerId);
+	}
 	item.found_lost_at = item.found_lost_at.seconds * 1000;
 	return item as Item;
 }
@@ -165,7 +170,7 @@ export async function getUserByAuthUserId(
 	const querySnapshot = await getDocs(q);
 
 	if (querySnapshot.empty) {
-		console.log("No matching documents found.");
+		console.log("[userByAuth] No matching documents found.");
 		return Promise.resolve(undefined);
 	}
 
@@ -184,24 +189,40 @@ export async function fetchAuthUserById(
 		return Promise.reject(e);
 	}
 }
-
 export async function fetchUserById(
 	userId: string
 ): Promise<AppUser | undefined> {
+	console.log(`[fetchUserById] Fetching user with ID: ${userId}`);
 	const usersCollection = collection(firestore, FirebaseCollections.USERS);
 	const q = query(usersCollection, where("id", "==", userId));
 	const querySnapshot = await getDocs(q);
 
 	if (querySnapshot.empty) {
-		console.log("No matching documents found.");
+		console.log("[fetchUserById] No matching documents found.");
 		return Promise.resolve(undefined);
 	}
 
 	const docs: any = [];
 	querySnapshot.forEach((doc) => docs.push(doc));
+	console.log(`[fetchUserById] Found ${docs.length} matching documents.`);
+
 	const user = docs[0].data();
+	console.log(`[fetchUserById] User data: ${JSON.stringify(user, null, 2)}`);
+
 	user.profile = await fetchProfileById(user.profileId);
-	user.items = await fetchItemsById(user.items);
+	console.log(
+		`[fetchUserById] User profile: ${JSON.stringify(user.profile)}`
+	);
+
+	try {
+		user.items = await fetchItemsById(user.items);
+		console.log(
+			`[fetchUserById] User items: ${JSON.stringify(user.items)}`
+		);
+	} catch (e: any) {
+		console.error(e);
+	}
+
 	return user as AppUser;
 }
 
@@ -223,27 +244,35 @@ export async function fetchItemDetailsById(id: string): Promise<ItemDetails> {
 		return Promise.reject(e);
 	}
 }
-
 export async function fetchProfileById(
 	id: string
 ): Promise<Profile | undefined> {
 	try {
-		const usersCollection = collection(
+		console.log(`[fetchProfileById] Fetching profile with ID: ${id}`);
+		let profile: Profile | undefined;
+		const profilesCollection = collection(
 			firestore,
 			FirebaseCollections.PROFILES
 		);
-		const q = query(usersCollection, where("id", "==", id));
-		const querySnapshot = await getDocs(q);
+		const profileRef = doc(profilesCollection, id);
 
-		if (querySnapshot.empty) {
-			console.log("No matching documents found.");
+		console.log(`[fetchProfileById] Profile ref: ${profileRef.path}`);
+		const profileDoc = await getDoc(profileRef);
+
+		if (!profileDoc.exists()) {
+			console.log("[fetchProfileById] No such document!");
 			return Promise.resolve(undefined);
 		}
 
-		const docs: any = [];
-		querySnapshot.forEach((doc) => docs.push(doc));
-		const profile = docs[0].data();
-		return profile as Profile;
+		profile = profileDoc.data() as Profile;
+		console.log(
+			`[fetchProfileById] Profile data: ${JSON.stringify(
+				profile,
+				null,
+				2
+			)}`
+		);
+		return profile;
 	} catch (e: any) {
 		console.error(e);
 		return Promise.reject(e);
@@ -264,6 +293,9 @@ export async function fetchAllItems(): Promise<Item[]> {
 				if (data) {
 					data.item = await fetchItemDetailsById(data.item as string);
 					data.found_lost_at = data.found_lost_at.seconds * 1000;
+					if (data.ownerId?.length > 0) {
+						data.owner = await fetchProfileById(data.ownerId);
+					}
 					const itemData = {
 						id: doc.id,
 						...(data as Item),

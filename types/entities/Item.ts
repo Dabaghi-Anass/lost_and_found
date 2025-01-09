@@ -1,4 +1,4 @@
-import { Item, ItemDetails, OptionType } from "../entities.types";
+import { Item, ItemDetails, OptionType, Profile } from "../entities.types";
 import { GeolocationCoordinates } from "../utils.types";
 
 export class ItemBuilder implements Item {
@@ -9,6 +9,7 @@ export class ItemBuilder implements Item {
 	type: OptionType;
 	geoCoordinates: GeolocationCoordinates;
 	location: string;
+	owner: Profile;
 
 	constructor() {
 		this.item = {
@@ -24,6 +25,7 @@ export class ItemBuilder implements Item {
 		this.type = "lost";
 		this.geoCoordinates = { latitude: 0, longitude: 0 };
 		this.location = "";
+		this.owner = {} as Profile;
 	}
 
 	static builder(): ItemBuilder {

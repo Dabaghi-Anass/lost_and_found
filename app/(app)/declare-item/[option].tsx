@@ -16,6 +16,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { Alert, Text, View } from 'react-native';
+import { useSelector } from 'react-redux';
 export interface SubFormProps {
   formData: FormData,
   onValidationStateChange?: (state: boolean) => void,
@@ -41,6 +42,7 @@ export default function DeclareItemScreen() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [validationState, setValidationState] = useState<Map<number, boolean>>(new Map());
+  const currentUser = useSelector((state: any) => state.user);
   const [formData, setFormData] = useState<FormData>({
     type: option || "lost",
     category: '',
@@ -78,7 +80,7 @@ export default function DeclareItemScreen() {
         .builder()
         .setItem(itemDetails)
         .setDelivred(false)
-        .setOwnerId('')
+        .setOwnerId(currentUser.id)
         .setLostAt(formData.date)
         .setType(formData.type)
         .setLocation(formData.location)

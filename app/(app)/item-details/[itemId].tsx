@@ -1,8 +1,9 @@
 import { fetchItemById } from '@/api/database';
 import { Item } from '@/types/entities.types';
+import { Feather } from '@expo/vector-icons';
 import { format, parseISO } from 'date-fns';
-import { useLocalSearchParams } from 'expo-router';
-import { Calendar, MapPin, MessageCircle, Package2, Share2, Tag } from 'lucide-react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Calendar, MapPin, Package2, Share2, Tag } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -22,6 +23,7 @@ export default function ItemDetailsScreen() {
   const [loading, setLoading] = useState<boolean>(false);
   const { itemId } = useLocalSearchParams()
   const [item, setItem] = useState<Item | null>(null)
+  const router = useRouter()
   const formatDate = (dateString: string) => {
     try {
       return format(parseISO(dateString), 'PPp');
@@ -79,7 +81,9 @@ export default function ItemDetailsScreen() {
   </View>
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.imageContainer}>
+      <View style={[styles.imageContainer, {
+        backgroundColor: item.item.color
+      }]}>
         <Image
           source={{ uri: item.item.images[selectedImage] }}
           style={styles.mainImage}
@@ -95,7 +99,8 @@ export default function ItemDetailsScreen() {
               onPress={() => setSelectedImage(index)}
               style={[
                 styles.thumbnailButton,
-                selectedImage === index && styles.thumbnailButtonActive
+                selectedImage === index && styles.thumbnailButtonActive,
+                { backgroundColor: "white" }
               ]}
             >
               <Image
@@ -115,24 +120,34 @@ export default function ItemDetailsScreen() {
               <Tag width={16} height={16} color="#666" />
               <Text style={styles.badgeText}>{item.item.category}</Text>
             </View>
-            <View style={[styles.badge, {
-              backgroundColor: item.item.color,
-              width: 16,
-              height: 16,
-            }]}>
-            </View>
             <View style={styles.badge}>
               <Package2 width={16} height={16} color="#666" />
               <Text style={styles.badgeText}>
                 {item.delivred ? 'Delivered' : 'Not Delivered'}
               </Text>
             </View>
-          </View>
-          <View style={styles.typeBadge}>
-            <Text style={styles.typeText}>{item.type.toUpperCase()}</Text>
+            <View style={styles.typeBadge}>
+              <Text style={styles.typeText}>{item.type.toUpperCase()}</Text>
+            </View>
+            <View style={[styles.badge, {
+              backgroundColor: item.item.color,
+              width: 16,
+              height: 16,
+            }]}>
+            </View>
           </View>
         </View>
-
+        {item.owner &&
+          <TouchableOpacity className='flex-row items-center gap-4' onPress={() => {
+            router.push(`/profile/${item.ownerId}`)
+          }}>
+            <Image
+              source={{ uri: item.owner.imageUri || "" }}
+              style={{ width: 50, height: 50, borderRadius: 100, borderColor: "white", borderWidth: 2 }}
+            />
+            <Text className='text-xl font-secondary'>{item.owner.firstName + item.owner.lastName}</Text>
+          </TouchableOpacity>
+        }
         <View style={styles.separator} />
 
         {/* Location */}
@@ -168,9 +183,15 @@ export default function ItemDetailsScreen() {
 
         {/* Action Buttons */}
         <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.primaryButton}>
-            <MessageCircle width={20} height={20} color="#fff" />
-            <Text style={styles.primaryButtonText}>Contact Owner</Text>
+          <TouchableOpacity
+            onPress={() => {
+              Linking.openURL(`tel:${item.owner?.phoneNumber}`)
+            }}
+            style={[styles.primaryButton, {
+              backgroundColor: "green"
+            }]}>
+            <Feather name="phone-call" width={30} height={20} color="#fff" />
+            <Text style={styles.primaryButtonText}>Call Owner</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.secondaryButton} onPress={handleShare}>
             <Share2 width={20} height={20} color="#000" />
@@ -178,7 +199,7 @@ export default function ItemDetailsScreen() {
           </TouchableOpacity>
         </View>
       </View>
-    </ScrollView>
+    </ScrollView >
   );
 }
 

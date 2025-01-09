@@ -3,12 +3,12 @@ export class ProfileBuilder implements Profile {
 	firstName: string;
 	lastName: string;
 	phoneNumber: string;
-	imageUri: string;
+	imageUri: string | null;
 	constructor(
 		firstName: string,
 		lastName: string,
 		phoneNumber: string,
-		imageUri: string
+		imageUri: string | null
 	) {
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -33,7 +33,7 @@ export class ProfileBuilder implements Profile {
 	}
 
 	getImageUri(): string {
-		return this.imageUri;
+		return this.imageUri as string;
 	}
 
 	static builder(): ProfileBuilder {
@@ -59,7 +59,7 @@ export class ProfileBuilder implements Profile {
 		return this;
 	}
 
-	setImageUri(imageUri: string): ProfileBuilder {
+	setImageUri(imageUri: string | null): ProfileBuilder {
 		this.imageUri = imageUri;
 		return this;
 	}

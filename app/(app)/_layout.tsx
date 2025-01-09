@@ -6,7 +6,7 @@ import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { MaterialIcons } from '@expo/vector-icons';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { Tabs } from 'expo-router';
+import { Link, Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
 
@@ -16,6 +16,9 @@ export default function TabLayout() {
   return (
     <ScrollScreen>
       <NavBar />
+      <Link href='/declare-item/lost' className='absolute left-5 bottom-24 bg-background p-2 rounded-full border-4 border-[hsl(250,100%,70%)] z-30'>
+        <MaterialIcons name="create-new-folder" size={35} color="hsl(250,100%,70%)" />
+      </Link>
       <Tabs
         initialRouteName='items'
         screenOptions={{
@@ -73,7 +76,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="declare-item/[option]"
           options={{
-            // href: null,
+            href: null,
             tabBarIcon: () => <MaterialIcons name="create-new-folder" size={35} style={{ height: 80 }} color={Colors[colorScheme ?? 'light'].text} />
           }}
         />
