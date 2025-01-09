@@ -10,8 +10,9 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { AppUser } from '@/types/entities.types';
 import { AntDesign, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { Link, router, useLocalSearchParams } from 'expo-router';
+import { Share2 } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
-import { Image, Linking, Text, View } from 'react-native';
+import { Image, Linking, Share, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 export default function UserProfile() {
@@ -33,7 +34,15 @@ export default function UserProfile() {
   };
 
   const handleEmail = () => {
-    Linking.openURL(`mailto:${user?.profile.firstName.toLowerCase()}.${user?.profile.lastName.toLowerCase()}@example.com`);
+    Linking.openURL(`mailto:${user?.email}`);
+  };
+
+  const handleShareProfile = () => {
+    const link = `lostandfound://profile/${user?.id}`;
+    Share.share({
+      message: `Check out ${user?.profile.firstName}'s profile on Lost & Found App: ${link}`,
+      url: link,
+    });
   };
 
   async function getUserById(id: string) {
@@ -69,7 +78,7 @@ export default function UserProfile() {
               <Text className='text-secondary-foreground capitalize'>{user.role}</Text>
             </Badge>
             <Badge variant="default">
-              <Text className='text-primary-foreground'>{user?.items.length} items</Text>
+              <Text className='text-primary-foreground'>{user?.items?.length} items</Text>
             </Badge>
           </View>
         </View>
@@ -120,6 +129,20 @@ export default function UserProfile() {
               <Text className="text-foreground text-xl">{user.email}</Text>
             </View>
           </View>
+        </View>
+        <View className='flex-row items-center gap-4 p-4'>
+          <AppButton
+            onPress={() => {
+              Linking.openURL(`tel:${user?.profile?.phoneNumber}`)
+            }}
+          >
+            <Feather name="phone-call" size={20} color="#fff" />
+            <Text className='text-foreground text-xl font-bold'>Call {user?.profile?.firstName}</Text>
+          </AppButton>
+          <AppButton variant="primary" onPress={handleShareProfile}>
+            <Share2 size={20} color="white" />
+            <Text className='text-foreground text-xl font-bold'>Share Profile</Text>
+          </AppButton>
         </View>
         {user.items?.length > 0 &&
           <View className='items-center justify-center gap-2'>

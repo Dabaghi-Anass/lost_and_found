@@ -1,6 +1,8 @@
 import { fetchAllItems } from "@/api/database";
+import { Input } from "@/components/Input";
 import ItemCard from "@/components/item-card";
 import { useSearch } from "@/hooks/use-search";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { Item } from "@/types/entities.types";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
@@ -9,7 +11,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View
 } from "react-native";
 
@@ -19,6 +20,7 @@ const LostItemPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const filtredItems = useSearch(items, searchQuery);
+  const theme = useColorScheme();
   const router = useRouter()
   const fetchItems = useCallback(() => {
     setLoading(true);
@@ -52,12 +54,14 @@ const LostItemPage: React.FC = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.searchBar}
+    <View className="flex-1 p-2 bg-background">
+      <Input
         placeholder="Search by title..."
+        placeholderTextColor={theme === "dark" ? "#ddd" : "#444"}
         value={searchQuery}
         onChangeText={setSearchQuery}
+        className="mb-4"
+        inputClasses="border-gray-600"
       />
       <ScrollView contentContainerStyle={styles.content}>
         {filtredItems.map((item, index) => (<ItemCard key={index}

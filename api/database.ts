@@ -176,7 +176,14 @@ export async function getUserByAuthUserId(
 
 	const docs: any = [];
 	querySnapshot.forEach((doc) => docs.push(doc));
-	return docs[0].data() as AppUser;
+	const user = docs[0].data();
+	user.profile = await fetchProfileById(user.profileId);
+	try {
+		user.items = await fetchItemsById(user.items);
+	} catch (e: any) {
+		console.error(e);
+	}
+	return user as AppUser;
 }
 
 export async function fetchAuthUserById(

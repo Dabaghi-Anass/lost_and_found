@@ -7,7 +7,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { View } from "react-native";
+import { Linking, View } from "react-native";
 import 'react-native-reanimated';
 import { Provider } from 'react-redux';
 import "../assets/styles/global.css";
@@ -26,6 +26,23 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
+  useEffect(() => {
+    Linking.addEventListener('url', (event) => {
+      const { url } = event;
+      console.log(url);
+    });
+  }, []);
+
+  const linking = {
+    prefixes: ['lostandfound://'],
+    config: {
+      screens: {
+        Home: 'home',
+        Profile: 'profile/:id',
+        Item: 'item/:id',
+      },
+    },
+  };
   if (!loaded) {
     return null;
   }

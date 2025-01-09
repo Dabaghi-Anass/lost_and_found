@@ -27,7 +27,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
   };
   console.log({ item })
   return (
-    <View style={styles.card} className='card'>
+    <View style={styles.card} className='card bg-card border border-muted'>
       <View style={styles.imageContainer}>
         <Image
           source={{ uri: itemDetails.images?.[0] || 'https://via.placeholder.com/300' }}
@@ -40,7 +40,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
       <View style={styles.content}>
         <View style={styles.titleRow}>
           <View>
-            <Text style={styles.title}>{itemDetails.title}</Text>
+            <Text style={styles.title} className='text-card-foreground'>{itemDetails.title}</Text>
             <Text style={styles.description}>{itemDetails.description}</Text>
           </View>
           <View style={[styles.colorIndicator, { backgroundColor: itemDetails.color }]} />
@@ -51,7 +51,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
         </View>
         <Text style={styles.dateText}>{formatDate(new Date(found_lost_at).toISOString())}</Text>
       </View>
-      <View style={styles.footer}>
+      <View style={styles.footer} className='border-t border-muted'>
         <TouchableOpacity onPress={() => onViewProfile(ownerId)}>
           <View style={styles.avatar}>
             <TouchableOpacity onPress={() => onViewProfile(ownerId)}>
@@ -76,16 +76,12 @@ const ItemCard: React.FC<ItemCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: 'white',
     borderRadius: 8,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    width: '95%',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    width: '100%',
+    elevation: 1,
     marginBottom: 16,
+    borderWidth: 1,
   },
   imageContainer: {
     position: 'relative',
@@ -121,7 +117,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 4,
-    color: '#111827',
   },
   description: {
     fontSize: 14,
@@ -151,8 +146,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
   },
   avatar: {
     width: 40,

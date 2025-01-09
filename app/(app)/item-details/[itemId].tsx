@@ -1,4 +1,5 @@
 import { fetchItemById } from '@/api/database';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { Item } from '@/types/entities.types';
 import { Feather } from '@expo/vector-icons';
 import { format, parseISO } from 'date-fns';
@@ -24,6 +25,7 @@ export default function ItemDetailsScreen() {
   const { itemId } = useLocalSearchParams()
   const [item, setItem] = useState<Item | null>(null)
   const router = useRouter()
+  const theme = useColorScheme();
   const formatDate = (dateString: string) => {
     try {
       return format(parseISO(dateString), 'PPp');
@@ -52,8 +54,11 @@ export default function ItemDetailsScreen() {
   const handleShare = async () => {
     if (!item) return
     try {
+      const itemLink = `
+
+      `
       await Share.share({
-        message: `Check out this ${item.type} item: ${item.item.title} at ${item.location}`,
+        message: `Check out this ${item.type} item: ${item.item.title} at ${item.location}\n${itemLink}`,
       });
     } catch (error) {
       console.error(error);
@@ -80,7 +85,7 @@ export default function ItemDetailsScreen() {
     <ActivityIndicator size="large" color="#000" />
   </View>
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView className='bg-background h-full'>
       <View style={[styles.imageContainer, {
         backgroundColor: item.item.color
       }]}>
@@ -100,8 +105,8 @@ export default function ItemDetailsScreen() {
               style={[
                 styles.thumbnailButton,
                 selectedImage === index && styles.thumbnailButtonActive,
-                { backgroundColor: "white" }
               ]}
+              className='bg-background'
             >
               <Image
                 source={{ uri: image }}
@@ -114,26 +119,27 @@ export default function ItemDetailsScreen() {
 
       <View style={styles.detailsContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>{item.item.title}</Text>
+          <Text className='text-foreground' style={styles.title}>{item.item.title}</Text>
           <View style={styles.badgeContainer}>
             <View style={styles.badge}>
               <Tag width={16} height={16} color="#666" />
-              <Text style={styles.badgeText}>{item.item.category}</Text>
+              <Text className='text-foreground' style={styles.badgeText}>{item.item.category}</Text>
             </View>
             <View style={styles.badge}>
               <Package2 width={16} height={16} color="#666" />
-              <Text style={styles.badgeText}>
+              <Text className='text-foreground' style={styles.badgeText}>
                 {item.delivred ? 'Delivered' : 'Not Delivered'}
               </Text>
             </View>
             <View style={styles.typeBadge}>
-              <Text style={styles.typeText}>{item.type.toUpperCase()}</Text>
+              <Text className='text-foreground' style={styles.typeText}>{item.type.toUpperCase()}</Text>
             </View>
             <View style={[styles.badge, {
               backgroundColor: item.item.color,
-              width: 16,
-              height: 16,
-            }]}>
+              width: 30,
+              height: 30,
+            }]}
+              className='border-2 border-foreground'>
             </View>
           </View>
         </View>
@@ -145,18 +151,18 @@ export default function ItemDetailsScreen() {
               source={{ uri: item.owner.imageUri || "" }}
               style={{ width: 50, height: 50, borderRadius: 100, borderColor: "white", borderWidth: 2 }}
             />
-            <Text className='text-xl font-secondary'>{item.owner.firstName + item.owner.lastName}</Text>
+            <Text className='text-xl font-secondary text-foreground'>{item.owner.firstName + " " + item.owner.lastName}</Text>
           </TouchableOpacity>
         }
         <View style={styles.separator} />
 
         {/* Location */}
         <TouchableOpacity style={styles.infoRow} onPress={openMap}>
-          <MapPin width={20} height={20} color="#666" />
+          <MapPin width={20} height={20} color={theme === "dark" ? "white" : "#666"} />
           <View style={styles.infoContent}>
-            <Text style={styles.infoLabel}>Location</Text>
-            <Text style={styles.infoText}>{item.location}</Text>
-            <Text style={styles.infoText}>
+            <Text className='text-foreground' style={styles.infoLabel}>Location</Text>
+            <Text className='text-foreground text-sm'>{item.location}</Text>
+            <Text className='text-foreground text-sm'>
               {item.geoCoordinates?.latitude}, {item.geoCoordinates?.longitude}
             </Text>
           </View>
@@ -164,20 +170,20 @@ export default function ItemDetailsScreen() {
 
         {/* Date */}
         <View style={styles.infoRow}>
-          <Calendar width={20} height={20} color="#666" />
+          <Calendar width={20} height={20} color={theme === "dark" ? "white" : "#666"} />
           <View style={styles.infoContent}>
-            <Text style={styles.infoLabel}>Date {
+            <Text className='text-foreground' style={styles.infoLabel}>Date When {
               item.type
             }</Text>
-            <Text style={styles.infoText}>{formatDate(new Date(item.found_lost_at).toISOString())}</Text>
+            <Text className='text-foreground text-sm'>{formatDate(new Date(item.found_lost_at).toISOString())}</Text>
           </View>
         </View>
 
         {/* Description */}
         {item.item.description && (
           <View style={styles.description}>
-            <Text style={styles.infoLabel}>Description</Text>
-            <Text style={styles.infoText}>{item.item.description}</Text>
+            <Text className='text-foreground' style={styles.infoLabel}>Description</Text>
+            <Text className='text-foreground text-lg'>{item.item.description}</Text>
           </View>
         )}
 
@@ -191,7 +197,7 @@ export default function ItemDetailsScreen() {
               backgroundColor: "green"
             }]}>
             <Feather name="phone-call" width={30} height={20} color="#fff" />
-            <Text style={styles.primaryButtonText}>Call Owner</Text>
+            <Text className='text-foreground' style={styles.primaryButtonText}>Call Owner</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.secondaryButton} onPress={handleShare}>
             <Share2 width={20} height={20} color="#000" />
@@ -199,15 +205,11 @@ export default function ItemDetailsScreen() {
           </TouchableOpacity>
         </View>
       </View>
-    </ScrollView >
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
   imageContainer: {
     width: '100%',
     backgroundColor: '#f4f4f5',
@@ -280,7 +282,6 @@ const styles = StyleSheet.create({
   },
   typeText: {
     fontSize: 14,
-    color: '#666',
   },
   separator: {
     height: 1,
@@ -342,7 +343,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   secondaryButtonText: {
-    color: '#000',
     fontSize: 16,
     fontWeight: '600',
   },
