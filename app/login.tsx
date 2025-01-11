@@ -8,6 +8,7 @@ import { Input } from "@/components/Input";
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import Separator from '@/components/separator';
 import { setCurrentUser } from "@/redux/global/current-user";
+import { setCurrentScreenName } from "@/redux/global/currentScreenName";
 // import { auth } from "@/database/fire_base";
 // import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
 import { Link, useRouter } from "expo-router";
@@ -43,7 +44,7 @@ export default function LoginScreen() {
       setError("Invalid Email Or Password");
     } else {
       setError(null);
-      const userDocument = await getUserByAuthUserId(user.uid);
+      const userDocument = await getUserByAuthUserId(user?.uid);
       dispatch(setCurrentUser(userDocument));
       setLoading(false);
       router.push("/home");
@@ -54,6 +55,9 @@ export default function LoginScreen() {
   useEffect(() => {
     setError(null);
   }, [userName, password]);
+  useEffect(() => {
+    dispatch(setCurrentScreenName("auth"));
+  }, [userName]);
 
   return (
     <ParallaxScrollView

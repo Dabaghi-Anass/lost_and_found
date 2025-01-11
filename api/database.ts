@@ -137,6 +137,37 @@ export async function fetchItemsById(
 	return itemsData;
 }
 
+export async function fetchUserItemsById(
+	id: string
+): Promise<Item[] | undefined> {
+	if (!id) return Promise.resolve(undefined);
+	const itemsCollection = collection(
+		firestore,
+		FirebaseCollections.LOST_ITEMS
+	);
+
+	const q = query(itemsCollection, where("ownerId", "==", id));
+	const querySnapshot = await getDocs(q);
+
+	if (querySnapshot.empty) {
+		console.log("[items] No matching documents found.");
+		return Promise.resolve(undefined);
+	}
+
+	const docs: any = [];
+	querySnapshot.forEach((doc) => docs.push(doc));
+	const itemsData = await Promise.all(
+		docs.map(async (doc: any) => {
+			const data = doc.data();
+			data.item = await fetchItemDetailsById(data.item as string);
+			data.found_lost_at = data.found_lost_at.seconds * 1000;
+			return data as Item;
+		})
+	);
+
+	return itemsData;
+}
+
 export async function fetchItemById(itemId: string): Promise<Item | undefined> {
 	const itemsCollection = collection(
 		firestore,
@@ -222,7 +253,7 @@ export async function fetchUserById(
 	);
 
 	try {
-		user.items = await fetchItemsById(user.items);
+		user.items = await fetchUserItemsById(user.id);
 		console.log(
 			`[fetchUserById] User items: ${JSON.stringify(user.items)}`
 		);

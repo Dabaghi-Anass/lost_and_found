@@ -8,6 +8,7 @@ import { Input } from "@/components/Input";
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import Separator from "@/components/separator";
 import { setCurrentUser } from "@/redux/global/current-user";
+import { setCurrentScreenName } from "@/redux/global/currentScreenName";
 import { AppUserBuilder } from "@/types/entities/AppUser";
 import { ProfileBuilder } from "@/types/entities/profile";
 import { Role } from "@/types/utils.types";
@@ -112,6 +113,10 @@ export default function LoginScreen() {
       validateFormData();
     }
   }, [userDetails]);
+  useEffect(() => {
+    dispatch(setCurrentScreenName("auth"));
+  }, [userDetails]);
+
   return (
     <ParallaxScrollView
       HEADER_HEIGHT={300}

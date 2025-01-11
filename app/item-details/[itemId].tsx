@@ -1,6 +1,8 @@
 import { fetchItemById } from '@/api/database';
+import { AppButton } from '@/components/AppButton';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { Item } from '@/types/entities.types';
 import { Feather } from '@expo/vector-icons';
 import { format, parseISO } from 'date-fns';
@@ -17,6 +19,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 const { width } = Dimensions.get('window');
 
 export default function ItemDetailsScreen() {
@@ -26,6 +29,9 @@ export default function ItemDetailsScreen() {
   const [item, setItem] = useState<Item | null>(null)
   const router = useRouter()
   const theme = useColorScheme();
+  const currentUser = useSelector((state: any) => state.user);
+  const isOwnItem = currentUser.id === item?.ownerId;
+  const dispatch = useDispatch();
   const formatDate = (dateString: string) => {
     try {
       return format(parseISO(dateString), 'PPp');
@@ -66,7 +72,7 @@ export default function ItemDetailsScreen() {
   };
 
   useEffect(() => {
-
+    dispatch(setCurrentScreenName('lost item'));
     const fetchItem = async () => {
       try {
         const fetchedItem = await fetchItemById(itemId as string)
@@ -145,7 +151,24 @@ export default function ItemDetailsScreen() {
             </View>
           </View>
         </View>
+
         {item.owner &&
+          isOwnItem ?
+          <View className='flex-row items-center gap-4'>
+
+            <AppButton variant="success" onPress={() => {
+              router.push(`/item-delivred/${item?.id}` as any)
+            }}>
+              <Text className='text-white text-xl'>{item.type === "found" ? "I found The Real Owner" : "I Found My Item"}</Text>
+              <Feather name="edit" size={20} color="white" />
+            </AppButton>
+            <AppButton variant="primary">
+              <Text className='text-white text-xl'>Edit Item</Text>
+              <Feather name="edit" size={20} color="white" />
+            </AppButton>
+
+          </View>
+          :
           <TouchableOpacity className='flex-row items-center gap-4' onPress={() => {
             router.push(`/profile/${item.ownerId}`)
           }}>

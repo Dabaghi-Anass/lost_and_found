@@ -6,6 +6,7 @@ import { ItemDetailsForm } from '@/components/item-form/item-details-form';
 import { LocationAndDateForm } from '@/components/item-form/location-and-date-form';
 import { ImagesUploadForm } from '@/components/item-form/upload-image-form';
 import ScrollScreen from '@/components/scroll-screen';
+import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { OptionType } from '@/types/entities.types';
 import { ItemBuilder } from '@/types/entities/Item';
 import { ItemDetailsBuilder } from '@/types/entities/ItemDetails';
@@ -15,8 +16,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
-import { Alert, Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { Alert, ScrollView, Text, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 export interface SubFormProps {
   formData: FormData,
   onValidationStateChange?: (state: boolean) => void,
@@ -43,6 +44,7 @@ export default function DeclareItemScreen() {
   const [loading, setLoading] = useState(false);
   const [validationState, setValidationState] = useState<Map<number, boolean>>(new Map());
   const currentUser = useSelector((state: any) => state.user);
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState<FormData>({
     type: option || "lost",
     category: '',
@@ -115,6 +117,7 @@ export default function DeclareItemScreen() {
   };
 
   useEffect(() => {
+    dispatch(setCurrentScreenName('declare lost item'));
     if (option) {
       updateFormData('type', option);
     }
@@ -124,7 +127,7 @@ export default function DeclareItemScreen() {
   }, [option]);
 
   return (
-    <ScrollScreen className={`flex-1 bg-muted px-4 py-6 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
+    <ScrollScreen className={`flex-1 bg-muted h-full px-4 py-6 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
       <View className="rounded-xl flex-1 overflow-hidden">
         <LinearGradient
           className='h-full max-h-full px-2'
@@ -136,7 +139,7 @@ export default function DeclareItemScreen() {
               {formData.type === 'lost' ? 'Report Lost Item' : 'Report Found Item'}
             </Text>
           </View>
-          <View className="p-4 bg-background rounded-lg  h-[75vh] flex justify-between">
+          <ScrollView contentContainerClassName="p-4 bg-background rounded-lg h-full flex justify-between">
             <FormStatusHeader step={step} />
             {step === 1 && <ChooseItemTypeForm
               formData={formData}
@@ -194,7 +197,7 @@ export default function DeclareItemScreen() {
                 </AppButton>
               )}
             </View>
-          </View>
+          </ScrollView>
         </LinearGradient>
       </View >
     </ScrollScreen >

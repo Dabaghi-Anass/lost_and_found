@@ -20,15 +20,20 @@ export default function AppColorPicker({ onChange, value }: Props) {
     <View className='flex-1'>
       <AppButton size="default" variant="default" onPress={() => setShowModal(true)} >pick color</AppButton>
       <Modal visible={showModal} animationType='slide'
+        className='max-w-full max-h-full w-full'
       >
-        <View className='flex-1 gap-4' style={{
+        <View className='flex-1 gap-4 items-center justify-center' style={{
           justifyContent: 'center',
           backgroundColor: selectedColor || "white",
           padding: 20,
         }}>
           <ColorPicker
+
             value={value || "white"} onComplete={onSelectColor}>
-            <Panel5 />
+            <Panel5 style={{
+              flex: 1,
+              maxWidth: 500,
+            }} />
           </ColorPicker>
           <AppButton
             style={{

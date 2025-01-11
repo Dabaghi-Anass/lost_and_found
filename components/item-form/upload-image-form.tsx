@@ -3,7 +3,7 @@ import { AppButton } from '@/components/AppButton';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
-import { Image, TouchableNativeFeedback, View } from 'react-native';
+import { Image, Pressable, View } from 'react-native';
 // import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 
 export function ImagesUploadForm({ formData, onFormData, onAssetsUploaded }: {
@@ -88,7 +88,7 @@ function ImagesPreview({ images, onSelect, onDelete }: {
             </AppButton>
           )}
 
-          <TouchableNativeFeedback
+          <Pressable
             onLongPress={() => addToToBeDeleted(`${image}withIndex${i}`)}
             onPress={() => {
               onSelect?.(i);
@@ -104,7 +104,7 @@ function ImagesPreview({ images, onSelect, onDelete }: {
                 borderRadius: 8,
               }}
             />
-          </TouchableNativeFeedback>
+          </Pressable>
         </View>
       ))}
     </View>

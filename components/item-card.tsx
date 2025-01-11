@@ -3,6 +3,7 @@ import { AntDesign, Entypo } from '@expo/vector-icons';
 import { format, parseISO } from 'date-fns';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 interface ItemCardProps {
@@ -17,6 +18,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
   onViewProfile,
 }) => {
   const { id, item: itemDetails, location, ownerId, type, found_lost_at, owner } = item
+  const currentUser = useSelector((state: any) => state.user)
   const formatDate = (dateString: string) => {
     try {
       return format(parseISO(dateString), 'PPp');
@@ -25,7 +27,9 @@ const ItemCard: React.FC<ItemCardProps> = ({
       return dateString;
     }
   };
-  console.log({ item })
+
+  const isOwnItem = currentUser?.id === ownerId
+
   return (
     <View style={styles.card} className='card bg-card border border-muted'>
       <View style={styles.imageContainer}>
@@ -33,6 +37,12 @@ const ItemCard: React.FC<ItemCardProps> = ({
           source={{ uri: itemDetails.images?.[0] || 'https://via.placeholder.com/300' }}
           style={styles.image}
         />
+        {isOwnItem && <View style={[styles.badge, {
+          left: 8,
+          right: 'auto',
+        }]} className='bg-pink-600 rounded-full'>
+          <Text className='text-white '>your item</Text>
+        </View>}
         <View style={[styles.badge, { backgroundColor: type === 'found' ? '#10B981' : '#EF4444' }]}>
           <Text style={styles.badgeText}>{type === 'found' ? 'Found' : 'Lost'}</Text>
         </View>

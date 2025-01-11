@@ -6,7 +6,7 @@ const currentUser = createSlice({
 	initialState: {} as AppUser,
 	reducers: {
 		setCurrentUser: (state, action) => {
-			AsyncStorage.setItem("userID", action.payload.id);
+			AsyncStorage.setItem("userID", action.payload?.id);
 			return action.payload;
 		},
 		removeCurrentUser: (state, action) => {

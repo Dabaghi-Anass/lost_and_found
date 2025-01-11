@@ -1,7 +1,11 @@
 import Screen from '@/components/screen';
+import SuccessStoryCard from '@/components/success-story-card';
+import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { Feather } from '@expo/vector-icons';
-import React from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import React, { useEffect } from 'react';
+import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 
 interface SuccessStory {
   id: number;
@@ -56,43 +60,20 @@ const successStories: SuccessStory[] = [
 ];
 
 export default function App() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setCurrentScreenName('home'));
+    Linking.addEventListener('url', (event) => {
+      const { url } = event;
+      console.log(url);
+    });
+  }, []);
   return (
     <Screen className='bg-background'>
       <Text className='text-foreground text-4xl font-bold font-secondary text-center pt-8 pb-4'>Success Stories</Text>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {successStories.map((story) => (
-          <View key={story.id} style={styles.card}>
-            <View style={styles.cardHeader}>
-              <View style={styles.userInfo}>
-                <Image source={{ uri: story.loserAvatar }} style={styles.avatar} />
-                <View>
-                  <Text className='text-foreground' style={styles.userName}>{story.loserName}</Text>
-                  <Text className='text-foreground' style={styles.itemText}>Lost: {story.item}</Text>
-                </View>
-              </View>
-              <View style={styles.userInfo}>
-                <Image source={{ uri: story.finderAvatar }} style={styles.avatar} />
-                <Text className='text-foreground' style={styles.finderName}>Found by {story.finderName}</Text>
-              </View>
-            </View>
-            <Text className='text-foreground' style={styles.description}>{story.description}</Text>
-            <Image source={{ uri: story.itemImage }} style={styles.itemImage} />
-            <View style={styles.cardFooter}>
-              <View style={styles.interactions}>
-                <View style={styles.interactionItem}>
-                  <Feather name="heart" size={18} color="#e74c3c" />
-                  <Text className='text-foreground' style={styles.interactionText}>{story.likes}</Text>
-                </View>
-                <View style={styles.interactionItem}>
-                  <Feather name="message-circle" size={18} color="#3498db" />
-                  <Text className='text-foreground' style={styles.interactionText}>{story.comments}</Text>
-                </View>
-              </View>
-              <TouchableOpacity>
-                <Text className='text-foreground' style={styles.readMoreButton}>Read More</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+          <SuccessStoryCard key={story.id} story={story} />
         ))}
       </ScrollView>
     </Screen>

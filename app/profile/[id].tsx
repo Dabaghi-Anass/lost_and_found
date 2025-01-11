@@ -8,16 +8,19 @@ import ScrollScreen from '@/components/scroll-screen';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { setCurrentUser } from '@/redux/global/current-user';
+import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { AppUser } from '@/types/entities.types';
 import { AntDesign, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { Link, router, useLocalSearchParams } from 'expo-router';
 import { Share2 } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { Image, Linking, Share, Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function UserProfile() {
   const { id } = useLocalSearchParams();
+  const dispatch = useDispatch();
   const [user, setUser] = useState<AppUser | null>(null);
   const currentUser = useSelector((state: any) => state.user);
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
@@ -30,6 +33,7 @@ export default function UserProfile() {
   };
   const handleLogout = () => {
     logoutUser().then(() => {
+      dispatch(setCurrentUser(null));
       router.replace('/login');
     })
   };
@@ -61,22 +65,25 @@ export default function UserProfile() {
     })()
   }, [id]);
 
+  useEffect(() => {
+    dispatch(setCurrentScreenName('profile'));
+  }, [user])
   if (!user) return <LoadingSpinner visible={true} />
   return (
     <ScrollScreen className='flex-1'>
       <View className='bg-transparent flex items-center justify-center py-4 px-4 relative' >
-        <Image source={bgPattern} className='absolute top-0 left-0 right-0' />
+        <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto' />
         <Image
           source={{ uri: user?.profile.imageUri || 'https://via.placeholder.com/150' }}
           className='w-32 h-32 rounded-full border-4 border-white'
         />
       </View>
-      <View className='bg-background h-full rounded-t-3xl p-4'>
+      <View className='bg-background min-h-full rounded-t-3xl p-4'>
         <View className='flex-row w-min items-center justify-between'>
-          <Text className='text-foreground text-4xl font-bold font-secondary capitalize max-w-sm text-center'>{user?.profile.firstName} {user?.profile.lastName}</Text>
+          <Text className='text-foreground text-4xl font-bold font-secondary capitalize max-w-sm web:w-[300px] text-center'>{user?.profile.firstName} {user?.profile.lastName}</Text>
           <View className='p-2 gap-4 flex-row items-center justify-center'>
             <Badge variant="secondary">
-              <Text className='text-secondary-foreground capitalize'>{user.role}</Text>
+              <Text className='text-secondary-foreground capitalize'>{user?.role}</Text>
             </Badge>
             <Badge variant="default">
               <Text className='text-primary-foreground'>{user?.items?.length} items</Text>
@@ -93,7 +100,7 @@ export default function UserProfile() {
             <Text className='text-lg'>Email</Text>
           </AppButton>
         </View>
-        {currentUser.id === user.id &&
+        {currentUser?.id === user?.id &&
           <View className='flex flex-row items-center justify-center py-8 px-4 gap-4'>
             <Link href="/edit-profile" asChild>
               <AppButton variant="outline" className='p-4 gap-4'>
@@ -123,11 +130,11 @@ export default function UserProfile() {
           <View className='items-start justify-center gap-4'>
             <View className='flex-row items-center justify-center gap-4'>
               <Feather name="phone" size={20} color={theme === "dark" ? "white" : "black"} />
-              <Text className="text-foreground text-xl">{user.profile.phoneNumber}</Text>
+              <Text className="text-foreground text-xl">{user?.profile.phoneNumber}</Text>
             </View>
             <View className='flex-row items-center justify-center gap-4'>
               <Feather name="mail" size={20} color={theme === "dark" ? "white" : "black"} />
-              <Text className="text-foreground text-xl">{user.email}</Text>
+              <Text className="text-foreground text-xl">{user?.email}</Text>
             </View>
           </View>
         </View>
@@ -145,10 +152,10 @@ export default function UserProfile() {
             <Text className='text-white text-xl font-bold'>Share Profile</Text>
           </AppButton>
         </View>
-        {user.items?.length > 0 &&
+        {user?.items?.length > 0 &&
           <View className='items-center justify-center gap-2'>
-            <Text className='text-xl font-bold text-foreground'>Items ({user.items.length})</Text>
-            {user.items.map((item) => (
+            <Text className='text-xl font-bold text-foreground'>Items ({user?.items.length})</Text>
+            {user?.items.map((item) => (
               <ItemMinifiedCard
                 key={item.id}
                 item={item}

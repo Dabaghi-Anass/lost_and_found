@@ -4,6 +4,7 @@ import ItemCard from "@/components/item-card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSearch } from "@/hooks/use-search";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { setCurrentScreenName } from "@/redux/global/currentScreenName";
 import { Item } from "@/types/entities.types";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
@@ -13,6 +14,7 @@ import {
   Text,
   View
 } from "react-native";
+import { useDispatch } from "react-redux";
 
 const LostItemPage: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
@@ -22,7 +24,9 @@ const LostItemPage: React.FC = () => {
   const filtredItems = useSearch(items, searchQuery);
   const theme = useColorScheme();
   const router = useRouter()
+  const dispatch = useDispatch()
   const fetchItems = useCallback(() => {
+    dispatch(setCurrentScreenName('lost items'));
     setLoading(true);
     try {
       fetchAllItems().then(fetchedItems => {
@@ -56,7 +60,7 @@ const LostItemPage: React.FC = () => {
         className="mb-4 w-full"
         inputClasses="border-gray-600"
       />
-      <ScrollView contentContainerStyle={styles.content} className="h-full">
+      <ScrollView contentContainerStyle={styles.content} className="h-full w-full">
         {filtredItems.map((item, index) => (<ItemCard key={index}
           item={item}
           onViewDetails={(_) => {
