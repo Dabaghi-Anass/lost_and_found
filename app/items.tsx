@@ -78,6 +78,7 @@ const LostItemPage: React.FC = () => {
             router.navigate("/profile/" + id as any)
           }} />)}
         keyExtractor={(item) => item.id}
+        className="w-full h-full"
         contentContainerClassName="p-2 w-full"
       />
     </View>
