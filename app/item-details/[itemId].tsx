@@ -101,6 +101,7 @@ export default function ItemDetailsScreen() {
         <Image
           source={{ uri: item.item.images[selectedImage] }}
           style={styles.mainImage}
+          className={`w-full h-[${width * 0.75}px]  web:h-[50vh] web:w-full web:max-w-[500px] self-center `}
         />
         <ScrollView
           horizontal

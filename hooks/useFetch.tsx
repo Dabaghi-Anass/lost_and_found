@@ -3,14 +3,14 @@ import { FirebaseCollections } from '@/lib/constants';
 import { RecursiveFetcher } from '@/types/utils.types';
 import { useEffect, useState } from 'react';
 
-export function useFetchAll<T>(collection: FirebaseCollections) {
+export function useFetchAll<T>(collection: FirebaseCollections, recursivefetchers: RecursiveFetcher[] | undefined = undefined, convertersMap: Record<string, (data: any) => any> = {}) {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = async () => {
     try {
-      const data = await fetchAllDocs<T>(collection);
+      const data = await fetchAllDocs<T>(collection, recursivefetchers, convertersMap);
       setData(data);
     } catch (error: any) {
       setError(error.message);

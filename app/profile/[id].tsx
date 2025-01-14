@@ -1,5 +1,4 @@
 import { logoutUser } from '@/api/auth';
-import { fetchUserById } from '@/api/database';
 import bgPattern from "@/assets/images/pattern.png";
 import { AppButton } from '@/components/AppButton';
 import { ConfirmationModal } from '@/components/confirmation-modal';
@@ -8,6 +7,8 @@ import ScrollScreen from '@/components/scroll-screen';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useFetch } from '@/hooks/useFetch';
+import { FirebaseCollections } from '@/lib/constants';
 import { setCurrentUser } from '@/redux/global/current-user';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { AppUser } from '@/types/entities.types';
@@ -22,14 +23,22 @@ export default function UserProfile() {
   const { id } = useLocalSearchParams();
   const dispatch = useDispatch();
   const [user, setUser] = useState<AppUser | null>(null);
+  const { data } = useFetch<AppUser>(FirebaseCollections.USERS, id as string, [
+    {
+      idPropertyName: "profileId",
+      propertyName: "profile",
+      collectionName: FirebaseCollections.PROFILES
+    }
+  ]);
   const currentUser = useSelector((state: any) => state.user);
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
   const theme = useColorScheme();
+
   function openConfirmationModal() {
     setConfirmationModalVisible(true);
   }
   const handleMessage = () => {
-    console.log('Message user:', user?.profile.id);
+    console.log('Message user:', user?.profile?.id);
   };
   const handleLogout = () => {
     logoutUser().then(() => {
@@ -45,20 +54,15 @@ export default function UserProfile() {
   const handleShareProfile = () => {
     const link = `lostandfound://profile/${user?.id}`;
     Share.share({
-      message: `Check out ${user?.profile.firstName}'s profile on Lost & Found App: ${link}`,
+      message: `Check out ${user?.profile?.firstName}'s profile on Lost & Found App: ${link}`,
       url: link,
     });
   };
 
-  async function getUserById(id: string) {
-    const user = await fetchUserById(id);
-    if (!user) return;
-    setUser(user);
-  }
   useEffect(() => {
     (async () => {
       if (id) {
-        getUserById(id as string);
+        setUser(data);
       } else if (!id) {
         setUser(currentUser);
       }
@@ -74,13 +78,13 @@ export default function UserProfile() {
       <View className='bg-transparent flex items-center justify-center py-4 px-4 relative' >
         <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto' />
         <Image
-          source={{ uri: user?.profile.imageUri || 'https://via.placeholder.com/150' }}
+          source={{ uri: user?.profile?.imageUri || 'https://via.placeholder.com/150' }}
           className='w-32 h-32 rounded-full border-4 border-white'
         />
       </View>
       <View className='bg-background min-h-full rounded-t-3xl p-4'>
         <View className='flex-row w-min items-center justify-between'>
-          <Text className='text-foreground text-4xl font-bold font-secondary capitalize max-w-sm web:w-[300px] text-center'>{user?.profile.firstName} {user?.profile.lastName}</Text>
+          <Text className='text-foreground text-4xl font-bold font-secondary capitalize max-w-sm web:w-[300px] text-center'>{user?.profile?.firstName} {user?.profile?.lastName}</Text>
           <View className='p-2 gap-4 flex-row items-center justify-center'>
             <Badge variant="secondary">
               <Text className='text-secondary-foreground capitalize'>{user?.role}</Text>
@@ -111,6 +115,7 @@ export default function UserProfile() {
             <ConfirmationModal
               title='Logout'
               description='Are you sure you want to logout?'
+              onOpen={openConfirmationModal}
               trigger={(open) => <AppButton variant="destructive" className='gap-4' onPress={() => open?.()}>
                 <Text className='text-white text-xl'>logout</Text>
                 <AntDesign name="logout" size={20} color="white" />
@@ -130,7 +135,7 @@ export default function UserProfile() {
           <View className='items-start justify-center gap-4'>
             <View className='flex-row items-center justify-center gap-4'>
               <Feather name="phone" size={20} color={theme === "dark" ? "white" : "black"} />
-              <Text className="text-foreground text-xl">{user?.profile.phoneNumber}</Text>
+              <Text className="text-foreground text-xl">{user?.profile?.phoneNumber}</Text>
             </View>
             <View className='flex-row items-center justify-center gap-4'>
               <Feather name="mail" size={20} color={theme === "dark" ? "white" : "black"} />
@@ -155,13 +160,18 @@ export default function UserProfile() {
         {user?.items?.length > 0 &&
           <View className='items-center justify-center gap-2'>
             <Text className='text-xl font-bold text-foreground'>Items ({user?.items.length})</Text>
-            {user?.items.map((item) => (
+            {user?.items.slice(0, 3).map((item) => (
               <ItemMinifiedCard
                 key={item.id}
                 item={item}
 
               />
             ))}
+            <Link href={`/`} asChild>
+              <AppButton variant="link" size="sm">
+                <Text className='text-primary text-lg'>View all items</Text>
+              </AppButton>
+            </Link>
           </View>
         }
 

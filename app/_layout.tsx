@@ -38,9 +38,9 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>
-        <View className={`${colorScheme} flex-1 flex items-center`}>
+        <View className={`${colorScheme} flex-1 flex items-center bg-background`}>
           <NavBar />
-          <View className='max-w-screen-md bg-background flex-1 w-full'>
+          <View className='bg-background flex-1 w-full max-w-screen-md'>
             <Drawer screenOptions={{
               headerShown: false,
               drawerActiveTintColor: Colors[colorScheme].primary,
@@ -53,6 +53,7 @@ export default function RootLayout() {
               },
               drawerStyle: {
                 backgroundColor: Colors[colorScheme].background,
+                width: '80%',
               },
 
             }}
@@ -95,6 +96,10 @@ export default function RootLayout() {
                 drawerLabel: 'Success Stories'
               }} />
               <Drawer.Screen name="item-details/[itemId]" options={{
+                headerShown: false,
+                drawerItemStyle: { display: "none" }
+              }} />
+              <Drawer.Screen name="item-delivred/[id]" options={{
                 headerShown: false,
                 drawerItemStyle: { display: "none" }
               }} />

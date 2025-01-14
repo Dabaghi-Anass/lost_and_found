@@ -19,7 +19,7 @@ export function UserProfileLink() {
         }}
         source={{ uri: user.profile?.imageUri || DefaultImage }} alt="user image" />
       <View className="flex-row gap-2 items-center">
-        <Text className="text-foreground text-3xl font-secondary font-bold my-4">{user.profile?.firstName} {user.profile?.lastName}</Text>
+        <Text className="text-foreground text-xl lg:text-3xl font-secondary font-bold my-4">{user.profile?.firstName} {user.profile?.lastName}</Text>
         <Badge variant="default">
           <Text className="text-primary-foreground">{user.role}</Text>
         </Badge>

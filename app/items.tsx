@@ -1,9 +1,9 @@
-import { fetchAllItems } from "@/api/database";
 import { Input } from "@/components/Input";
 import ItemCard from "@/components/item-card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { useSearch } from "@/hooks/use-search";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useFetchAll } from "@/hooks/useFetch";
+import { FirebaseCollections } from "@/lib/constants";
 import { setCurrentScreenName } from "@/redux/global/currentScreenName";
 import { Item } from "@/types/entities.types";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -17,29 +17,30 @@ import {
 import { useDispatch } from "react-redux";
 
 const LostItemPage: React.FC = () => {
-  const [items, setItems] = useState<Item[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const filtredItems = useSearch(items, searchQuery);
-  const theme = useColorScheme();
   const router = useRouter()
   const dispatch = useDispatch()
-  const fetchItems = useCallback(() => {
-    dispatch(setCurrentScreenName('lost items'));
-    setLoading(true);
-    try {
-      fetchAllItems().then(fetchedItems => {
-        setItems(fetchedItems);
-      })
-    } catch (err) {
-      setError("Failed to fetch items.");
-      console.error(err);
-    } finally {
-      setLoading(false);
+  const theme = useColorScheme();
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const { data: items, error, loading, refetch } = useFetchAll<Item>(FirebaseCollections.LOST_ITEMS, [
+    {
+      collectionName: FirebaseCollections.ITEMS,
+      idPropertyName: "item",
+      propertyName: "item"
+    },
+    {
+      collectionName: FirebaseCollections.PROFILES,
+      idPropertyName: "ownerId",
+      propertyName: "owner"
+    },
+  ]
+    , {
+      found_lost_at: (value: any) => value.seconds * 1000,
     }
+  );
+  const changeScreenName = useCallback(() => {
+    dispatch(setCurrentScreenName('lost items'));
   }, []);
-  useFocusEffect(fetchItems);
+  useFocusEffect(changeScreenName);
 
   if (error) {
     return (
@@ -50,7 +51,7 @@ const LostItemPage: React.FC = () => {
   }
 
   return (
-    <View className="flex-1 p-2 bg-background items-start justify-start">
+    <View className="flex-1 p-2 bg-background items-start justify-start max-w-screen-lg">
       <LoadingSpinner visible={loading} />
       <Input
         placeholder="Search by title, category, color, owner name, anything..."
@@ -63,12 +64,12 @@ const LostItemPage: React.FC = () => {
       <FlatList
         ListEmptyComponent={() => (
           <View style={styles.centered}>
-            <Text>No items found.</Text>
+            <Text className="text-foreground">No items found.</Text>
           </View>
         )}
         scrollEnabled={true}
         showsVerticalScrollIndicator
-        data={filtredItems}
+        data={items}
         renderItem={({ item }) => (<ItemCard
           item={item}
           onViewDetails={(_) => {
@@ -77,7 +78,7 @@ const LostItemPage: React.FC = () => {
           onViewProfile={(id) => {
             router.navigate("/profile/" + id as any)
           }} />)}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id as string}
         className="w-full h-full"
         contentContainerClassName="p-2 w-full"
       />
@@ -98,7 +99,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FFF",
   },
   errorText: {
     color: "#E53E3E",

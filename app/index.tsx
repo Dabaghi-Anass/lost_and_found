@@ -1,25 +1,36 @@
 // import { auth } from "@/database/fire_base";
-import { fetchUserById } from '@/api/database';
+import { fetchDoc } from '@/api/database';
 import Screen from '@/components/screen';
+import { FirebaseCollections } from '@/lib/constants';
 import { setCurrentUser } from '@/redux/global/current-user';
+import { AppUser } from '@/types/entities.types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router, useFocusEffect } from 'expo-router';
+import { router, SplashScreen, useFocusEffect } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Text } from 'react-native';
 import { useDispatch } from 'react-redux';
+SplashScreen.preventAutoHideAsync();
+
 export default function HomeScreen() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState<boolean>(true);
   const initUser = async (userId: string) => {
     setLoading(true);
-    const user = await fetchUserById(userId);
-    console.log({ user })
+    const user = await fetchDoc<AppUser>(FirebaseCollections.USERS, userId as string, [
+      {
+        idPropertyName: "profileId",
+        propertyName: "profile",
+        collectionName: FirebaseCollections.PROFILES
+      }
+    ]);
     if (user) {
       dispatch(setCurrentUser(user));
       router.replace("/items");
+      SplashScreen.hideAsync();
     } else {
       console.log("User Not Found");
       router.replace("/login");
+      SplashScreen.hideAsync();
     }
     setLoading(false);
   }
