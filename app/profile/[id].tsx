@@ -111,7 +111,7 @@ export default function UserProfile() {
             <ConfirmationModal
               title='Logout'
               description='Are you sure you want to logout?'
-              trigger={<AppButton variant="destructive" className='gap-4' onPress={openConfirmationModal}>
+              trigger={(open) => <AppButton variant="destructive" className='gap-4' onPress={() => open?.()}>
                 <Text className='text-white text-xl'>logout</Text>
                 <AntDesign name="logout" size={20} color="white" />
               </AppButton>}
@@ -159,9 +159,7 @@ export default function UserProfile() {
               <ItemMinifiedCard
                 key={item.id}
                 item={item}
-                onPress={() => {
-                  router.push(`/item-details/${item.id}`);
-                }}
+
               />
             ))}
           </View>

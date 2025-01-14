@@ -9,7 +9,7 @@ import { Item } from "@/types/entities.types";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
-  ScrollView,
+  FlatList,
   StyleSheet,
   Text,
   View
@@ -60,25 +60,34 @@ const LostItemPage: React.FC = () => {
         className="mb-4 w-full"
         inputClasses="border-gray-600"
       />
-      <ScrollView contentContainerStyle={styles.content} className="h-full w-full">
-        {filtredItems.map((item, index) => (<ItemCard key={index}
+      <FlatList
+        ListEmptyComponent={() => (
+          <View style={styles.centered}>
+            <Text>No items found.</Text>
+          </View>
+        )}
+        scrollEnabled={true}
+        showsVerticalScrollIndicator
+        data={filtredItems}
+        renderItem={({ item }) => (<ItemCard
           item={item}
           onViewDetails={(_) => {
             router.navigate("/item-details/" + item.id as any)
           }}
           onViewProfile={(id) => {
             router.navigate("/profile/" + id as any)
-          }} />))}
-      </ScrollView>
+          }} />)}
+        keyExtractor={(item) => item.id}
+        contentContainerClassName="p-2 w-full"
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#F9FAFB",
-    padding: 16,
+    width: "100%",
+    alignItems: "center",
   },
   content: {
     alignItems: "center",

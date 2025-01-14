@@ -1,7 +1,8 @@
-import { fetchItemById } from '@/api/database';
 import { AppButton } from '@/components/AppButton';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useFetch } from '@/hooks/useFetch';
+import { FirebaseCollections } from '@/lib/constants';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { Item } from '@/types/entities.types';
 import { Feather } from '@expo/vector-icons';
@@ -26,7 +27,25 @@ export default function ItemDetailsScreen() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
   const { itemId } = useLocalSearchParams()
-  const [item, setItem] = useState<Item | null>(null)
+  const { data: item, loading: itemLoading, error } = useFetch<Item>(FirebaseCollections.LOST_ITEMS, itemId as string, [
+    {
+      collectionName: FirebaseCollections.ITEMS,
+      propertyName: 'item',
+      idPropertyName: 'item',
+    },
+    {
+      collectionName: FirebaseCollections.PROFILES,
+      propertyName: 'owner',
+      idPropertyName: 'ownerId',
+    },
+    {
+      collectionName: FirebaseCollections.PROFILES,
+      propertyName: 'realOwner',
+      idPropertyName: 'realOwnerId',
+    },
+  ], {
+    found_lost_at: (value: any) => value.seconds * 1000,
+  });
   const router = useRouter()
   const theme = useColorScheme();
   const currentUser = useSelector((state: any) => state.user);
@@ -60,9 +79,7 @@ export default function ItemDetailsScreen() {
   const handleShare = async () => {
     if (!item) return
     try {
-      const itemLink = `
-
-      `
+      const itemLink = `https://lost-and-found-2b7b1.web.app/item-details/${item.id}`;
       await Share.share({
         message: `Check out this ${item.type} item: ${item.item.title} at ${item.location}\n${itemLink}`,
       });
@@ -73,21 +90,9 @@ export default function ItemDetailsScreen() {
 
   useEffect(() => {
     dispatch(setCurrentScreenName('lost item'));
-    const fetchItem = async () => {
-      try {
-        const fetchedItem = await fetchItemById(itemId as string)
-        if (fetchedItem) {
-          setItem(fetchedItem)
-          setLoading(false)
-        }
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    setLoading(true)
-    fetchItem()
   }, [itemId])
   if (!item || loading) return <LoadingSpinner visible={!item || loading} />
+  if (error) return <Text className='text-3xl font-bold text-red-600'>{error}</Text>
   return (
     <ScrollView className='bg-background h-full'>
       <View style={[styles.imageContainer, {
@@ -136,7 +141,7 @@ export default function ItemDetailsScreen() {
             }]}>
               <Package2 width={16} height={16} color="#666" />
               <Text className='text-foreground' style={styles.badgeText}>
-                {item.delivred ? 'Delivered' : 'Not Delivered'}
+                {item.delivered ? 'Delivered' : 'Not Delivered'}
               </Text>
             </View>
             <View style={styles.typeBadge}>
@@ -155,31 +160,51 @@ export default function ItemDetailsScreen() {
         {item.owner &&
           isOwnItem ?
           <View className='flex-row items-center gap-4'>
-
             <AppButton variant="success" onPress={() => {
               router.push(`/item-delivred/${item?.id}` as any)
             }}>
-              <Text className='text-white text-xl'>{item.type === "found" ? "I found The Real Owner" : "I Found My Item"}</Text>
+              <Text className='text-white text-xl'>{item.type === "found" ? item.delivered ? "update owner" : "I Found The Real Owner" : "I Found My Item"}</Text>
               <Feather name="edit" size={20} color="white" />
             </AppButton>
             <AppButton variant="primary">
               <Text className='text-white text-xl'>Edit Item</Text>
               <Feather name="edit" size={20} color="white" />
             </AppButton>
-
           </View>
           :
-          <TouchableOpacity className='flex-row items-center gap-4' onPress={() => {
+          <TouchableOpacity onPress={() => {
             router.push(`/profile/${item.ownerId}`)
           }}>
-            <Image
-              source={{ uri: item.owner.imageUri || "" }}
-              style={{ width: 50, height: 50, borderRadius: 100, borderColor: "white", borderWidth: 2 }}
-            />
-            <Text className='text-xl font-secondary text-foreground'>{item.owner?.firstName + " " + item.owner?.lastName}</Text>
+            <View>
+              <Text className='text-foreground text-xl my-4'>founder</Text>
+              <View className='flex-row items-center gap-4' >
+                <Image
+                  source={{ uri: item.owner.imageUri || "" }}
+                  style={{ width: 50, height: 50, borderRadius: 100, borderColor: "white", borderWidth: 2 }}
+                />
+                <Text className='text-xl font-secondary text-foreground'>{item.owner?.firstName + " " + item.owner?.lastName}</Text>
+              </View>
+            </View>
           </TouchableOpacity>
         }
         <View style={styles.separator} />
+        {item.realOwner &&
+          <TouchableOpacity onPress={() => {
+            router.push(`/profile/${item.realOwnerId}`)
+          }}>
+            <View>
+              <Text className='text-foreground text-xl my-4'>real owner</Text>
+              <View className='flex-row items-center gap-4' >
+                <Image
+                  source={{ uri: item.realOwner.imageUri || "" }}
+                  style={{ width: 50, height: 50, borderRadius: 100, borderColor: "white", borderWidth: 2 }}
+                />
+                <Text className='text-xl font-secondary text-foreground'>{item.realOwner?.firstName + " " + item.realOwner?.lastName}</Text>
+              </View>
+            </View>
+            <View style={styles.separator} />
+          </TouchableOpacity>
+        }
 
         {/* Location */}
         <TouchableOpacity style={styles.infoRow} onPress={openMap}>

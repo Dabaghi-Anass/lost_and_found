@@ -32,10 +32,12 @@ interface Item {
 	id?: string;
 	type: OptionType;
 	item: ItemDetails;
-	delivred: boolean;
+	delivered: boolean;
 	found_lost_at: Date;
 	ownerId: string;
+	realOwnerId: string;
 	owner: Profile;
+	realOwner: Profile;
 	location: string;
 	geoCoordinates?: GeolocationCoordinates;
 }

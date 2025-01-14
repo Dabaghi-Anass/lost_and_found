@@ -3,13 +3,15 @@ import { GeolocationCoordinates } from "../utils.types";
 
 export class ItemBuilder implements Item {
 	item: ItemDetails;
-	delivred: boolean;
+	delivered: boolean;
 	ownerId: string;
+	realOwnerId: string;
 	found_lost_at: Date;
 	type: OptionType;
 	geoCoordinates: GeolocationCoordinates;
 	location: string;
 	owner: Profile;
+	realOwner: Profile;
 
 	constructor() {
 		this.item = {
@@ -19,13 +21,15 @@ export class ItemBuilder implements Item {
 			images: [],
 			title: "",
 		};
-		this.delivred = false;
+		this.delivered = false;
 		this.ownerId = "";
+		this.realOwnerId = "";
 		this.found_lost_at = new Date();
 		this.type = "lost";
 		this.geoCoordinates = { latitude: 0, longitude: 0 };
 		this.location = "";
 		this.owner = {} as Profile;
+		this.realOwner = {} as Profile;
 	}
 
 	static builder(): ItemBuilder {
@@ -36,8 +40,8 @@ export class ItemBuilder implements Item {
 		this.item = item;
 		return this;
 	}
-	setDelivred(delivred: boolean): ItemBuilder {
-		this.delivred = delivred;
+	setDelivered(delivered: boolean): ItemBuilder {
+		this.delivered = delivered;
 		return this;
 	}
 
@@ -77,8 +81,8 @@ export class ItemBuilder implements Item {
 		return this.item;
 	}
 
-	getDelivred(): boolean {
-		return this.delivred;
+	getDelivered(): boolean {
+		return this.delivered;
 	}
 
 	getLostAt(): Date {

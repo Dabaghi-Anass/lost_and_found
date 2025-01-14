@@ -1,68 +1,122 @@
+import { makeItemDelivred } from '@/api/database';
+import { AppButton } from '@/components/AppButton';
+import { ConfirmationModal } from '@/components/confirmation-modal';
+import ItemMinifiedCard from '@/components/item-minified-card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { Feather } from '@expo/vector-icons';
+import { useFetch } from '@/hooks/useFetch';
+import { useFirebaseSearch } from '@/hooks/useFirebaseSearch';
+import { FirebaseCollections } from '@/lib/constants';
+import { Item, Profile } from '@/types/entities.types';
+import { AntDesign, Feather } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 
 export default function RealOwnerSearchScreen() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(false);
   const { id } = useLocalSearchParams();
+  const [loading, setLoading] = useState(false);
+  const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const theme = useColorScheme();
-
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
-      Alert.alert('Error', 'Please enter a search query');
-      return;
-    }
-
+  const { data: item, loading: itemLoading, error } = useFetch<Item>(FirebaseCollections.LOST_ITEMS, id as string, [{
+    collectionName: FirebaseCollections.ITEMS,
+    propertyName: 'item',
+    idPropertyName: 'item',
+  }]);
+  const { data: users, loading: usersLoading, error: usersError, refetch } = useFirebaseSearch<Profile>(FirebaseCollections.PROFILES, searchQuery, ['firstName', 'lastName', 'phoneNumber']);
+  async function handleUpdateItemRealOwner(ownerId: string) {
     setLoading(true);
     try {
-      const result = {
-        found: true,
-        ownerName: 'John Doe',
-      }
-      if (result.found) {
-        Alert.alert('Success', `Real owner found: ${result.ownerName}`);
-      } else {
-        Alert.alert('Not Found', 'No matching owner found. Please try a different search.');
-      }
+      await makeItemDelivred(id as string, ownerId);
     } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'An error occurred while searching. Please try again.');
+      console.error('Error updating item real owner:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.title, { color: theme === 'dark' ? '#fff' : '#000' }]}>
-        Find the Real Owner
-      </Text>
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={[styles.input, { color: theme === 'dark' ? '#fff' : '#000' }]}
-          placeholder="Enter owner's name or details"
-          placeholderTextColor={theme === 'dark' ? '#999' : '#666'}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
+    <View className='flex-1 items-center bg-background'>
+      {itemLoading && <View className='w-full h-48 items-center justify-center'>
+        <ActivityIndicator size='large' color={theme === "dark" ? "white" : "black"} />
+      </View>}
+      {item &&
+        <View className='w-full h-48 p-4 items-center justify-center' style={{ backgroundColor: item?.item.color }}>
+          <ItemMinifiedCard item={item} />
+        </View>
+      }
+      <View className='w-full h-full p-4'>
+        <Text className='text-3xl font-bold my-8 text-foreground text-center'>
+          Find the Real Owner
+        </Text>
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={[styles.input, { color: theme === 'dark' ? '#fff' : '#000' }]}
+            placeholder="Enter owner's name or details"
+            placeholderTextColor={theme === 'dark' ? '#999' : '#666'}
+            onChangeText={setSearchQuery}
+          />
+          <TouchableOpacity
+            style={[styles.searchButton, { opacity: loading ? 0.7 : 1 }]}
+            onPress={() => refetch()}
+            disabled={loading}
+          >
+            {loading ? (
+              <Feather name="loader" size={24} color="#fff" />
+            ) : (
+              <Feather name="search" size={24} color="#fff" />
+            )}
+          </TouchableOpacity>
+        </View>
+        {usersLoading && <View className='w-full h-48 items-center justify-center'>
+          <ActivityIndicator size='large' color={theme === "dark" ? "white" : "black"} />
+        </View>}
+        <FlatList
+          keyExtractor={(item, i) => item.id as string}
+          data={users}
+          ListEmptyComponent={<Text style={[styles.hint, { color: theme === 'dark' ? '#ccc' : '#666' }]}>
+            Enter any information that might help identify the real owner, such as name, contact details, or email, etc.
+          </Text>}
+          renderItem={({ item: profile }) => {
+            return <View className='w-full my-4 flex-row bg-card elevation-md p-4 items-center justify-between border border-muted rounded-md gap-4'>
+              <Avatar style={{
+                width: 60,
+                height: 60,
+              }} alt="user image">
+                <AvatarImage style={{
+                  width: "100%",
+                  height: "100%",
+                }} source={{
+                  uri: profile?.imageUri as any
+                }} />
+                <AvatarFallback>
+                  <AntDesign name="user" size={20} color="#6B7280" />
+                </AvatarFallback>
+              </Avatar>
+
+              <View className='flex-1 ml-4'>
+                <Text className='text-lg font-bold capitalize text-foreground'>{profile.firstName} {profile.lastName}</Text>
+                <Text className='text-sm text-muted-foreground'>{profile.phoneNumber}</Text>
+              </View>
+
+              <ConfirmationModal
+                title='confirm real owner'
+                description={`Are you sure you want to select ${profile.firstName} ${profile.lastName} as the real owner of this item?`}
+                open={confirmationModalOpen}
+                onOpen={() => setConfirmationModalOpen(true)}
+                trigger={(onOpen) => <AppButton onPress={onOpen} size="sm" variant="primary">Select</AppButton>}
+                onClose={() => setConfirmationModalOpen(false)}
+                onAccept={() => {
+                  setConfirmationModalOpen(false)
+                  handleUpdateItemRealOwner(profile.id as string)
+                }}
+              />
+            </View>
+          }}
         />
-        <TouchableOpacity
-          style={[styles.searchButton, { opacity: loading ? 0.7 : 1 }]}
-          onPress={handleSearch}
-          disabled={loading}
-        >
-          {loading ? (
-            <Feather name="loader" size={24} color="#fff" />
-          ) : (
-            <Feather name="search" size={24} color="#fff" />
-          )}
-        </TouchableOpacity>
       </View>
-      <Text style={[styles.hint, { color: theme === 'dark' ? '#ccc' : '#666' }]}>
-        Enter any information that might help identify the real owner, such as name, contact details, or item description.
-      </Text>
     </View>
   );
 }

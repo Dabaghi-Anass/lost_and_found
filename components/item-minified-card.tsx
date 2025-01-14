@@ -1,111 +1,46 @@
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { Item } from '@/types/entities.types';
-import { Feather } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 interface ItemCardProps {
   item: Item;
-  onPress: (id: string) => void;
 }
 
-export default function ItemMinifiedCard({ item, onPress }: ItemCardProps) {
-  const mainImage = item.item.images[0] || 'https://via.placeholder.com/150';
-  const formattedDate = new Date(item.found_lost_at).toLocaleDateString();
-  const theme = useColorScheme()
-  return (
-    <TouchableOpacity
-      style={[styles.container, { backgroundColor: theme == 'light' ? 'hsl(250,30%,100%)' : 'hsl(250,25%,20%)' }]}
-      onPress={() => onPress(item.id as string)}
-      activeOpacity={0.7}
-    >
-      <Image source={{ uri: mainImage }} style={styles.image} />
-      <View style={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.title} className='text-foreground' numberOfLines={1}>
-            {item.item.title}
-          </Text>
-          <View style={[styles.badge, { backgroundColor: item.item.color }]}>
-            <Text style={styles.badgeText}>{item.type}</Text>
-          </View>
-        </View>
+export default function ItemMinifiedCard({ item }: ItemCardProps) {
 
-        <Text style={styles.description} className='text-foreground' numberOfLines={2}>
-          {item.item.description}
-        </Text>
-
-        <View style={styles.footer}>
-          <View style={styles.footerItem}>
-            <Feather name="map-pin" size={14} color={theme === "dark" ? "white" : "#111"} />
-            <Text style={styles.footerText} className='text-foreground' numberOfLines={1}>
-              {item.location}
-            </Text>
-          </View>
-          <View style={styles.footerItem}>
-            <Feather name="calendar" size={14} color={theme === "dark" ? "white" : "#111"} />
-            <Text style={styles.footerText} className='text-foreground'>{formattedDate}</Text>
-          </View>
-        </View>
+  return (<TouchableOpacity className='flex flex-row gap-4 w-full bg-card p-4 rounded-lg elevation-sm'
+    onPress={() => {
+      router.push(`/item-details/${item.id}`);
+    }}>
+    <Image
+      source={{ uri: item?.item.images[0] }}
+      style={{ width: 100, height: 100, borderRadius: 5 }}
+    />
+    <View className='gap-2'>
+      <Text className='text-xl font-bold text-foreground'>{item?.item.title}</Text>
+      <View>
+        <Text className='text-sm text-muted-foreground'>{item?.item.description}</Text>
+        <Text className='text-sm text-muted-foreground'>Lost on {new Date((item?.found_lost_at as any)?.seconds as any).toLocaleDateString("en-US", {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })}</Text>
       </View>
-    </TouchableOpacity>
+      <View className='flex-row gap-2 items-center'>
+        <View className={`flex flex-row items-center gap-2 p-2 rounded-lg ${item?.type === 'lost' ? 'bg-red-500' : 'bg-green-500'}`}>
+          <Text className='text-white'>{item?.type.toUpperCase()}</Text>
+        </View>
+        <View style={{
+          backgroundColor: item?.item.color,
+          width: 20,
+          height: 20,
+          borderRadius: 15,
+
+        }}
+          className='border-2 border-foreground'></View>
+      </View>
+    </View>
+  </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    borderRadius: 5,
-    padding: 12,
-    elevation: 1,
-  },
-  image: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-    marginRight: 12,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    flex: 1,
-    marginRight: 8,
-  },
-  badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  badgeText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  description: {
-    fontSize: 14,
-    marginBottom: 8,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  footerItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  footerText: {
-    fontSize: 12,
-    marginLeft: 4,
-    maxWidth: 200,
-  },
-});
-
