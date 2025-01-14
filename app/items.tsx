@@ -1,6 +1,7 @@
 import { Input } from "@/components/Input";
 import ItemCard from "@/components/item-card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { useSearch } from "@/hooks/use-search";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useFetchAll } from "@/hooks/useFetch";
 import { FirebaseCollections } from "@/lib/constants";
@@ -21,7 +22,7 @@ const LostItemPage: React.FC = () => {
   const dispatch = useDispatch()
   const theme = useColorScheme();
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const { data: items, error, loading, refetch } = useFetchAll<Item>(FirebaseCollections.LOST_ITEMS, [
+  const { data, error, loading, refetch } = useFetchAll<Item>(FirebaseCollections.LOST_ITEMS, [
     {
       collectionName: FirebaseCollections.ITEMS,
       idPropertyName: "item",
@@ -37,6 +38,7 @@ const LostItemPage: React.FC = () => {
       found_lost_at: (value: any) => value.seconds * 1000,
     }
   );
+  const items = useSearch(data, searchQuery);
   const changeScreenName = useCallback(() => {
     dispatch(setCurrentScreenName('lost items'));
   }, []);

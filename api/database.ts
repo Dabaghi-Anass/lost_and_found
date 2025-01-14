@@ -301,6 +301,45 @@ export async function fetchAllDocs<T>(
 	}
 }
 
+export async function fetchDocsWithIds<T>(
+	collectionName: FirebaseCollections,
+	ids: string[] | undefined,
+	recursiveFetchers: RecursiveFetcher[] = [],
+	convertersMap: Record<string, (data: any) => any> = {}
+): Promise<T[]> {
+	console.log({ ids });
+	if (!ids || ids.length === 0) return Promise.resolve([]);
+	try {
+		const docsCollection = collection(firestore, collectionName);
+		const q = query(docsCollection, where("id", "in", ids));
+
+		const querySnapshot = await getDocs(q);
+		const items = await Promise.all(
+			querySnapshot.docs.map(async (document) => {
+				const data = document.data();
+				if (data) {
+					let itemData: any = {
+						id: document.id,
+						...data,
+					};
+					itemData = await fetchInnerDocs(
+						itemData,
+						recursiveFetchers
+					);
+					itemData = applyConverters(itemData, convertersMap);
+					return itemData as T;
+				} else {
+					throw new Error(`Document ${document.id} has no data`);
+				}
+			})
+		);
+		return items;
+	} catch (e: any) {
+		console.error("Error fetching items:", e);
+		return Promise.reject(e);
+	}
+}
+
 export async function fetchDoc<T>(
 	collectionName: FirebaseCollections,
 	id: string,

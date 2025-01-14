@@ -74,7 +74,3 @@ body {
 		--chart-5: 250 103% 53%;
 	}
 }
-
-.elevate {
-	@apply: elevation-md web:shadow-md web:shadow-slate-300 bg-red-500;
-}

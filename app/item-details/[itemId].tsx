@@ -91,7 +91,7 @@ export default function ItemDetailsScreen() {
   useEffect(() => {
     dispatch(setCurrentScreenName('lost item'));
   }, [itemId])
-  if (!item || loading) return <LoadingSpinner visible={!item || loading} />
+  if (!item?.item || loading) return <LoadingSpinner visible={!item || loading} />
   if (error) return <Text className='text-3xl font-bold text-red-600'>{error}</Text>
   return (
     <ScrollView className='bg-background h-full'>

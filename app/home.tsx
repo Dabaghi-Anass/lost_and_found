@@ -1,66 +1,35 @@
 import Screen from '@/components/screen';
 import SuccessStoryCard from '@/components/success-story-card';
+import { useFetchAll } from '@/hooks/useFetch';
+import { FirebaseCollections } from '@/lib/constants';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
-import { Feather } from '@expo/vector-icons';
+import { Item } from '@/types/entities.types';
 
 import React, { useEffect } from 'react';
-import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, ScrollView, StyleSheet, Text } from 'react-native';
 import { useDispatch } from 'react-redux';
-
-interface SuccessStory {
-  id: number;
-  loserName: string;
-  finderName: string;
-  item: string;
-  description: string;
-  loserAvatar: string;
-  finderAvatar: string;
-  itemImage: string;
-  likes: number;
-  comments: number;
-}
-
-const successStories: SuccessStory[] = [
-  {
-    id: 1,
-    loserName: "Sarah Johnson",
-    finderName: "John Smith",
-    item: "Diamond Ring",
-    description: "I lost my engagement ring at the beach. Thanks to John and this app, I got it back within 24 hours!",
-    loserAvatar: "https://via.placeholder.com/40",
-    finderAvatar: "https://via.placeholder.com/40",
-    itemImage: "https://via.placeholder.com/400x200",
-    likes: 152,
-    comments: 23
-  },
-  {
-    id: 2,
-    loserName: "Mike Chen",
-    finderName: "Lisa Wong",
-    item: "Laptop",
-    description: "Left my laptop on the train. Lisa found it and used the app to contact me. So grateful!",
-    loserAvatar: "https://via.placeholder.com/40",
-    finderAvatar: "https://via.placeholder.com/40",
-    itemImage: "https://via.placeholder.com/400x200",
-    likes: 98,
-    comments: 15
-  },
-  {
-    id: 3,
-    loserName: "Emily Davis",
-    finderName: "Alex Turner",
-    item: "Pet Dog",
-    description: "My dog ran away during a storm. Alex found him and posted on this app. We were reunited in hours!",
-    loserAvatar: "https://via.placeholder.com/40",
-    finderAvatar: "https://via.placeholder.com/40",
-    itemImage: "https://via.placeholder.com/400x200",
-    likes: 231,
-    comments: 42
-  }
-];
-
 export default function App() {
   const dispatch = useDispatch();
+  const { data: items } = useFetchAll<Item>(FirebaseCollections.LOST_ITEMS, [{
+    collectionName: FirebaseCollections.ITEMS,
+    idPropertyName: "item",
+    propertyName: "item"
+  },
+  {
+    collectionName: FirebaseCollections.PROFILES,
+    idPropertyName: "ownerId",
+    propertyName: "owner"
+  },
+  {
+    collectionName: FirebaseCollections.PROFILES,
+    idPropertyName: "realOwnerId",
+    propertyName: "realOwner"
+  },
+  ],
+    {
+      found_lost_at: (value: any) => value.seconds * 1000,
+    });
+  const data = items.filter((item) => item.delivered);
   useEffect(() => {
     dispatch(setCurrentScreenName('home'));
     Linking.addEventListener('url', (event) => {
@@ -72,8 +41,8 @@ export default function App() {
     <Screen className='bg-background'>
       <Text className='text-foreground text-4xl font-bold font-secondary text-center pt-8 pb-4'>Success Stories</Text>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {successStories.map((story) => (
-          <SuccessStoryCard key={story.id} story={story} />
+        {data.map((story: Item) => (
+          <SuccessStoryCard key={story.id} item={story} />
         ))}
       </ScrollView>
     </Screen>
