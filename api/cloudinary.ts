@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ImagePickerAsset } from "expo-image-picker";
 import { Alert } from "react-native";
+const manipulateAsync = require("expo-image-manipulator").manipulateAsync;
 
 let cloudinaryConnection: {
 	uploadImage: (url: string, fileName: string) => Promise<any>;
@@ -8,6 +9,13 @@ let cloudinaryConnection: {
 };
 
 export async function uploadAsset(asset: ImagePickerAsset) {
+	const resizedAsset = await manipulateAsync(
+		asset.uri,
+		[{ resize: { width: 500, height: 500 } }],
+		{ compress: 1, format: "jpeg" }
+	);
+
+	asset.uri = resizedAsset.uri;
 	try {
 		const formData = new FormData();
 		formData.append("file", {

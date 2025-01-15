@@ -6,11 +6,11 @@ import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { Item } from '@/types/entities.types';
 
 import React, { useEffect } from 'react';
-import { Linking, ScrollView, StyleSheet, Text } from 'react-native';
+import { FlatList, Linking, StyleSheet, Text } from 'react-native';
 import { useDispatch } from 'react-redux';
 export default function App() {
   const dispatch = useDispatch();
-  const { data: items } = useFetchAll<Item>(FirebaseCollections.LOST_ITEMS, [{
+  const { data: items, loading, refetch } = useFetchAll<Item>(FirebaseCollections.LOST_ITEMS, [{
     collectionName: FirebaseCollections.ITEMS,
     idPropertyName: "item",
     propertyName: "item"
@@ -40,11 +40,14 @@ export default function App() {
   return (
     <Screen className='bg-background'>
       <Text className='text-foreground text-4xl font-bold font-secondary text-center pt-8 pb-4'>Success Stories</Text>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {data.map((story: Item) => (
-          <SuccessStoryCard key={story.id} item={story} />
-        ))}
-      </ScrollView>
+      <FlatList
+        data={data}
+        refreshing={loading}
+        onRefresh={refetch}
+        keyExtractor={(item) => item.id || Math.random().toString()}
+        renderItem={({ item }) => <SuccessStoryCard item={item} />}
+        contentContainerClassName='gap-2 p-4'
+      />
     </Screen>
   );
 }

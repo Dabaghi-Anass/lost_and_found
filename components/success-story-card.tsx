@@ -2,7 +2,7 @@
 
 import { Item } from '@/types/entities.types';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 type Props = {
@@ -11,27 +11,37 @@ type Props = {
 
 export default function SuccessStoryCard({ item }: Props) {
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' }}>
-      <Avatar alt="hello">
-        <AvatarImage source={{
-          uri: item?.owner?.imageUri || ''
-        }} />
-        <AvatarFallback>
-          <Text style={{ color: '#fff', fontSize: 20 }}>{item?.owner?.firstName}</Text>
-        </AvatarFallback>
-      </Avatar>
-      <View style={{ flex: 1, marginLeft: 16 }}>
-        <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{item?.owner?.firstName}</Text>
-        <Text style={{ fontSize: 14, color: '#666' }}>{item?.location}</Text>
+    <View className='gap-4 p-4 bg-card elevation-md web:shadow-md web:shadow-slate-200 rounded-sm'>
+      <View className='flex-row gap-4 items-center'>
+        <Avatar alt="hello">
+          <AvatarImage source={{
+            uri: item?.owner?.imageUri || ''
+          }} />
+          <AvatarFallback>
+            <Text style={{ color: '#fff', fontSize: 20 }}>{item?.owner?.firstName}</Text>
+          </AvatarFallback>
+        </Avatar>
+        <View>
+          <Text className='text-foreground text-xl'>{item.owner.firstName} delivered {item.item.title} to {item.realOwner.firstName}</Text>
+        </View>
+        <Avatar alt="hello">
+          <AvatarImage source={{
+            uri: item?.realOwner?.imageUri || ''
+          }} />
+          <AvatarFallback>
+            <Text style={{ color: '#fff', fontSize: 20 }}>{item?.realOwner?.firstName}</Text>
+          </AvatarFallback>
+        </Avatar>
       </View>
-      <Avatar alt="hello">
-        <AvatarImage source={{
-          uri: item?.realOwner?.imageUri || ''
-        }} />
-        <AvatarFallback>
-          <Text style={{ color: '#fff', fontSize: 20 }}>{item?.realOwner?.firstName}</Text>
-        </AvatarFallback>
-      </Avatar>
+      <View className='w-full flex-row items-center flex-wrap justify-center'>
+        {item.item.images.map((image, index) => (
+          <Image
+            key={index}
+            source={{ uri: image }}
+            style={{ width: 100, height: 100, borderRadius: 8 }}
+          />
+        ))}
+      </View>
     </View>
   );
 

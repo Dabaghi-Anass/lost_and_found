@@ -132,7 +132,7 @@ export default function EditItemScreen() {
           setFormData({ ...formData, images });
         }} />
       <View className='py-4 gap-4'>
-        <AppButton variant="secondary" onPress={undefined}>Upload More Images</AppButton>
+        <AppButton variant="default" size="sm" onPress={undefined}>Upload More Images</AppButton>
         <AppButton variant="primary" onPress={handleUpdate}>Update Item</AppButton>
       </View>
 
@@ -153,11 +153,11 @@ function ImagesView({ images, onUpdateImages }: ImagesViewProps) {
         <View key={index} className='relative'>
           <Image
             source={{ uri: image }}
-            style={{ width: 100, height: 100 }}
+            style={{ width: 100, height: 100, borderRadius: 8 }}
           />
           <TouchableOpacity
             onPress={() => {
-              const updatedImages = images.filter((_, i) => i !== index);
+              const updatedImages = images.filter((uri) => uri !== image);
               onUpdateImages(updatedImages);
             }}
             className='absolute top-0 right-0 bg-white p-1 rounded-full'

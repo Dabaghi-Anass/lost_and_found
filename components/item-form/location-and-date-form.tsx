@@ -2,6 +2,7 @@ import { SubFormProps } from '@/app/declare-item/[option]';
 // import ExamplePlusCodeAdressImage from "@/assets/images/example-plus-code.jpg";
 import { AppButton } from '@/components/AppButton';
 import { Input } from '@/components/Input';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
@@ -10,6 +11,7 @@ import { Text, View } from 'react-native';
 export function LocationAndDateForm({ formData, onFormData, onValidationStateChange }: SubFormProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [error, setError] = useState<string>("");
+  const theme = useColorScheme()
   const getCurrentLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
@@ -84,6 +86,7 @@ export function LocationAndDateForm({ formData, onFormData, onValidationStateCha
           placeholder="Latitude"
           keyboardType="numeric"
           className="flex-1 border-none rounded-md mr-2 text-foreground opacity-50"
+          placeholderTextColor={theme === 'dark' ? 'gray' : 'black'}
           editable={false}
         />
         <Input
@@ -91,6 +94,7 @@ export function LocationAndDateForm({ formData, onFormData, onValidationStateCha
           placeholder="Longitude"
           keyboardType="numeric"
           className="flex-1 border-none rounded-md mr-2 text-foreground opacity-50"
+          placeholderTextColor={theme === 'dark' ? 'gray' : 'black'}
           editable={false}
         />
 
