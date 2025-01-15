@@ -30,6 +30,25 @@ export function ImagesUploadForm({ formData, onFormData, onAssetsUploaded }: {
       onAssetsUploaded(result.assets);
     }
   };
+  const handleUploadImagesFromCamera = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      aspect: [1, 1],
+    });
+    if (!result.canceled) {
+      const uploadedImages = result.assets.map((asset: ImagePicker.ImagePickerAsset) => {
+        return asset.uri
+      })
+      onFormData('images', [...formData.images, ...uploadedImages]);
+      onAssetsUploaded(result.assets);
+    }
+  };
   return <View className="image-upload-form space-y-4 h-[60%] flex flex-start gap-4">
     <ImagesPreview
       images={formData.images}
@@ -51,7 +70,15 @@ export function ImagesUploadForm({ formData, onFormData, onAssetsUploaded }: {
       }}
       variant="primary"
       className="px-4 py-2 rounded-md">
-      Upload Images
+      Upload Images From Strorage
+    </AppButton>
+    <AppButton
+      onPress={() => {
+        handleUploadImagesFromCamera()
+      }}
+      variant="default"
+      className="px-4 py-2 rounded-md">
+      Take A Picture
     </AppButton>
 
   </View>

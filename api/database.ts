@@ -32,7 +32,10 @@ export async function saveItemDetails(item: ItemDetails): Promise<ItemDetails> {
 			firestore,
 			FirebaseCollections.ITEMS
 		);
-		const itemRef = await addDoc(itemsCollection, { ...item });
+		const itemRef = await addDoc(itemsCollection, {
+			...item,
+			id: doc(itemsCollection).id,
+		});
 		item.id = itemRef.id;
 		return await Promise.resolve(item);
 	} catch (e: any) {
@@ -60,12 +63,17 @@ export async function saveItem(item: Item): Promise<Item> {
 
 			const itemToSave = {
 				...item,
+				itemId: itemDetailsRef.id,
 				item: itemDetailsRef.id,
 			};
 
 			await addDoc(itemsCollection, itemToSave);
 
-			itemToSaveClone = { ...itemToSave, item: item.item };
+			itemToSaveClone = {
+				...itemToSave,
+				item: item.item,
+				itemId: itemDetailsRef.id,
+			};
 		});
 		return Promise.resolve(itemToSaveClone);
 	} catch (e: any) {
@@ -340,6 +348,46 @@ export async function fetchDocsWithIds<T>(
 	}
 }
 
+export async function fetchItemsOfUser(
+	id: string | undefined,
+	recursiveFetchers: RecursiveFetcher[] = [],
+	convertersMap: Record<string, (data: any) => any> = {}
+): Promise<Item[]> {
+	if (!id) return Promise.resolve([]);
+	try {
+		const docsCollection = collection(
+			firestore,
+			FirebaseCollections.LOST_ITEMS
+		);
+		const q = query(docsCollection, where("ownerId", "==", id));
+
+		const querySnapshot = await getDocs(q);
+		const items = await Promise.all(
+			querySnapshot.docs.map(async (document) => {
+				const data = document.data();
+				if (data) {
+					let itemData: any = {
+						id: document.id,
+						...data,
+					};
+					itemData = await fetchInnerDocs(
+						itemData,
+						recursiveFetchers
+					);
+					itemData = applyConverters(itemData, convertersMap);
+					return itemData as Item;
+				} else {
+					throw new Error(`Document ${document.id} has no data`);
+				}
+			})
+		);
+		return items;
+	} catch (e: any) {
+		console.error("Error fetching items:", e);
+		return Promise.reject(e);
+	}
+}
+
 export async function fetchDoc<T>(
 	collectionName: FirebaseCollections,
 	id: string,
@@ -353,7 +401,20 @@ export async function fetchDoc<T>(
 
 		if (querySnapshot.empty) {
 			console.log("[fetchDoc] No matching documents found.");
-			return Promise.resolve(undefined);
+			const docRef = doc(docsCollection, id);
+			const docSnap = await getDoc(docRef);
+			if (docSnap.exists()) {
+				const documentData = docSnap.data();
+				let itemData: any = {
+					id: docSnap.id,
+					...documentData,
+				};
+				itemData = await fetchInnerDocs(itemData, recursiveFetchers);
+				itemData = applyConverters(itemData, convertersMap);
+				return itemData as T;
+			} else {
+				throw Promise.resolve(undefined);
+			}
 		}
 		const docs: any = [];
 		querySnapshot.forEach((doc) => docs.push(doc));
@@ -393,6 +454,7 @@ function _formQueryArray(queryString: string): string[] {
 }
 
 async function fetchInnerDocs(data: any, fetchers: RecursiveFetcher[]) {
+	if (fetchers.length === 0) return data;
 	for (const fetcher of fetchers) {
 		const collectionRef = collection(firestore, fetcher.collectionName);
 		const q = query(
@@ -503,6 +565,26 @@ export async function makeItemDelivred(
 			} else {
 				throw new Error(`Document ${itemId} has no data`);
 			}
+		});
+		return Promise.resolve(true);
+	} catch (e: any) {
+		console.error(e);
+		return Promise.reject(e);
+	}
+}
+export async function updateItem(
+	itemId: string,
+	newItem: ItemDetails
+): Promise<boolean | undefined> {
+	try {
+		await runTransaction(firestore, async (transaction: Transaction) => {
+			const itemsCollection = collection(
+				firestore,
+				FirebaseCollections.ITEMS
+			);
+			const itemRef = doc(itemsCollection, itemId);
+			await updateDoc(itemRef, { ...newItem });
+			return true;
 		});
 		return Promise.resolve(true);
 	} catch (e: any) {

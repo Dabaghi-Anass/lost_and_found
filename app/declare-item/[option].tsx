@@ -81,7 +81,7 @@ export default function DeclareItemScreen() {
       const item = ItemBuilder
         .builder()
         .setItem(itemDetails)
-        .setDelivred(false)
+        .setDelivered(false)
         .setOwnerId(currentUser.id)
         .setLostAt(formData.date)
         .setType(formData.type)
@@ -161,7 +161,9 @@ export default function DeclareItemScreen() {
                 setValidationState(validationStateClone);
               }} />}
             {step === 4 && <ImagesUploadForm
-              onAssetsUploaded={setAssets}
+              onAssetsUploaded={(assets) => {
+                setAssets(prev => ([...prev, ...assets]));
+              }}
               formData={formData} onFormData={updateFormData} />}
 
 

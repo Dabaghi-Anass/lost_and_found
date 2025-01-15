@@ -3,6 +3,7 @@ import { AppButton } from '@/components/AppButton';
 import { ConfirmationModal } from '@/components/confirmation-modal';
 import ItemMinifiedCard from '@/components/item-minified-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFetch } from '@/hooks/useFetch';
 import { useFirebaseSearch } from '@/hooks/useFirebaseSearch';
@@ -11,8 +12,7 @@ import { Item, Profile } from '@/types/entities.types';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function RealOwnerSearchScreen() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -20,7 +20,7 @@ export default function RealOwnerSearchScreen() {
   const [loading, setLoading] = useState(false);
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const theme = useColorScheme();
-  const { data: item, loading: itemLoading, error } = useFetch<Item>(FirebaseCollections.LOST_ITEMS, id as string, [{
+  const { data: item, loading: itemLoading } = useFetch<Item>(FirebaseCollections.LOST_ITEMS, id as string, [{
     collectionName: FirebaseCollections.ITEMS,
     propertyName: 'item',
     idPropertyName: 'item',
@@ -30,6 +30,7 @@ export default function RealOwnerSearchScreen() {
     setLoading(true);
     try {
       await makeItemDelivred(id as string, ownerId);
+      Alert.alert('Success', 'Item real owner updated successfully');
     } catch (error) {
       console.error('Error updating item real owner:', error);
     } finally {
@@ -37,6 +38,7 @@ export default function RealOwnerSearchScreen() {
     }
   }
 
+  if (loading) return <LoadingSpinner visible={loading} />
   return (
     <View className='flex-1 items-center bg-background'>
       {itemLoading && <View className='w-full h-48 items-center justify-center'>
@@ -48,8 +50,8 @@ export default function RealOwnerSearchScreen() {
         </View>
       }
       <View className='w-full h-full p-4'>
-        <Text className='text-3xl font-bold my-8 text-foreground text-center'>
-          Find the Real Owner
+        <Text className='text-3xl font-bold my-8 text-foreground text-center capitalize'>
+          {item?.type === "found" ? "Tell Us the real owner" : "Tell Us who found your item"}
         </Text>
         <View style={styles.searchContainer}>
           <TextInput
@@ -79,8 +81,9 @@ export default function RealOwnerSearchScreen() {
           ListEmptyComponent={<Text style={[styles.hint, { color: theme === 'dark' ? '#ccc' : '#666' }]}>
             Enter any information that might help identify the real owner, such as name, contact details, or email, etc.
           </Text>}
+          contentContainerClassName='gap-4 py-2'
           renderItem={({ item: profile }) => {
-            return <View className='w-full my-4 flex-row bg-card elevation-md p-4 items-center justify-between border border-muted rounded-md gap-4'>
+            return <View className='w-full my-2& flex-row bg-card elevation-sm p-4 items-center justify-between border border-muted rounded-md gap-4 web:shadow-md web:shadow-slate-200'>
               <Avatar style={{
                 width: 60,
                 height: 60,

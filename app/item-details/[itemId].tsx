@@ -7,7 +7,7 @@ import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { Item } from '@/types/entities.types';
 import { Feather } from '@expo/vector-icons';
 import { format, parseISO } from 'date-fns';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import { Calendar, MapPin, Package2, Share2, Tag } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import {
@@ -164,13 +164,17 @@ export default function ItemDetailsScreen() {
             <AppButton variant="success" onPress={() => {
               router.push(`/item-delivred/${item?.id}` as any)
             }}>
-              <Text className='text-white text-xl'>{item.type === "found" ? item.delivered ? "update owner" : "I Found The Real Owner" : "I Found My Item"}</Text>
+              <Text className='text-white text-xl'>{
+                item.delivered ? 'update receiver' : 'Mark as delivered '
+              }</Text>
               <Feather name="edit" size={20} color="white" />
             </AppButton>
-            <AppButton variant="primary">
-              <Text className='text-white text-xl'>Edit Item</Text>
-              <Feather name="edit" size={20} color="white" />
-            </AppButton>
+            <Link href={`/edit-item/${item.id}` as any} asChild>
+              <AppButton variant="primary">
+                <Text className='text-white text-xl'>Edit Item</Text>
+                <Feather name="edit" size={20} color="white" />
+              </AppButton>
+            </Link>
           </View>
           :
           <TouchableOpacity onPress={() => {
@@ -189,7 +193,7 @@ export default function ItemDetailsScreen() {
           </TouchableOpacity>
         }
         <View style={styles.separator} />
-        {item.realOwner &&
+        {Object.keys(item.realOwner).length > 0 &&
           <TouchableOpacity onPress={() => {
             router.push(`/profile/${item.realOwnerId}`)
           }}>

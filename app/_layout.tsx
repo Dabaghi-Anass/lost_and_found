@@ -85,6 +85,10 @@ export default function RootLayout() {
                 headerShown: false,
                 drawerItemStyle: { display: "none" }
               }} />
+              <Drawer.Screen name="edit-item/[itemId]" options={{
+                headerShown: false,
+                drawerItemStyle: { display: "none" }
+              }} />
               <Drawer.Screen name="items" options={{
                 headerShown: false,
                 drawerIcon: ({ focused }) => <FolderSearch color={focused ? Colors[colorScheme].primary : Colors[colorScheme].text} />,

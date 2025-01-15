@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, View } from 'react-native';
+import { Modal, Platform, View } from 'react-native';
 
 import ColorPicker, { Panel5 } from 'reanimated-color-picker';
 import { AppButton } from './AppButton';
@@ -30,10 +30,20 @@ export default function AppColorPicker({ onChange, value }: Props) {
           <ColorPicker
 
             value={value || "white"} onComplete={onSelectColor}>
-            <Panel5 style={{
-              flex: 1,
-              maxWidth: 500,
-            }} />
+            <Panel5 style={Platform.select({
+              web: {
+                height: "50vh",
+                aspectRatio: 1,
+              },
+              android: {
+                height: "50vh",
+                width: '100%',
+              },
+              default: {
+                height: "50vh",
+                width: '100%',
+              }
+            }) as any} />
           </ColorPicker>
           <AppButton
             style={{

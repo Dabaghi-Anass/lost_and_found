@@ -31,6 +31,7 @@ interface ItemDetails {
 interface Item {
 	id?: string;
 	type: OptionType;
+	itemId: string;
 	item: ItemDetails;
 	delivered: boolean;
 	found_lost_at: Date;

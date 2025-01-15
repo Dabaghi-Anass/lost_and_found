@@ -1,5 +1,5 @@
 import { logoutUser } from '@/api/auth';
-import { fetchDoc, fetchDocsWithIds } from '@/api/database';
+import { fetchDoc, fetchItemsOfUser } from '@/api/database';
 import bgPattern from "@/assets/images/pattern.png";
 import { AppButton } from '@/components/AppButton';
 import { ConfirmationModal } from '@/components/confirmation-modal';
@@ -12,11 +12,11 @@ import { FirebaseCollections } from '@/lib/constants';
 import { setCurrentUser } from '@/redux/global/current-user';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { AppUser, Item } from '@/types/entities.types';
-import { AntDesign, Feather, FontAwesome5 } from '@expo/vector-icons';
+import { AntDesign, Feather } from '@expo/vector-icons';
 import { Link, router, useLocalSearchParams } from 'expo-router';
 import { Share2 } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
-import { Image, Linking, Share, Text, View } from 'react-native';
+import { Alert, FlatList, Image, Linking, Share, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
 export default function UserProfile() {
@@ -24,6 +24,7 @@ export default function UserProfile() {
   const dispatch = useDispatch();
   const [userItems, setUserItems] = useState<Item[]>([]);
   const [user, setUser] = useState<AppUser | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const currentUser = useSelector((state: any) => state.user);
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
   const theme = useColorScheme();
@@ -55,8 +56,7 @@ export default function UserProfile() {
 
   async function getUserItems(user: AppUser) {
     if (user?.items && user?.items?.length === 0) return;
-    console.log(user?.items);
-    const items = await fetchDocsWithIds<Item>(FirebaseCollections.ITEMS, user?.items as any[], [{
+    const items = await fetchItemsOfUser(user?.id, [{
       collectionName: FirebaseCollections.ITEMS,
       idPropertyName: "item",
       propertyName: "item"
@@ -74,31 +74,39 @@ export default function UserProfile() {
   }
   useEffect(() => {
     (async () => {
+      setLoading(true);
+      setUserItems([]);
+      setUser(null);
       if (id) {
-        const user = await fetchDoc<AppUser>(FirebaseCollections.USERS, id as string, [
-          {
-            idPropertyName: "profileId",
-            propertyName: "profile",
-            collectionName: FirebaseCollections.PROFILES
-          }
-        ]);
-        if (user) setUser(user as AppUser);
-        getUserItems(user as AppUser);
+        try {
+          const userFromDb = await fetchDoc<AppUser>(FirebaseCollections.USERS, id as string, [
+            {
+              idPropertyName: "profileId",
+              propertyName: "profile",
+              collectionName: FirebaseCollections.PROFILES
+            }
+          ]);
+          if (userFromDb) setUser(userFromDb as AppUser);
+          getUserItems(userFromDb as AppUser)
+        } catch (e: any) {
+          Alert.alert('Error', e.message);
+        } finally {
+          setLoading(false);
+        }
       } else if (!id) {
         getUserItems(currentUser as AppUser);
         setUser(currentUser);
       }
+      setLoading(false);
     })()
   }, [id]);
-  console.log({ userItems })
 
   useEffect(() => {
     dispatch(setCurrentScreenName('profile'));
   }, [user])
-  console.log(JSON.stringify({ user, currentUser }, null, 2));
-  if (!user || !currentUser) return <LoadingSpinner visible={true} />
+  if (!user || !currentUser || loading) return <LoadingSpinner visible={true} />
   return (
-    <ScrollScreen className='flex-1'>
+    <ScrollScreen className='w-full h-full'>
       <View className='bg-transparent flex items-center justify-center py-4 px-4 relative' >
         <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto' />
         <Image
@@ -130,12 +138,12 @@ export default function UserProfile() {
         </View>
         {currentUser.id === user.id &&
           <View className='flex flex-row items-center justify-center py-8 px-4 gap-4'>
-            <Link href="/edit-profile" asChild>
+            {/* <Link href="/edit-profile" asChild>
               <AppButton variant="outline" className='p-4 gap-4'>
                 <Text className='text-foreground text-xl'>edit profile</Text>
                 <FontAwesome5 name="user-edit" size={20} color={theme === 'dark' ? "white" : "#222"} />
               </AppButton>
-            </Link>
+            </Link> */}
             <ConfirmationModal
               title='Logout'
               description='Are you sure you want to logout?'
@@ -183,14 +191,19 @@ export default function UserProfile() {
         </View>
         {userItems.length > 0 &&
           <View className='items-center justify-center gap-2'>
-            <Text className='text-xl font-bold text-foreground'>Items ({user.items.length})</Text>
-            {userItems.slice(0, 3).map((item) => (
-              <ItemMinifiedCard
-                key={item.id}
-                item={item}
-
-              />
-            ))}
+            <Text className='text-3xl font-bold text-foreground'>Items ({userItems.length})</Text>
+            <FlatList
+              horizontal
+              scrollEnabled
+              keyExtractor={item => item.id || Math.random().toString()}
+              data={userItems.slice(0, 3)}
+              renderItem={({ item }) => (
+                <ItemMinifiedCard
+                  item={item}
+                />
+              )}
+              contentContainerClassName='gap-4 py-4'
+            />
             <Link href={`/`} asChild>
               <AppButton variant="link" size="sm">
                 <Text className='text-primary text-lg'>View all items</Text>

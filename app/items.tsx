@@ -64,6 +64,8 @@ const LostItemPage: React.FC = () => {
         inputClasses="border-gray-600"
       />
       <FlatList
+        refreshing={loading}
+        onRefresh={refetch}
         ListEmptyComponent={() => (
           <View style={styles.centered}>
             <Text className="text-foreground">No items found.</Text>

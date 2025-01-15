@@ -3,6 +3,7 @@ import { GeolocationCoordinates } from "../utils.types";
 
 export class ItemBuilder implements Item {
 	item: ItemDetails;
+	itemId: string;
 	delivered: boolean;
 	ownerId: string;
 	realOwnerId: string;
@@ -30,6 +31,7 @@ export class ItemBuilder implements Item {
 		this.location = "";
 		this.owner = {} as Profile;
 		this.realOwner = {} as Profile;
+		this.itemId = "";
 	}
 
 	static builder(): ItemBuilder {

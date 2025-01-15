@@ -1,4 +1,5 @@
 import { SubFormProps } from '@/app/declare-item/[option]';
+// import ExamplePlusCodeAdressImage from "@/assets/images/example-plus-code.jpg";
 import { AppButton } from '@/components/AppButton';
 import { Input } from '@/components/Input';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -9,7 +10,6 @@ import { Text, View } from 'react-native';
 export function LocationAndDateForm({ formData, onFormData, onValidationStateChange }: SubFormProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [error, setError] = useState<string>("");
-  const [coordinates, setCoordinates] = useState<{ latitude: number, longitude: number }>();
   const getCurrentLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
@@ -18,10 +18,6 @@ export function LocationAndDateForm({ formData, onFormData, onValidationStateCha
     }
 
     let location = await Location.getCurrentPositionAsync({});
-    setCoordinates({
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    });
     onFormData(
       'coordinates',
       {
@@ -33,6 +29,7 @@ export function LocationAndDateForm({ formData, onFormData, onValidationStateCha
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
     });
+
     if (geocode.length > 0) {
       const { formattedAddress, district } = geocode[0];
       onFormData('location', `${formattedAddress}, ${district}`);
@@ -50,35 +47,75 @@ export function LocationAndDateForm({ formData, onFormData, onValidationStateCha
   }
 
   useEffect(() => {
+    (async () => {
+      if (formData.location) {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.log('Permission to access location was denied');
+          return;
+        }
+        const result: Location.LocationGeocodedLocation[] = await Location.geocodeAsync(formData.location);
+        if (result.length === 0) return;
+        console.log(result[0])
+        onFormData("coordinates", {
+          latitude: result[0].latitude,
+          longitude: result[0].longitude,
+        })
+      }
+    })()
     validateField();
   }, [formData.location]);
 
   return <View className="space-y-4">
     <View>
       <Text className="mb-2 text-xl text-foreground font-bold">Location</Text>
-      <View className="flex-row items-start">
+      <Text className='text-muted-foreground text-sm my-2'>please go to your favourite map provider and copy your location plus code address: example (2X9C+3W7, Fes, Morocco)
+      </Text>
+      {/* <Image
+
+        className='w-full'
+        source={{
+          uri: ExamplePlusCodeAdressImage
+        }}
+      /> */}
+      <View className="flex-row items-center mb-2 ">
+        <Input
+          value={formData.coordinates ? formData?.coordinates?.latitude?.toString() : ''}
+          placeholder="Latitude"
+          keyboardType="numeric"
+          className="flex-1 border-none rounded-md mr-2 text-foreground opacity-50"
+          editable={false}
+        />
+        <Input
+          value={formData?.coordinates ? formData?.coordinates?.longitude?.toString() : ''}
+          placeholder="Longitude"
+          keyboardType="numeric"
+          className="flex-1 border-none rounded-md mr-2 text-foreground opacity-50"
+          editable={false}
+        />
+
+      </View>
+      <View className="flex-row items-center ">
         <Input
           error={error}
           value={formData.location}
           onChangeText={(value) => onFormData('location', value)}
           placeholderTextColor="gray"
           placeholder="Where was it lost/found?"
-
           style={{ color: "#ff9100", fontWeight: "bold" }}
           className="flex-1 border-none rounded-md mr-2 text-foreground"
         />
         <AppButton
-          size="sm"
           onPress={getCurrentLocation}
-          className="h-12 py-2 bg-indigo-600 rounded-md"
+          className="bg-indigo-600 rounded-lg"
         >
           <MaterialIcons name="my-location" size={28} color="white" />
         </AppButton>
       </View>
-      {coordinates && (
+      {formData.coordinates && (
         <Text className="mt-2 text-sm text-gray-600">
-          Lat: {coordinates.latitude.toFixed(6)}, Long:{' '}
-          {coordinates.longitude.toFixed(6)}
+          Lat: {formData.coordinates.latitude?.toFixed(6)}, Long:{' '}
+          {formData.coordinates.longitude?.toFixed(6)}
         </Text>
       )}
     </View>

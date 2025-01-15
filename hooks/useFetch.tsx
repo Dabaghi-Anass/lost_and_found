@@ -10,6 +10,7 @@ export function useFetchAll<T>(collection: FirebaseCollections, recursivefetcher
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const data = await fetchAllDocs<T>(collection, recursivefetchers, convertersMap);
       setData(data);
     } catch (error: any) {
