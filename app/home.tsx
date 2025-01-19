@@ -14,7 +14,7 @@ export default function App() {
   const itemsFromStore = useSelector((state: any) => state.items);
   const { data: items, loading, refetch } = useFetchAll<Item>({
     collection: FirebaseCollections.LOST_ITEMS,
-    cachedData: [...itemsFromStore.values()],
+    cachedData: [...Object.values(itemsFromStore)],
     cache: (data) => {
       dispatch(setItems(data))
     },

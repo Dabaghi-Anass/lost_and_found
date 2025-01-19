@@ -13,6 +13,7 @@ import { Calendar, MapPin, Package2, Share2, Tag } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import {
   Dimensions,
+  FlatList,
   Image,
   Linking,
   Platform,
@@ -31,12 +32,12 @@ export default function ItemDetailsScreen() {
   const router = useRouter()
   const theme = useColorScheme();
   const currentUser = useSelector((state: any) => state.user);
-  const itemsMap: Map<string, Item> = useSelector((state: any) => state.items);
+  const itemsMap: Record<string, Item> = useSelector((state: any) => state.items);
   const dispatch = useDispatch();
-  const { data: item, error, loading: itemLoading } = useFetch<Item>({
+  const { data: item, error, loading: itemLoading, refetch } = useFetch<Item>({
     id: (itemId || "__") as string,
     collection: FirebaseCollections.LOST_ITEMS,
-    cachedData: itemsMap.get((itemId || "__") as string),
+    cachedData: itemsMap[itemId.toString()],
     cache: (data) => {
       if (itemId) {
         dispatch(saveItem(data))
@@ -106,174 +107,180 @@ export default function ItemDetailsScreen() {
   }, [itemId])
   if (!item?.item || loading) return <LoadingSpinner visible={!item || loading} />
   if (error) return <Text className='text-3xl font-bold text-red-600'>{error}</Text>
-  return (
-    <ScrollView className='bg-background h-full'>
-      <View style={[styles.imageContainer, {
-        backgroundColor: item.item.color
-      }]}>
-        <Image
-          source={{ uri: item.item.images[selectedImage] }}
-          style={styles.mainImage}
-          className={`w-full h-[${width * 0.75}px]  web:h-[50vh] web:w-full web:max-w-[500px] self-center `}
-        />
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.thumbnailContainer}
-        >
-          {item.item.images.map((image, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => setSelectedImage(index)}
-              style={[
-                styles.thumbnailButton,
-                selectedImage === index && styles.thumbnailButtonActive,
-              ]}
-              className='bg-background'
-            >
-              <Image
-                source={{ uri: image }}
-                style={styles.thumbnailImage}
-              />
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-
-      <View style={styles.detailsContainer}>
-        <View style={styles.header}>
-          <Text className='text-foreground' style={styles.title}>{item.item.title}</Text>
-          <View style={styles.badgeContainer}>
-            <View style={[styles.badge, {
-              backgroundColor: theme === "dark" ? "#2c2536" : "#f4f4f5",
-            }]}>
-              <Tag width={16} height={16} color="#666" />
-              <Text className='text-foreground' style={styles.badgeText}>{item.item.category}</Text>
-            </View>
-            <View style={[styles.badge, {
-              backgroundColor: theme === "dark" ? "#2c2536" : "#f4f4f5",
-            }]}>
-              <Package2 width={16} height={16} color="#666" />
-              <Text className='text-foreground' style={styles.badgeText}>
-                {item.delivered ? 'Delivered' : 'Not Delivered'}
-              </Text>
-            </View>
-            <View style={styles.typeBadge}>
-              <Text className='text-foreground' style={styles.typeText}>{item.type.toUpperCase()}</Text>
-            </View>
-            <View style={[styles.badge, {
-              backgroundColor: item.item.color,
-              width: 30,
-              height: 30,
-            }]}
-              className='border-2 border-foreground'>
-            </View>
-          </View>
+  return (<FlatList
+    refreshing={loading}
+    onRefresh={refetch}
+    keyExtractor={(item) => item.id || '__'}
+    data={[item]}
+    renderItem={({ item }) => (
+      <View className='bg-background h-full'>
+        <View style={[styles.imageContainer, {
+          backgroundColor: item.item.color
+        }]}>
+          <Image
+            source={{ uri: item.item.images[selectedImage] }}
+            style={styles.mainImage}
+            className={`w-full h-[${width * 0.75}px]  web:h-[50vh] web:w-full web:max-w-[500px] self-center `}
+          />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.thumbnailContainer}
+          >
+            {item.item.images.map((image, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => setSelectedImage(index)}
+                style={[
+                  styles.thumbnailButton,
+                  selectedImage === index && styles.thumbnailButtonActive,
+                ]}
+                className='bg-background'
+              >
+                <Image
+                  source={{ uri: image }}
+                  style={styles.thumbnailImage}
+                />
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
 
-        {item.owner &&
-          isOwnItem ?
-          <View className='flex-row items-center gap-4'>
-            <AppButton variant="success" onPress={() => {
-              router.push(`/item-delivred/${item?.id}` as any)
-            }}>
-              <Text className='text-white text-xl'>{
-                item.delivered ? 'update receiver' : 'Mark as delivered '
-              }</Text>
-              <Feather name="edit" size={20} color="white" />
-            </AppButton>
-            <Link href={`/edit-item/${item.id}` as any} asChild>
-              <AppButton variant="primary">
-                <Text className='text-white text-xl'>Edit Item</Text>
+        <View style={styles.detailsContainer}>
+          <View style={styles.header}>
+            <Text className='text-foreground' style={styles.title}>{item.item.title}</Text>
+            <View style={styles.badgeContainer}>
+              <View style={[styles.badge, {
+                backgroundColor: theme === "dark" ? "#2c2536" : "#f4f4f5",
+              }]}>
+                <Tag width={16} height={16} color="#666" />
+                <Text className='text-foreground' style={styles.badgeText}>{item.item.category}</Text>
+              </View>
+              <View style={[styles.badge, {
+                backgroundColor: theme === "dark" ? "#2c2536" : "#f4f4f5",
+              }]}>
+                <Package2 width={16} height={16} color="#666" />
+                <Text className='text-foreground' style={styles.badgeText}>
+                  {item.delivered ? 'Delivered' : 'Not Delivered'}
+                </Text>
+              </View>
+              <View style={styles.typeBadge}>
+                <Text className='text-foreground' style={styles.typeText}>{item.type.toUpperCase()}</Text>
+              </View>
+              <View style={[styles.badge, {
+                backgroundColor: item.item.color,
+                width: 30,
+                height: 30,
+              }]}
+                className='border-2 border-foreground'>
+              </View>
+            </View>
+          </View>
+
+          {item.owner &&
+            isOwnItem ?
+            <View className='flex-row items-center gap-4'>
+              <AppButton variant="success" onPress={() => {
+                router.push(`/item-delivred/${item?.id}` as any)
+              }}>
+                <Text className='text-white text-xl'>{
+                  item.delivered ? 'update receiver' : 'Mark as delivered '
+                }</Text>
                 <Feather name="edit" size={20} color="white" />
               </AppButton>
-            </Link>
-          </View>
-          :
-          <TouchableOpacity onPress={() => {
-            router.push(`/profile/${item.ownerId}`)
-          }}>
-            <View>
-              <Text className='text-foreground text-xl my-4'>founder</Text>
-              <View className='flex-row items-center gap-4' >
-                <Image
-                  source={{ uri: item.owner.imageUri || "" }}
-                  style={{ width: 50, height: 50, borderRadius: 100, borderColor: "white", borderWidth: 2 }}
-                />
-                <Text className='text-xl font-secondary text-foreground'>{item.owner?.firstName + " " + item.owner?.lastName}</Text>
+              <Link href={`/edit-item/${item.id}` as any} asChild>
+                <AppButton variant="primary">
+                  <Text className='text-white text-xl'>Edit Item</Text>
+                  <Feather name="edit" size={20} color="white" />
+                </AppButton>
+              </Link>
+            </View>
+            :
+            <TouchableOpacity onPress={() => {
+              router.push(`/profile/${item.ownerId}`)
+            }}>
+              <View>
+                <Text className='text-foreground text-xl my-4'>founder</Text>
+                <View className='flex-row items-center gap-4' >
+                  <Image
+                    source={{ uri: item.owner.imageUri || "" }}
+                    style={{ width: 50, height: 50, borderRadius: 100, borderColor: "white", borderWidth: 2 }}
+                  />
+                  <Text className='text-xl font-secondary text-foreground'>{item.owner?.firstName + " " + item.owner?.lastName}</Text>
+                </View>
               </View>
+            </TouchableOpacity>
+          }
+          <View style={styles.separator} />
+          {item.realOwner && Object.keys(item.realOwner).length > 0 &&
+            <TouchableOpacity onPress={() => {
+              router.push(`/profile/${item.realOwnerId}`)
+            }}>
+              <View>
+                <Text className='text-foreground text-xl my-4'>real owner</Text>
+                <View className='flex-row items-center gap-4' >
+                  <Image
+                    source={{ uri: item.realOwner.imageUri || "" }}
+                    style={{ width: 50, height: 50, borderRadius: 100, borderColor: "white", borderWidth: 2 }}
+                  />
+                  <Text className='text-xl font-secondary text-foreground'>{item.realOwner?.firstName + " " + item.realOwner?.lastName}</Text>
+                </View>
+              </View>
+              <View style={styles.separator} />
+            </TouchableOpacity>
+          }
+
+          {/* Location */}
+          <TouchableOpacity style={styles.infoRow} onPress={openMap}>
+            <MapPin width={20} height={20} color={theme === "dark" ? "white" : "#666"} />
+            <View style={styles.infoContent}>
+              <Text className='text-foreground' style={styles.infoLabel}>Location</Text>
+              <Text className='text-foreground text-sm'>{item.location}</Text>
+              <Text className='text-foreground text-sm'>
+                {item.geoCoordinates?.latitude}, {item.geoCoordinates?.longitude}
+              </Text>
             </View>
           </TouchableOpacity>
-        }
-        <View style={styles.separator} />
-        {item.realOwner && Object.keys(item.realOwner).length > 0 &&
-          <TouchableOpacity onPress={() => {
-            router.push(`/profile/${item.realOwnerId}`)
-          }}>
-            <View>
-              <Text className='text-foreground text-xl my-4'>real owner</Text>
-              <View className='flex-row items-center gap-4' >
-                <Image
-                  source={{ uri: item.realOwner.imageUri || "" }}
-                  style={{ width: 50, height: 50, borderRadius: 100, borderColor: "white", borderWidth: 2 }}
-                />
-                <Text className='text-xl font-secondary text-foreground'>{item.realOwner?.firstName + " " + item.realOwner?.lastName}</Text>
-              </View>
+
+          {/* Date */}
+          <View style={styles.infoRow}>
+            <Calendar width={20} height={20} color={theme === "dark" ? "white" : "#666"} />
+            <View style={styles.infoContent}>
+              <Text className='text-foreground' style={styles.infoLabel}>Date When {
+                item.type
+              }</Text>
+              <Text className='text-foreground text-sm'>{formatDate(new Date(item.found_lost_at).toISOString())}</Text>
             </View>
-            <View style={styles.separator} />
-          </TouchableOpacity>
-        }
-
-        {/* Location */}
-        <TouchableOpacity style={styles.infoRow} onPress={openMap}>
-          <MapPin width={20} height={20} color={theme === "dark" ? "white" : "#666"} />
-          <View style={styles.infoContent}>
-            <Text className='text-foreground' style={styles.infoLabel}>Location</Text>
-            <Text className='text-foreground text-sm'>{item.location}</Text>
-            <Text className='text-foreground text-sm'>
-              {item.geoCoordinates?.latitude}, {item.geoCoordinates?.longitude}
-            </Text>
           </View>
-        </TouchableOpacity>
 
-        {/* Date */}
-        <View style={styles.infoRow}>
-          <Calendar width={20} height={20} color={theme === "dark" ? "white" : "#666"} />
-          <View style={styles.infoContent}>
-            <Text className='text-foreground' style={styles.infoLabel}>Date When {
-              item.type
-            }</Text>
-            <Text className='text-foreground text-sm'>{formatDate(new Date(item.found_lost_at).toISOString())}</Text>
+          {/* Description */}
+          {item.item.description && (
+            <View style={styles.description}>
+              <Text className='text-foreground' style={styles.infoLabel}>Description</Text>
+              <Text className='text-foreground text-lg'>{item.item.description}</Text>
+            </View>
+          )}
+
+          {/* Action Buttons */}
+          <View style={styles.actionButtons}>
+            <TouchableOpacity
+              onPress={() => {
+                Linking.openURL(`tel:${item.owner?.phoneNumber}`)
+              }}
+              style={[styles.primaryButton, {
+                backgroundColor: "green"
+              }]}>
+              <Feather name="phone-call" size={20} color="#fff" />
+              <Text className='text-foreground' style={styles.primaryButtonText}>Call Owner</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.secondaryButton} onPress={handleShare}>
+              <Share2 width={20} height={20} color="#000" />
+              <Text style={styles.secondaryButtonText}>Share</Text>
+            </TouchableOpacity>
           </View>
         </View>
-
-        {/* Description */}
-        {item.item.description && (
-          <View style={styles.description}>
-            <Text className='text-foreground' style={styles.infoLabel}>Description</Text>
-            <Text className='text-foreground text-lg'>{item.item.description}</Text>
-          </View>
-        )}
-
-        {/* Action Buttons */}
-        <View style={styles.actionButtons}>
-          <TouchableOpacity
-            onPress={() => {
-              Linking.openURL(`tel:${item.owner?.phoneNumber}`)
-            }}
-            style={[styles.primaryButton, {
-              backgroundColor: "green"
-            }]}>
-            <Feather name="phone-call" size={20} color="#fff" />
-            <Text className='text-foreground' style={styles.primaryButtonText}>Call Owner</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryButton} onPress={handleShare}>
-            <Share2 width={20} height={20} color="#000" />
-            <Text style={styles.secondaryButtonText}>Share</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </ScrollView>
+      </View>)
+    } />
   );
 }
 

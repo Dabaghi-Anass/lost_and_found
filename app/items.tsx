@@ -23,11 +23,10 @@ const LostItemPage: React.FC = () => {
   const dispatch = useDispatch()
   const theme = useColorScheme();
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const itemsFromStore: Map<string, Item> = useSelector((state: any) => state.items);
-  console.log(itemsFromStore)
+  const itemsFromStore: Record<string, Item> = useSelector((state: any) => state.items);
   const { data, error, loading, refetch } = useFetchAll<Item>({
     collection: FirebaseCollections.LOST_ITEMS,
-    cachedData: [...itemsFromStore.values()],
+    cachedData: [...Object.values(itemsFromStore)],
     cache: (data) => {
       dispatch(setItems(data))
     },

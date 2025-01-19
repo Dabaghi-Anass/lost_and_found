@@ -12,7 +12,7 @@ import { ZodIssue } from 'zod';
 
 export function ItemDetailsForm({ formData, onFormData, onValidationStateChange }: SubFormProps) {
   const colorTheme = useColorScheme();
-  const [errors, setErrors] = useState<Map<string, string>>(new Map());
+  const [errors, setErrors] = useState<Record<string, string>>(new Map());
   const validateFormData = () => {
     try {
       setErrors(new Map());
@@ -20,7 +20,7 @@ export function ItemDetailsForm({ formData, onFormData, onValidationStateChange 
       onValidationStateChange!(true);
     } catch (e: any) {
       onValidationStateChange!(false);
-      const errorsMap: Map<string, string> = new Map();
+      const errorsMap: Record<string, string> = new Map();
       e.errors.forEach((error: ZodIssue) => {
         errorsMap.set(`${error.path[0]}`, `${error.path[0]} ${error.message}`);
         console.log(error);

@@ -40,13 +40,13 @@ export default function EditItemScreen() {
   const theme = useColorScheme();
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false);
-  const itemsFromStoreMap: Map<string, Item> = useSelector((state: any) => state.items);
+  const itemsFromStoreMap: Record<string, Item> = useSelector((state: any) => state.items);
   const { data: item, error, loading: itemLoading, refetch } = useFetch<ItemDetails>({
     id: itemId as string,
     collection: FirebaseCollections.ITEMS,
-    cachedData: itemsFromStoreMap.get(itemId as string)?.item,
+    cachedData: itemsFromStoreMap[itemId as string]?.item,
     cache: (data) => {
-      const itemToSave = itemsFromStoreMap.get(itemId as string);
+      const itemToSave = itemsFromStoreMap[(itemId as string)];
       if (itemToSave) {
         itemToSave.item = data;
         dispatch(saveItem(itemToSave))
@@ -74,7 +74,7 @@ export default function EditItemScreen() {
         .setColor(formData.color as string)
         .build();
       await updateItem(itemId as string, newDetails);
-      const itemToSave = itemsFromStoreMap.get(itemId as string);
+      const itemToSave = itemsFromStoreMap[itemId as string];
       if (itemToSave) {
         newDetails.id = itemToSave.item.id;
         itemToSave.item = newDetails;

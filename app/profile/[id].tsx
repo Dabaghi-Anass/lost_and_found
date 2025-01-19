@@ -25,7 +25,7 @@ export default function UserProfile() {
   const dispatch = useDispatch();
   const [userItems, setUserItems] = useState<Item[]>([]);
   const [user, setUser] = useState<AppUser | null>(null);
-  const usersMap = useSelector((state: any) => state.users);
+  const usersMap: Record<string, AppUser> = useSelector((state: any) => state.users);
   const [loading, setLoading] = useState<boolean>(false);
   const currentUser = useSelector((state: any) => state.user);
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
@@ -82,9 +82,9 @@ export default function UserProfile() {
       setUser(null);
       if (id) {
         try {
-          if (usersMap.has(id as string)) {
-            setUser(usersMap.get(id as string) as AppUser);
-            getUserItems(usersMap.get(id as string) as AppUser);
+          if (usersMap[id as string]) {
+            setUser(usersMap[id as string] as AppUser);
+            getUserItems(usersMap[id as string] as AppUser);
             return
           }
           const userFromDb = await fetchDoc<AppUser>(FirebaseCollections.USERS, id as string, [

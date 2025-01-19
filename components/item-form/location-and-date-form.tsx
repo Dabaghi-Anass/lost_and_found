@@ -1,5 +1,4 @@
 import { SubFormProps } from '@/app/declare-item/[option]';
-// import ExamplePlusCodeAdressImage from "@/assets/images/example-plus-code.jpg";
 import { AppButton } from '@/components/AppButton';
 import { Input } from '@/components/Input';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -73,13 +72,7 @@ export function LocationAndDateForm({ formData, onFormData, onValidationStateCha
       <Text className="mb-2 text-xl text-foreground font-bold">Location</Text>
       <Text className='text-muted-foreground text-sm my-2'>please go to your favourite map provider and copy your location plus code address: example (2X9C+3W7, Fes, Morocco)
       </Text>
-      {/* <Image
 
-        className='w-full'
-        source={{
-          uri: ExamplePlusCodeAdressImage
-        }}
-      /> */}
       <View className="flex-row items-center mb-2 ">
         <Input
           value={formData.coordinates ? formData?.coordinates?.latitude?.toString() : ''}

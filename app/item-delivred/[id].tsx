@@ -23,11 +23,11 @@ export default function RealOwnerSearchScreen() {
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const theme = useColorScheme();
   const dispatch = useDispatch();
-  const itemMap: Map<string, Item> = useSelector((state: any) => state.items);
+  const itemMap: Record<string, Item> = useSelector((state: any) => state.items);
   const { data: item, loading: itemLoading } = useFetch<Item>({
     collection: FirebaseCollections.LOST_ITEMS,
-    id: id as string,
-    cachedData: itemMap.get(id as string),
+    id: id.toString(),
+    cachedData: itemMap[id.toString()],
     cache: (data) => {
       dispatch(saveItem(data))
     },
