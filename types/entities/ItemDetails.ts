@@ -6,6 +6,7 @@ export class ItemDetailsBuilder implements ItemDetails {
 	color?: string | undefined;
 	category: string;
 	images: string[];
+	id?: string | undefined;
 
 	constructor(
 		title: string,

@@ -11,6 +11,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { FirebaseCollections } from '@/lib/constants';
 import { setCurrentUser } from '@/redux/global/current-user';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
+import { saveUser } from '@/redux/global/users';
 import { AppUser, Item } from '@/types/entities.types';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { Link, router, useLocalSearchParams } from 'expo-router';
@@ -24,6 +25,7 @@ export default function UserProfile() {
   const dispatch = useDispatch();
   const [userItems, setUserItems] = useState<Item[]>([]);
   const [user, setUser] = useState<AppUser | null>(null);
+  const usersMap = useSelector((state: any) => state.users);
   const [loading, setLoading] = useState<boolean>(false);
   const currentUser = useSelector((state: any) => state.user);
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
@@ -56,6 +58,7 @@ export default function UserProfile() {
 
   async function getUserItems(user: AppUser) {
     if (user?.items && user?.items?.length === 0) return;
+
     const items = await fetchItemsOfUser(user?.id, [{
       collectionName: FirebaseCollections.ITEMS,
       idPropertyName: "item",
@@ -79,6 +82,11 @@ export default function UserProfile() {
       setUser(null);
       if (id) {
         try {
+          if (usersMap.has(id as string)) {
+            setUser(usersMap.get(id as string) as AppUser);
+            getUserItems(usersMap.get(id as string) as AppUser);
+            return
+          }
           const userFromDb = await fetchDoc<AppUser>(FirebaseCollections.USERS, id as string, [
             {
               idPropertyName: "profileId",
@@ -86,8 +94,11 @@ export default function UserProfile() {
               collectionName: FirebaseCollections.PROFILES
             }
           ]);
-          if (userFromDb) setUser(userFromDb as AppUser);
-          getUserItems(userFromDb as AppUser)
+          if (userFromDb) {
+            setUser(userFromDb as AppUser);
+            dispatch(saveUser(userFromDb as AppUser));
+            getUserItems(userFromDb as AppUser)
+          }
         } catch (e: any) {
           Alert.alert('Error', e.message);
         } finally {
@@ -110,13 +121,13 @@ export default function UserProfile() {
       <View className='bg-transparent flex items-center justify-center py-4 px-4 relative' >
         <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto' />
         <Image
-          source={{ uri: user.profile?.imageUri || 'https://via.placeholder.com/150' }}
+          source={{ uri: user?.profile?.imageUri || 'https://via.placeholder.com/150' }}
           className='w-32 h-32 rounded-full border-4 border-white'
         />
       </View>
       <View className='bg-background min-h-full rounded-t-3xl p-4'>
         <View className='flex-row w-min items-center justify-between'>
-          <Text className='text-foreground text-4xl font-bold font-secondary capitalize max-w-sm web:w-[300px] text-center'>{user.profile?.firstName} {user.profile?.lastName}</Text>
+          <Text className='text-foreground text-4xl font-bold font-secondary capitalize max-w-sm web:w-[300px] text-center'>{user?.profile?.firstName} {user?.profile?.lastName}</Text>
           <View className='p-2 gap-4 flex-row items-center justify-center'>
             <Badge variant="secondary">
               <Text className='text-secondary-foreground capitalize'>{user.role}</Text>
@@ -167,7 +178,7 @@ export default function UserProfile() {
           <View className='items-start justify-center gap-4'>
             <View className='flex-row items-center justify-center gap-4'>
               <Feather name="phone" size={20} color={theme === "dark" ? "white" : "black"} />
-              <Text className="text-foreground text-xl">{user.profile?.phoneNumber}</Text>
+              <Text className="text-foreground text-xl">{user?.profile?.phoneNumber}</Text>
             </View>
             <View className='flex-row items-center justify-center gap-4'>
               <Feather name="mail" size={20} color={theme === "dark" ? "white" : "black"} />
@@ -178,11 +189,11 @@ export default function UserProfile() {
         <View className='flex-row items-center gap-4 p-4'>
           <AppButton
             onPress={() => {
-              Linking.openURL(`tel:${user.profile?.phoneNumber}`)
+              Linking.openURL(`tel:${user?.profile?.phoneNumber}`)
             }}
           >
             <Feather name="phone-call" size={20} color="#333" />
-            <Text className='text-accent-foreground text-xl font-bold'>Call {user.profile?.firstName}</Text>
+            <Text className='text-accent-foreground text-xl font-bold'>Call {user?.profile?.firstName}</Text>
           </AppButton>
           <AppButton variant="primary" onPress={handleShareProfile}>
             <Share2 size={20} color="white" />

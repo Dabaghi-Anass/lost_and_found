@@ -3,32 +3,41 @@ import SuccessStoryCard from '@/components/success-story-card';
 import { useFetchAll } from '@/hooks/useFetch';
 import { FirebaseCollections } from '@/lib/constants';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
+import { setItems } from '@/redux/global/items';
 import { Item } from '@/types/entities.types';
 
 import React, { useEffect } from 'react';
 import { FlatList, Linking, StyleSheet, Text } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 export default function App() {
   const dispatch = useDispatch();
-  const { data: items, loading, refetch } = useFetchAll<Item>(FirebaseCollections.LOST_ITEMS, [{
-    collectionName: FirebaseCollections.ITEMS,
-    idPropertyName: "item",
-    propertyName: "item"
-  },
-  {
-    collectionName: FirebaseCollections.PROFILES,
-    idPropertyName: "ownerId",
-    propertyName: "owner"
-  },
-  {
-    collectionName: FirebaseCollections.PROFILES,
-    idPropertyName: "realOwnerId",
-    propertyName: "realOwner"
-  },
-  ],
+  const itemsFromStore = useSelector((state: any) => state.items);
+  const { data: items, loading, refetch } = useFetchAll<Item>({
+    collection: FirebaseCollections.LOST_ITEMS,
+    cachedData: [...itemsFromStore.values()],
+    cache: (data) => {
+      dispatch(setItems(data))
+    },
+    recursivefetchers: [{
+      collectionName: FirebaseCollections.ITEMS,
+      idPropertyName: "item",
+      propertyName: "item"
+    },
     {
+      collectionName: FirebaseCollections.PROFILES,
+      idPropertyName: "ownerId",
+      propertyName: "owner"
+    },
+    {
+      collectionName: FirebaseCollections.PROFILES,
+      idPropertyName: "realOwnerId",
+      propertyName: "realOwner"
+    },
+    ],
+    convertersMap: {
       found_lost_at: (value: any) => value.seconds * 1000,
-    });
+    }
+  });
   const data = items.filter((item) => item.delivered);
   useEffect(() => {
     dispatch(setCurrentScreenName('home'));

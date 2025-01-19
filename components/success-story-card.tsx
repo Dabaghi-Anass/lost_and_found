@@ -21,9 +21,7 @@ export default function SuccessStoryCard({ item }: Props) {
             <Text style={{ color: '#fff', fontSize: 20 }}>{item?.owner?.firstName}</Text>
           </AvatarFallback>
         </Avatar>
-        <View>
-          <Text className='text-foreground text-xl'>{item.owner.firstName} delivered {item.item.title} to {item.realOwner.firstName}</Text>
-        </View>
+        <Text className='text-foreground text-xl max-w-[70%]' lineBreakMode='middle' numberOfLines={1}>{item.owner.firstName} delivered {item.item.title} to {item.realOwner.firstName}</Text>
         <Avatar alt="hello">
           <AvatarImage source={{
             uri: item?.realOwner?.imageUri || ''

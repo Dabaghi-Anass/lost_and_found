@@ -6,6 +6,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { useFetchAll } from "@/hooks/useFetch";
 import { FirebaseCollections } from "@/lib/constants";
 import { setCurrentScreenName } from "@/redux/global/currentScreenName";
+import { setItems } from "@/redux/global/items";
 import { Item } from "@/types/entities.types";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
@@ -15,29 +16,37 @@ import {
   Text,
   View
 } from "react-native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const LostItemPage: React.FC = () => {
   const router = useRouter()
   const dispatch = useDispatch()
   const theme = useColorScheme();
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const { data, error, loading, refetch } = useFetchAll<Item>(FirebaseCollections.LOST_ITEMS, [
-    {
-      collectionName: FirebaseCollections.ITEMS,
-      idPropertyName: "item",
-      propertyName: "item"
+  const itemsFromStore: Map<string, Item> = useSelector((state: any) => state.items);
+  console.log(itemsFromStore)
+  const { data, error, loading, refetch } = useFetchAll<Item>({
+    collection: FirebaseCollections.LOST_ITEMS,
+    cachedData: [...itemsFromStore.values()],
+    cache: (data) => {
+      dispatch(setItems(data))
     },
-    {
-      collectionName: FirebaseCollections.PROFILES,
-      idPropertyName: "ownerId",
-      propertyName: "owner"
-    },
-  ]
-    , {
+    recursivefetchers: [
+      {
+        collectionName: FirebaseCollections.ITEMS,
+        idPropertyName: "item",
+        propertyName: "item"
+      },
+      {
+        collectionName: FirebaseCollections.PROFILES,
+        idPropertyName: "ownerId",
+        propertyName: "owner"
+      },
+    ],
+    convertersMap: {
       found_lost_at: (value: any) => value.seconds * 1000,
     }
-  );
+  });
   const items = useSearch(data, searchQuery);
   const changeScreenName = useCallback(() => {
     dispatch(setCurrentScreenName('lost items'));
@@ -65,6 +74,7 @@ const LostItemPage: React.FC = () => {
       />
       <FlatList
         refreshing={loading}
+
         onRefresh={refetch}
         ListEmptyComponent={() => (
           <View style={styles.centered}>

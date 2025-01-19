@@ -3,16 +3,25 @@ import { FirebaseCollections } from '@/lib/constants';
 import { RecursiveFetcher } from '@/types/utils.types';
 import { useEffect, useState } from 'react';
 
-export function useFetchAll<T>(collection: FirebaseCollections, recursivefetchers: RecursiveFetcher[] | undefined = undefined, convertersMap: Record<string, (data: any) => any> = {}) {
+type FetchProps = {
+  collection: FirebaseCollections;
+  recursivefetchers?: RecursiveFetcher[];
+  convertersMap?: Record<string, (data: any) => any>;
+  cache?: (data: any) => any;
+  cachedData?: any;
+  id?: string;
+}
+
+export function useFetchAll<T>({ collection, recursivefetchers = undefined, convertersMap = {}, cache = () => { }, cachedData = null }: FetchProps) {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
   const fetchData = async () => {
     try {
       setLoading(true);
       const data = await fetchAllDocs<T>(collection, recursivefetchers, convertersMap);
       setData(data);
+      cache(data);
     } catch (error: any) {
       setError(error.message);
     } finally {
@@ -20,11 +29,17 @@ export function useFetchAll<T>(collection: FirebaseCollections, recursivefetcher
     }
   };
   useEffect(() => {
-    fetchData();
+    if (cachedData?.length > 0) {
+      setData(cachedData);
+      setLoading(false);
+    } else {
+      fetchData();
+    }
   }, [collection]);
   return { data, loading, error, refetch: () => fetchData() };
 };
-export function useFetch<T>(collection: FirebaseCollections, id: string, recursivefetchers: RecursiveFetcher[] | undefined = undefined, convertersMap: Record<string, (data: any) => any> = {}) {
+
+export function useFetch<T>({ collection, id = "", recursivefetchers = undefined, convertersMap = {}, cache = () => { }, cachedData = null }: FetchProps) {
   const [data, setItem] = useState<T | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +49,7 @@ export function useFetch<T>(collection: FirebaseCollections, id: string, recursi
       setLoading(true);
       const data = await fetchDoc<T>(collection, id, recursivefetchers, convertersMap);
       setItem(data ?? null);
+      cache(data);
     } catch (error: any) {
       setError(error.message);
       setLoading(false);
@@ -42,7 +58,12 @@ export function useFetch<T>(collection: FirebaseCollections, id: string, recursi
     }
   };
   useEffect(() => {
-    fetchData();
+    if (cachedData) {
+      setItem(cachedData);
+      setLoading(false);
+    } else {
+      fetchData();
+    }
   }, [collection, id]);
   return { data, loading, error, refetch: () => fetchData() };
 };

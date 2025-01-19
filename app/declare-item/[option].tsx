@@ -7,6 +7,7 @@ import { LocationAndDateForm } from '@/components/item-form/location-and-date-fo
 import { ImagesUploadForm } from '@/components/item-form/upload-image-form';
 import ScrollScreen from '@/components/scroll-screen';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
+import { saveItem as saveItemAction } from '@/redux/global/items';
 import { OptionType } from '@/types/entities.types';
 import { ItemBuilder } from '@/types/entities/Item';
 import { ItemDetailsBuilder } from '@/types/entities/ItemDetails';
@@ -88,7 +89,8 @@ export default function DeclareItemScreen() {
         .setLocation(formData.location)
         .setGeoCoordinates(formData.coordinates)
         .build();
-      await saveItem(item);
+      const savedItem = await saveItem(item);
+      dispatch(saveItemAction(savedItem));
     } catch (error) {
       Alert.alert('Error', 'An error occurred while saving the item');
     }

@@ -8,7 +8,8 @@ import { firestore } from '@/database/fire_base';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFetch } from '@/hooks/useFetch';
 import { FirebaseCollections } from '@/lib/constants';
-import { ItemDetails } from '@/types/entities.types';
+import { saveItem } from '@/redux/global/items';
+import { Item, ItemDetails } from '@/types/entities.types';
 import { ItemDetailsBuilder } from '@/types/entities/ItemDetails';
 import { ItemDetailsSchema } from '@/zod-schemas/schemas';
 import { AntDesign } from '@expo/vector-icons';
@@ -17,6 +18,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import { ZodIssue } from 'zod';
 
 
@@ -36,11 +38,21 @@ export default function EditItemScreen() {
   const { itemId } = useLocalSearchParams();
   const router = useRouter();
   const theme = useColorScheme();
+  const dispatch = useDispatch()
   const [loading, setLoading] = useState(false);
-  const { data: item, loading: itemLoading, error } = useFetch<ItemDetails>(
-    FirebaseCollections.ITEMS,
-    itemId as string,
-  );
+  const itemsFromStoreMap: Map<string, Item> = useSelector((state: any) => state.items);
+  const { data: item, error, loading: itemLoading, refetch } = useFetch<ItemDetails>({
+    id: itemId as string,
+    collection: FirebaseCollections.ITEMS,
+    cachedData: itemsFromStoreMap.get(itemId as string)?.item,
+    cache: (data) => {
+      const itemToSave = itemsFromStoreMap.get(itemId as string);
+      if (itemToSave) {
+        itemToSave.item = data;
+        dispatch(saveItem(itemToSave))
+      }
+    },
+  });
 
   const [formData, setFormData] = useState<FormData>({
     title: item?.title,
@@ -62,6 +74,12 @@ export default function EditItemScreen() {
         .setColor(formData.color as string)
         .build();
       await updateItem(itemId as string, newDetails);
+      const itemToSave = itemsFromStoreMap.get(itemId as string);
+      if (itemToSave) {
+        newDetails.id = itemToSave.item.id;
+        itemToSave.item = newDetails;
+        dispatch(saveItem(itemToSave))
+      }
       Alert.alert('Success', 'Item updated successfully');
       router.back();
     } catch (error) {

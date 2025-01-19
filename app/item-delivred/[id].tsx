@@ -1,4 +1,4 @@
-import { makeItemDelivred } from '@/api/database';
+import { fetchDoc, makeItemDelivred } from '@/api/database';
 import { AppButton } from '@/components/AppButton';
 import { ConfirmationModal } from '@/components/confirmation-modal';
 import ItemMinifiedCard from '@/components/item-minified-card';
@@ -8,11 +8,13 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFetch } from '@/hooks/useFetch';
 import { useFirebaseSearch } from '@/hooks/useFirebaseSearch';
 import { FirebaseCollections } from '@/lib/constants';
+import { saveItem } from '@/redux/global/items';
 import { Item, Profile } from '@/types/entities.types';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function RealOwnerSearchScreen() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -20,16 +22,32 @@ export default function RealOwnerSearchScreen() {
   const [loading, setLoading] = useState(false);
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const theme = useColorScheme();
-  const { data: item, loading: itemLoading } = useFetch<Item>(FirebaseCollections.LOST_ITEMS, id as string, [{
-    collectionName: FirebaseCollections.ITEMS,
-    propertyName: 'item',
-    idPropertyName: 'item',
-  }]);
+  const dispatch = useDispatch();
+  const itemMap: Map<string, Item> = useSelector((state: any) => state.items);
+  const { data: item, loading: itemLoading } = useFetch<Item>({
+    collection: FirebaseCollections.LOST_ITEMS,
+    id: id as string,
+    cachedData: itemMap.get(id as string),
+    cache: (data) => {
+      dispatch(saveItem(data))
+    },
+    recursivefetchers: [{
+      collectionName: FirebaseCollections.ITEMS,
+      propertyName: 'item',
+      idPropertyName: 'item',
+    }]
+  });
   const { data: users, loading: usersLoading, error: usersError, refetch } = useFirebaseSearch<Profile>(FirebaseCollections.PROFILES, searchQuery, ['firstName', 'lastName', 'phoneNumber']);
   async function handleUpdateItemRealOwner(ownerId: string) {
     setLoading(true);
     try {
+      if (!id || !item) return;
       await makeItemDelivred(id as string, ownerId);
+      item.delivered = true;
+      item.realOwnerId = ownerId;
+      const realOwnerProfile = await fetchDoc<Profile>(FirebaseCollections.PROFILES, ownerId);
+      if (realOwnerProfile) item.realOwner = realOwnerProfile;
+      dispatch(saveItem(item))
       Alert.alert('Success', 'Item real owner updated successfully');
     } catch (error) {
       console.error('Error updating item real owner:', error);
@@ -83,7 +101,7 @@ export default function RealOwnerSearchScreen() {
           </Text>}
           contentContainerClassName='gap-4 py-2'
           renderItem={({ item: profile }) => {
-            return <View className='w-full my-2 flex-row bg-card elevation-sm p-4 items-center justify-between border border-muted rounded-md gap-4'>
+            return <View className='w-full flex-row bg-card elevation-sm p-4 items-center justify-between border border-muted rounded-md gap-4'>
               <Avatar style={{
                 width: 60,
                 height: 60,

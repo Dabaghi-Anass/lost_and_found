@@ -40,7 +40,7 @@ export default function NavBar() {
         <Pressable onPress={() => expoRouter.push(`/profile/${currentUser?.id}`)}>
           <Avatar alt="user avatar">
             <AvatarImage source={{
-              uri: currentUser.profile?.imageUri
+              uri: currentUser?.profile?.imageUri
             }} />
             <AvatarFallback className="text-foreground">
               <Text className="text-foreground">{userShortName}</Text>

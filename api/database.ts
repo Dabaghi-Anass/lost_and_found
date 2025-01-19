@@ -95,7 +95,7 @@ export async function saveUser(user: AppUser): Promise<AppUser> {
 				FirebaseCollections.USERS
 			);
 			const profileRef = await addDoc(profilesCollection, {
-				...(user.profile as Profile),
+				...(user?.profile as Profile),
 				id: doc(profilesCollection).id,
 			});
 			user.id = profileRef.id;
@@ -107,7 +107,7 @@ export async function saveUser(user: AppUser): Promise<AppUser> {
 			delete userToSave.profile;
 			await addDoc(usersCollection, userToSave);
 
-			userToSaveClone = { ...userToSave, profile: user.profile };
+			userToSaveClone = { ...userToSave, profile: user?.profile };
 		});
 		return Promise.resolve(userToSaveClone);
 	} catch (e: any) {
@@ -213,7 +213,7 @@ export async function getUserByAuthUserId(
 	const docs: any = [];
 	querySnapshot.forEach((doc) => docs.push(doc));
 	const user = docs[0].data();
-	user.profile = await fetchProfileById(user.profileId);
+	user.profile = await fetchProfileById(user?.profileId);
 	try {
 		user.items = await fetchItemsById(user.items);
 	} catch (e: any) {
@@ -591,4 +591,16 @@ export async function updateItem(
 		console.error(e);
 		return Promise.reject(e);
 	}
+}
+
+export async function getUserById(id: string) {
+	if (!id) return Promise.resolve(undefined);
+	const user = await fetchDoc<AppUser>(FirebaseCollections.USERS, id, [
+		{
+			collectionName: FirebaseCollections.PROFILES,
+			idPropertyName: "profileId",
+			propertyName: "profile",
+		},
+	]);
+	return user;
 }

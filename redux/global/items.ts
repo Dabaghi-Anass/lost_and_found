@@ -1,29 +1,35 @@
 import { Item } from "@/types/entities.types";
 import { createSlice } from "@reduxjs/toolkit";
+import { enableMapSet } from "immer";
+
+enableMapSet();
 const itemsReducer = createSlice({
 	name: "lost-items",
-	initialState: [] as Item[],
+	initialState: new Map() as Map<string, Item>,
 	reducers: {
 		setItems: (state, action) => {
-			return action.payload;
+			const itemsMap = new Map<string, Item>();
+			action.payload.forEach((item: Item) => {
+				if (!item.id) return;
+				itemsMap.set(item.id, item);
+			});
+			return itemsMap;
 		},
-		addItem: (state, action) => {
-			state.push(action.payload);
+		saveItem: (state, action) => {
+			const item = action.payload;
+			if (!item.id) return;
+			state.set(item.id, item);
 		},
 		removeItem: (state, action) => {
-			return state.filter((item) => item.id !== action.payload);
+			const id = action.payload;
+			state.delete(id);
 		},
-		updateItem: (state, action) => {
-			const index = state.findIndex(
-				(item) => item.id === action.payload.id
-			);
-			state[index] = action.payload;
-		},
-		clearItems: (state) => {
-			return [];
+		clearItems: () => {
+			return new Map();
 		},
 	},
 });
 
-export const { setItems } = itemsReducer.actions;
+export const { saveItem, setItems, removeItem, clearItems } =
+	itemsReducer.actions;
 export default itemsReducer.reducer;

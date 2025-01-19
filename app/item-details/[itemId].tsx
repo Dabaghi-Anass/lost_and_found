@@ -4,6 +4,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFetch } from '@/hooks/useFetch';
 import { FirebaseCollections } from '@/lib/constants';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
+import { saveItem } from '@/redux/global/items';
 import { Item } from '@/types/entities.types';
 import { Feather } from '@expo/vector-icons';
 import { format, parseISO } from 'date-fns';
@@ -27,30 +28,42 @@ export default function ItemDetailsScreen() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
   const { itemId } = useLocalSearchParams()
-  const { data: item, loading: itemLoading, error } = useFetch<Item>(FirebaseCollections.LOST_ITEMS, itemId as string, [
-    {
-      collectionName: FirebaseCollections.ITEMS,
-      propertyName: 'item',
-      idPropertyName: 'item',
-    },
-    {
-      collectionName: FirebaseCollections.PROFILES,
-      propertyName: 'owner',
-      idPropertyName: 'ownerId',
-    },
-    {
-      collectionName: FirebaseCollections.PROFILES,
-      propertyName: 'realOwner',
-      idPropertyName: 'realOwnerId',
-    },
-  ], {
-    found_lost_at: (value: any) => value.seconds * 1000,
-  });
   const router = useRouter()
   const theme = useColorScheme();
   const currentUser = useSelector((state: any) => state.user);
-  const isOwnItem = currentUser.id === item?.ownerId;
+  const itemsMap: Map<string, Item> = useSelector((state: any) => state.items);
   const dispatch = useDispatch();
+  const { data: item, error, loading: itemLoading } = useFetch<Item>({
+    id: (itemId || "__") as string,
+    collection: FirebaseCollections.LOST_ITEMS,
+    cachedData: itemsMap.get((itemId || "__") as string),
+    cache: (data) => {
+      if (itemId) {
+        dispatch(saveItem(data))
+      }
+    },
+    recursivefetchers: [
+      {
+        collectionName: FirebaseCollections.ITEMS,
+        propertyName: 'item',
+        idPropertyName: 'item',
+      },
+      {
+        collectionName: FirebaseCollections.PROFILES,
+        propertyName: 'owner',
+        idPropertyName: 'ownerId',
+      },
+      {
+        collectionName: FirebaseCollections.PROFILES,
+        propertyName: 'realOwner',
+        idPropertyName: 'realOwnerId',
+      },
+    ],
+    convertersMap: {
+      found_lost_at: (value: any) => value.seconds * 1000,
+    }
+  });
+  const isOwnItem = currentUser.id === item?.ownerId;
   const formatDate = (dateString: string) => {
     try {
       return format(parseISO(dateString), 'PPp');
@@ -193,7 +206,7 @@ export default function ItemDetailsScreen() {
           </TouchableOpacity>
         }
         <View style={styles.separator} />
-        {Object.keys(item.realOwner).length > 0 &&
+        {item.realOwner && Object.keys(item.realOwner).length > 0 &&
           <TouchableOpacity onPress={() => {
             router.push(`/profile/${item.realOwnerId}`)
           }}>
