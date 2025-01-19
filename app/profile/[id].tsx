@@ -13,7 +13,7 @@ import { setCurrentUser } from '@/redux/global/current-user';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { saveUser } from '@/redux/global/users';
 import { AppUser, Item } from '@/types/entities.types';
-import { AntDesign, Feather } from '@expo/vector-icons';
+import { AntDesign, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { Link, router, useLocalSearchParams } from 'expo-router';
 import { Share2 } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
@@ -138,10 +138,6 @@ export default function UserProfile() {
           </View>
         </View>
         <View className='flex-row items-center justify-center gap-4 mt-4'>
-          <AppButton variant="primary" onPress={handleMessage} size="sm">
-            <Feather name="message-square" size={20} color="white" />
-            <Text className='text-lg text-primary-foreground'>Message</Text>
-          </AppButton>
           <AppButton size="sm" onPress={handleEmail}>
             <Feather name="mail" size={20} color="#111" />
             <Text className='text-lg'>Email</Text>
@@ -149,12 +145,12 @@ export default function UserProfile() {
         </View>
         {currentUser.id === user.id &&
           <View className='flex flex-row items-center justify-center py-8 px-4 gap-4'>
-            {/* <Link href="/edit-profile" asChild>
+            <Link href="/edit-profile" asChild>
               <AppButton variant="outline" className='p-4 gap-4'>
                 <Text className='text-foreground text-xl'>edit profile</Text>
                 <FontAwesome5 name="user-edit" size={20} color={theme === 'dark' ? "white" : "#222"} />
               </AppButton>
-            </Link> */}
+            </Link>
             <ConfirmationModal
               title='Logout'
               description='Are you sure you want to logout?'
