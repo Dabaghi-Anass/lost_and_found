@@ -29,7 +29,7 @@ export default function RealOwnerSearchScreen() {
     id: id.toString(),
     cachedData: itemMap[id.toString()],
     cache: (data) => {
-      dispatch(saveItem(data))
+      dispatch(saveItem(data as any))
     },
     recursivefetchers: [{
       collectionName: FirebaseCollections.ITEMS,
@@ -47,7 +47,7 @@ export default function RealOwnerSearchScreen() {
       item.realOwnerId = ownerId;
       const realOwnerProfile = await fetchDoc<Profile>(FirebaseCollections.PROFILES, ownerId);
       if (realOwnerProfile) item.realOwner = realOwnerProfile;
-      dispatch(saveItem(item))
+      dispatch(saveItem(item as any))
       Alert.alert('Success', 'Item real owner updated successfully');
     } catch (error) {
       console.error('Error updating item real owner:', error);

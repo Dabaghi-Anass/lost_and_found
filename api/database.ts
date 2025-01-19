@@ -6,7 +6,10 @@ import { ImagePickerAsset } from "expo-image-picker";
 import {
 	addDoc,
 	collection,
+	deleteDoc,
 	doc,
+	DocumentData,
+	DocumentReference,
 	getDoc,
 	getDocs,
 	query,
@@ -603,4 +606,67 @@ export async function getUserById(id: string) {
 		},
 	]);
 	return user;
+}
+
+export async function deleteDocumentById(
+	collectionName: FirebaseCollections,
+	id: string
+) {
+	const q = query(
+		collection(firestore, collectionName),
+		where("id", "==", id)
+	);
+	const querySnapshot = await getDocs(q);
+	if (querySnapshot.empty) {
+		console.log("[deleteDocumentById] No matching documents found.");
+		return Promise.resolve(undefined);
+	}
+	const docs: any = [];
+	querySnapshot.forEach((doc) => docs.push(doc.ref));
+	if (docs.length > 0) {
+		await deleteDoc(docs[0]);
+	} else {
+		const ref = doc(collection(firestore, collectionName), id);
+		await deleteDoc(ref);
+	}
+	return Promise.resolve(true);
+}
+
+export async function deleteItemById(itemId: string) {
+	const q = query(
+		collection(firestore, FirebaseCollections.LOST_ITEMS),
+		where("id", "==", itemId)
+	);
+	const querySnapshot = await getDocs(q);
+	if (querySnapshot.empty) {
+		console.log("[deleteDocumentById] No matching documents found.");
+		return Promise.resolve(undefined);
+	}
+	const docs: DocumentReference<DocumentData, DocumentData>[] = [];
+	querySnapshot.forEach((doc) => docs.push(doc.ref));
+	if (docs.length > 0) {
+		const itemDataSnap = await getDoc(docs[0]);
+		const itemData = itemDataSnap.data();
+		if (itemData) {
+			const itemDetailsRef = doc(
+				collection(firestore, FirebaseCollections.ITEMS),
+				itemData.itemId
+			);
+			await Promise.all([deleteDoc(docs[0]), deleteDoc(itemDetailsRef)]);
+		}
+	} else {
+		const ref = doc(
+			collection(firestore, FirebaseCollections.LOST_ITEMS),
+			itemId
+		);
+		const itemDataRef = await getDoc(ref);
+		const itemData = itemDataRef.data();
+		if (!itemData) return Promise.resolve(true);
+		const itemDetailsRef = doc(
+			collection(firestore, FirebaseCollections.ITEMS),
+			itemData.itemId
+		);
+		await Promise.all([deleteDoc(ref), deleteDoc(itemDetailsRef)]);
+	}
+	return Promise.resolve(true);
 }

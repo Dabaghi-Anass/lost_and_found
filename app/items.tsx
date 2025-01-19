@@ -28,7 +28,7 @@ const LostItemPage: React.FC = () => {
     collection: FirebaseCollections.LOST_ITEMS,
     cachedData: [...Object.values(itemsFromStore)],
     cache: (data) => {
-      dispatch(setItems(data))
+      dispatch(setItems(data as any))
     },
     recursivefetchers: [
       {

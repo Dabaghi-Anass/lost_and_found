@@ -1,26 +1,25 @@
-import { updateItem } from '@/api/database';
+import { deleteItemById, updateItem } from '@/api/database';
 import { AppButton } from '@/components/AppButton';
 import AppColorPicker from '@/components/color-picker';
+import { ConfirmationModal } from '@/components/confirmation-modal';
 import { Input } from '@/components/Input';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Colors } from '@/constants/Colors';
-import { firestore } from '@/database/fire_base';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFetch } from '@/hooks/useFetch';
 import { FirebaseCollections } from '@/lib/constants';
-import { saveItem } from '@/redux/global/items';
+import { removeItem, saveItem } from '@/redux/global/items';
 import { Item, ItemDetails } from '@/types/entities.types';
 import { ItemDetailsBuilder } from '@/types/entities/ItemDetails';
 import { ItemDetailsSchema } from '@/zod-schemas/schemas';
 import { AntDesign } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
+import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { deleteDoc, doc } from 'firebase/firestore';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { ZodIssue } from 'zod';
-
 
 interface SubFormProps {
   formData: FormData,
@@ -39,6 +38,8 @@ export default function EditItemScreen() {
   const router = useRouter();
   const theme = useColorScheme();
   const dispatch = useDispatch()
+  const [valid, setValid] = useState(true);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const itemsFromStoreMap: Record<string, Item> = useSelector((state: any) => state.items);
   const { data: item, error, loading: itemLoading, refetch } = useFetch<ItemDetails>({
@@ -46,13 +47,14 @@ export default function EditItemScreen() {
     collection: FirebaseCollections.ITEMS,
     cachedData: itemsFromStoreMap[itemId as string]?.item,
     cache: (data) => {
-      const itemToSave = { ...itemsFromStoreMap[(itemId as string)] };
+      const itemToSave = { ...(itemsFromStoreMap[(itemId as string)] as any) };
       if (itemToSave) {
         itemToSave.item = data;
         dispatch(saveItem(itemToSave))
       }
     },
   });
+  const [itemImages, setItemImages] = useState<string[] | undefined>(item?.images);
 
   const [formData, setFormData] = useState<FormData>({
     title: item?.title,
@@ -74,7 +76,7 @@ export default function EditItemScreen() {
         .setColor(formData.color as string)
         .build();
       await updateItem(itemId as string, newDetails);
-      const itemToSave = itemsFromStoreMap[itemId as string];
+      const itemToSave = { ...(itemsFromStoreMap[itemId as string] as any) };
       if (itemToSave) {
         newDetails.id = itemToSave.item.id;
         itemToSave.item = newDetails;
@@ -90,32 +92,22 @@ export default function EditItemScreen() {
     }
   };
 
-  const handleDelete = () => {
-    Alert.alert(
-      'Confirm Deletion',
-      'Are you sure you want to delete this item?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            setLoading(true);
-            try {
-              await deleteDoc(doc(firestore, FirebaseCollections.LOST_ITEMS, itemId as string));
-              Alert.alert('Success', 'Item deleted successfully');
-              router.replace('/');
-            } catch (error) {
-              console.error('Error deleting item:', error);
-              Alert.alert('Error', 'Failed to delete item');
-            } finally {
-              setLoading(false);
-            }
-          }
-        },
-      ]
-    );
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      await deleteItemById(itemId as string);
+      dispatch(removeItem(itemId as string));
+      Alert.alert('Success', 'Item deleted successfully');
+      router.replace('/');
+    } catch (error) {
+      console.error('Error deleting item:', error);
+      Alert.alert('Error', 'Failed to delete item');
+    } finally {
+      setLoading(false);
+    }
+
   };
+
   const updateFormData = (field: keyof FormData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -136,22 +128,34 @@ export default function EditItemScreen() {
   }, [item]));
   if (itemLoading || loading) return <LoadingSpinner visible={itemLoading || loading} />;
   if (error) return <Text className='text-3xl font-bold text-red-600'>{error}</Text>;
-
   return (
     <ScrollView className='bg-background h-full p-4'>
-      <Text className='text-foreground text-2xl font-bold mb-4'>Edit Item</Text>
+      <View className='my-8 flex-row justify-between items-center'>
+        <Text className='text-foreground web:text-2xl text-3xl font-bold'>Edit Item</Text>
+        <ConfirmationModal
+          trigger={(show) => (<AppButton size="sm" variant="destructive" onPress={show}>
+            <Text className='text-white font-bold'>Delete Item</Text>
+          </AppButton>)}
+          title='Delete Item'
+          description='Are you sure you want to delete this item?'
+          onAccept={handleDelete}
+          onClose={() => setModalOpen(false)}
+          open={modalOpen}
+          onOpen={() => setModalOpen(true)}
+        />
+
+      </View>
       <ItemDetailsForm
         formData={formData}
         onFormData={updateFormData}
-        onValidationStateChange={(valid) => { }}
+        onValidationStateChange={setValid}
       />
-      <ImagesView images={item?.images || []}
+      <ImagesView images={itemImages || []}
         onUpdateImages={(images) => {
-          setFormData({ ...formData, images });
+          setItemImages(images);
         }} />
       <View className='py-4 gap-4'>
-        <AppButton variant="default" size="sm" onPress={undefined}>Upload More Images</AppButton>
-        <AppButton variant="primary" onPress={handleUpdate}>Update Item</AppButton>
+        <AppButton variant="primary" onPress={handleUpdate} disabled={!valid}>Update Item</AppButton>
       </View>
 
     </ScrollView>
@@ -164,8 +168,25 @@ interface ImagesViewProps {
 }
 
 function ImagesView({ images, onUpdateImages }: ImagesViewProps) {
+  const handleUploadImagesFromDevice = async () => {
+    try {
+      const { assets } = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsMultipleSelection: true,
+        quality: 1,
+      });
+      if (!assets) return;
+      const assetsUris = assets.map((asset) => asset.uri);
+      onUpdateImages([...images, ...assetsUris])
+    } catch (error) {
+      console.error('Error uploading images:', error);
+    }
+  }
   return <View className='flex gap-4'>
-    <Text className='text-foreground text-2xl font-bold my-4'>Images</Text>
+    <View className='flex flex-row gap-4 items-center justify-between'>
+      <Text className='text-foreground text-2xl font-bold my-4'>Images</Text>
+      <AppButton size="sm" variant="default" onPress={handleUploadImagesFromDevice}>Upload More Images</AppButton>
+    </View>
     <View className='flex gap-4'>
       {images.map((image, index) => (
         <View key={index} className='relative'>
@@ -178,9 +199,9 @@ function ImagesView({ images, onUpdateImages }: ImagesViewProps) {
               const updatedImages = images.filter((uri) => uri !== image);
               onUpdateImages(updatedImages);
             }}
-            className='absolute top-0 right-0 bg-white p-1 rounded-full'
+            className='absolute top-0 right-0 bg-red-600 p-2 rounded-full'
           >
-            <AntDesign name="delete" size={24} color="red" />
+            <AntDesign name="delete" size={30} color="white" />
           </TouchableOpacity>
         </View>
       ))}
@@ -222,6 +243,7 @@ function ItemDetailsForm({ formData, onFormData, onValidationStateChange }: SubF
             mode='dropdown'
             style={{ color: Colors[colorTheme ?? 'light'].text }}
             onValueChange={(value) => onFormData('category', value)}
+            className='web:p-4'
           >
             <Picker.Item label="Select category" value="" />
             <Picker.Item label="Electronics" value="electronics" />

@@ -89,7 +89,7 @@ export default function UserProfile() {
               collectionName: FirebaseCollections.PROFILES
             }
           ]);
-          dispatch(saveUserAction(userFromDb as AppUser));
+          dispatch(saveUserAction(userFromDb as any));
         } else {
           if (usersMap[id as string]) {
             userFromDb = usersMap[id as string];
@@ -104,12 +104,12 @@ export default function UserProfile() {
                 collectionName: FirebaseCollections.PROFILES
               }
             ]);
-            dispatch(saveUserAction(userFromDb as AppUser));
+            dispatch(saveUserAction(userFromDb as any));
           }
         }
         if (userFromDb) {
           setUser(userFromDb as AppUser);
-          dispatch(saveUser(userFromDb as AppUser));
+          dispatch(saveUser(userFromDb as any));
           getUserItems(userFromDb as AppUser)
         }
       } catch (e: any) {

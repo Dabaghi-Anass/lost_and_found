@@ -40,7 +40,7 @@ export default function ItemDetailsScreen() {
     cachedData: itemsMap[itemId.toString()],
     cache: (data) => {
       if (itemId) {
-        dispatch(saveItem(data))
+        dispatch(saveItem(data as any))
       }
     },
     recursivefetchers: [
@@ -268,10 +268,11 @@ export default function ItemDetailsScreen() {
                 Linking.openURL(`tel:${item.owner?.phoneNumber}`)
               }}
               style={[styles.primaryButton, {
-                backgroundColor: "green"
-              }]}>
+                backgroundColor: "#00a170"
+              }]}
+            >
               <Feather name="phone-call" size={20} color="#fff" />
-              <Text className='text-foreground' style={styles.primaryButtonText}>Call Owner</Text>
+              <Text className='text-white' style={styles.primaryButtonText}>Call Owner</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.secondaryButton} onPress={handleShare}>
               <Share2 width={20} height={20} color="#000" />
