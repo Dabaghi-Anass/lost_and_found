@@ -46,7 +46,7 @@ export default function EditItemScreen() {
     collection: FirebaseCollections.ITEMS,
     cachedData: itemsFromStoreMap[itemId as string]?.item,
     cache: (data) => {
-      const itemToSave = itemsFromStoreMap[(itemId as string)];
+      const itemToSave = { ...itemsFromStoreMap[(itemId as string)] };
       if (itemToSave) {
         itemToSave.item = data;
         dispatch(saveItem(itemToSave))
@@ -134,7 +134,7 @@ export default function EditItemScreen() {
       }));
     }
   }, [item]));
-  if (itemLoading) return <LoadingSpinner visible={itemLoading} />;
+  if (itemLoading || loading) return <LoadingSpinner visible={itemLoading || loading} />;
   if (error) return <Text className='text-3xl font-bold text-red-600'>{error}</Text>;
 
   return (
