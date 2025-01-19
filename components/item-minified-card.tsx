@@ -9,7 +9,7 @@ interface ItemCardProps {
 
 export default function ItemMinifiedCard({ item }: ItemCardProps) {
   if (!item?.item) return null;
-  return (<TouchableOpacity className='flex flex-row gap-4 bg-card p-4 rounded-lg border border-muted elevation-sm web:shadow-md web:shadow-slate-200'
+  return (<TouchableOpacity className='flex flex-row gap-4 bg-card p-4 rounded-lg border border-muted elevation-sm'
     onPress={() => {
       router.push(`/item-details/${item.id}`);
     }}>

@@ -83,7 +83,7 @@ export default function RealOwnerSearchScreen() {
           </Text>}
           contentContainerClassName='gap-4 py-2'
           renderItem={({ item: profile }) => {
-            return <View className='w-full my-2& flex-row bg-card elevation-sm p-4 items-center justify-between border border-muted rounded-md gap-4 web:shadow-md web:shadow-slate-200'>
+            return <View className='w-full my-2 flex-row bg-card elevation-sm p-4 items-center justify-between border border-muted rounded-md gap-4'>
               <Avatar style={{
                 width: 60,
                 height: 60,

@@ -11,8 +11,8 @@ type Props = {
 
 export default function SuccessStoryCard({ item }: Props) {
   return (
-    <View className='gap-4 p-4 bg-card elevation-md web:shadow-md web:shadow-slate-200 rounded-sm'>
-      <View className='flex-row gap-4 items-center'>
+    <View className='gap-4 p-4 bg-card elevation-md border border-muted rounded-lg'>
+      <View className='flex-row gap-4 items-center justify-between'>
         <Avatar alt="hello">
           <AvatarImage source={{
             uri: item?.owner?.imageUri || ''
@@ -33,11 +33,11 @@ export default function SuccessStoryCard({ item }: Props) {
           </AvatarFallback>
         </Avatar>
       </View>
-      <View className='w-full flex-row items-center flex-wrap justify-center'>
+      <View className='w-full flex-row items-center flex-wrap gap-4'>
         {item.item.images.map((image, index) => (
           <Image
             key={index}
-            source={{ uri: image }}
+            source={{ uri: image as any }}
             style={{ width: 100, height: 100, borderRadius: 8 }}
           />
         ))}
