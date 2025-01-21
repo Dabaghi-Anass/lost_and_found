@@ -83,6 +83,7 @@ export default function LoginScreen() {
             value={password}
             onChangeText={setPassword}
             className="rounded"
+            secureTextEntry
             inputClasses="text-foreground" placeholderTextColor="gray" />
         </View>
         <View className="mt-4">

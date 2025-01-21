@@ -2,40 +2,39 @@ import axios from "axios";
 import { ImagePickerAsset } from "expo-image-picker";
 import { Alert, Platform } from "react-native";
 const manipulateAsync = require("expo-image-manipulator").manipulateAsync;
-
-let cloudinaryConnection: {
-	uploadImage: (url: string, fileName: string) => Promise<any>;
-	optimizeUrl: (publicName: string) => string;
-};
-
+/**
+ * Uploads an image to cloudinary cloud storage and returns the url of the uploaded image
+ * @param {ImagePickerAsset} asset The image to upload
+ * @returns The url of the uploaded image
+ */
 export async function uploadAsset(asset: ImagePickerAsset) {
 	if (Platform.OS === "web") {
 		try {
-			console.log(asset);
+			//fetch the asset and convert it to a blob then send it
+			const imageData = await fetch(asset.uri);
+			const blob = await imageData.blob();
 			const formData = new FormData();
-			// formData.append("file", {
-			// 	uri: asset.uri,
-			// 	type: asset.mimeType,
-			// 	name: asset.fileName,
-			// } as any);
+			let file = new File([blob], asset.fileName || "image.jpg", {
+				type: asset.mimeType,
+			});
+			formData.append("file", file);
+			formData.append("api_key", "936119415866171");
+			formData.append("upload_preset", "lost_and_found_items_images");
 
-			// formData.append("api_key", "936119415866171");
-			// formData.append("upload_preset", "lost_and_found_items_images");
+			const response = await axios.post(
+				"https://api.cloudinary.com/v1_1/dnf11wb1l/image/upload",
+				formData,
+				{
+					headers: {
+						"Content-Type": "multipart/form-data",
+					},
+				}
+			);
 
-			// const response = await axios.post(
-			// 	"https://api.cloudinary.com/v1_1/dnf11wb1l/image/upload",
-			// 	formData,
-			// 	{
-			// 		headers: {
-			// 			"Content-Type": "multipart/form-data",
-			// 		},
-			// 	}
-			// );
-
-			// return response.data.secure_url;
-			return "https://via.placeholder.com/300";
+			return response.data.secure_url;
 		} catch (e: any) {
 			Alert.alert("Error", "Failed to upload image");
+			return "";
 		}
 	} else {
 		const resizedAsset = await manipulateAsync(

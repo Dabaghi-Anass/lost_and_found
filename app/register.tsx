@@ -137,8 +137,8 @@ export default function LoginScreen() {
             <Input className="rounded" error={errors.get("lastName")} onChangeText={(text) => updateField("lastName", text)} placeholder="last name" inputClasses="text-foreground" placeholderTextColor="gray" />
             <Input className="rounded" error={errors.get("phoneNumber")} onChangeText={(text) => updateField("phoneNumber", text)} placeholder="phone number" inputClasses="text-foreground" placeholderTextColor="gray" />
             <Input className="rounded" error={errors.get("email")} onChangeText={(text) => updateField("email", text)} placeholder="email" inputClasses="text-foreground" placeholderTextColor="gray" />
-            <Input className="rounded" error={errors.get("password")} onChangeText={(text) => updateField("password", text)} placeholder="password" inputClasses="text-foreground" placeholderTextColor="gray" />
-            <Input className="rounded" error={errors.get("confirmPassword")} onChangeText={(text) => updateField("confirmPassword", text)} placeholder="confirm password" inputClasses="text-foreground" placeholderTextColor="gray" />
+            <Input className="rounded" error={errors.get("password")} onChangeText={(text) => updateField("password", text)} placeholder="password" inputClasses="text-foreground" placeholderTextColor="gray" secureTextEntry />
+            <Input className="rounded" error={errors.get("confirmPassword")} onChangeText={(text) => updateField("confirmPassword", text)} placeholder="confirm password" inputClasses="text-foreground" placeholderTextColor="gray" secureTextEntry />
           </View>
           <View className="mt-4 ">
             <AppButton
