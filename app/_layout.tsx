@@ -40,7 +40,7 @@ export default function RootLayout() {
       <Provider store={store}>
         <View className={`${colorScheme} flex-1 flex items-center bg-background`}>
           <NavBar />
-          <View className='bg-background flex-1 w-full max-w-screen-md'>
+          <View className='bg-background flex-1 w-full'>
             <Drawer screenOptions={{
               headerShown: false,
               drawerActiveTintColor: Colors[colorScheme].primary,

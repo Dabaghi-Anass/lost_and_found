@@ -2,8 +2,9 @@ import { Item } from '@/types/entities.types';
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import { format, parseISO } from 'date-fns';
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import { AppButton } from './AppButton';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 interface ItemCardProps {
@@ -31,7 +32,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
   const isOwnItem = currentUser?.id === ownerId
 
   return (
-    <View style={styles.card} className='card bg-card border border-muted'>
+    <View className='bg-card border border-muted w-full md:web:w-[300px] overflow-hidden rounded-2xl'>
       <View style={styles.imageContainer}>
         <Image
           source={{ uri: itemDetails.images?.[0] || 'https://via.placeholder.com/300' }}
@@ -62,9 +63,9 @@ const ItemCard: React.FC<ItemCardProps> = ({
         <Text style={styles.dateText}>{formatDate(new Date(found_lost_at).toISOString())}</Text>
       </View>
       <View style={styles.footer} className='border-t border-muted'>
-        <TouchableOpacity onPress={() => onViewProfile(ownerId)}>
+        <Pressable onPress={() => onViewProfile(ownerId)}>
           <View style={styles.avatar}>
-            <TouchableOpacity onPress={() => onViewProfile(ownerId)}>
+            <Pressable onPress={() => onViewProfile(ownerId)}>
               <Avatar alt="user image">
                 <AvatarImage source={{
                   uri: owner?.imageUri as any
@@ -73,12 +74,12 @@ const ItemCard: React.FC<ItemCardProps> = ({
                   <AntDesign name="user" size={20} color="#6B7280" />
                 </AvatarFallback>
               </Avatar>
-            </TouchableOpacity>
+            </Pressable>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => onViewDetails(id as string)}>
-          <Text style={styles.buttonText}>View Details</Text>
-        </TouchableOpacity>
+        </Pressable>
+        <AppButton onPress={() => onViewDetails(id as string)} variant="primary" size="sm">
+          <Text className='text-primary-foreground'>View Details</Text>
+        </AppButton>
       </View>
     </View>
   );
@@ -88,8 +89,6 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 8,
     overflow: 'hidden',
-    width: '100%',
-    marginBottom: 16,
     borderWidth: 1,
   },
   imageContainer: {

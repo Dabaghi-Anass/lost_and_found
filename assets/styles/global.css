@@ -5,17 +5,29 @@
 body {
 	margin: 0 auto;
 }
-
-@media screen and (max-width: 640px) {
-	body {
-		font-size: 5px !important;
-	}
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
 }
+
 .font-secondary {
 	font-family: "Galada", serif;
 	font-weight: 400;
 	font-style: normal;
 	line-height: 2;
+}
+
+@media screen and (min-width: 640px) {
+	html,
+	body {
+		font-size: 14px;
+		background: red;
+	}
+	* {
+		font-size: 14px;
+		background: red !important;
+	}
 }
 
 @layer base {

@@ -1,4 +1,4 @@
-import { deleteItemById, updateItem } from '@/api/database';
+import { deleteItemById, updateItem, uploadImagesToServer } from '@/api/database';
 import { AppButton } from '@/components/AppButton';
 import AppColorPicker from '@/components/color-picker';
 import { ConfirmationModal } from '@/components/confirmation-modal';
@@ -8,6 +8,7 @@ import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFetch } from '@/hooks/useFetch';
 import { FirebaseCollections } from '@/lib/constants';
+import { getCategories } from '@/lib/utils';
 import { removeItem, saveItem } from '@/redux/global/items';
 import { Item, ItemDetails } from '@/types/entities.types';
 import { ItemDetailsBuilder } from '@/types/entities/ItemDetails';
@@ -50,11 +51,12 @@ export default function EditItemScreen() {
       const itemToSave = { ...(itemsFromStoreMap[(itemId as string)] as any) };
       if (itemToSave) {
         itemToSave.item = data;
-        dispatch(saveItem(itemToSave))
+        dispatch(saveItem(itemToSave as any))
       }
     },
   });
   const [itemImages, setItemImages] = useState<string[] | undefined>(item?.images);
+  const [uploadedAssets, setUploadedAssets] = useState<ImagePicker.ImagePickerAsset[]>([]);
 
   const [formData, setFormData] = useState<FormData>({
     title: item?.title,
@@ -68,11 +70,12 @@ export default function EditItemScreen() {
   const handleUpdate = async () => {
     setLoading(true);
     try {
+      const newlyUploadedImages = await uploadImagesToServer(uploadedAssets);
       const newDetails = ItemDetailsBuilder.builder()
         .setTitle(formData.title as string)
         .setDescription(formData.description as string)
         .setCategory(formData.category as string)
-        .setImages(formData.images)
+        .setImages([...formData.images, ...newlyUploadedImages])
         .setColor(formData.color as string)
         .build();
       await updateItem(itemId as string, newDetails);
@@ -117,6 +120,7 @@ export default function EditItemScreen() {
       ...prev,
       ...item
     }));
+    setItemImages(item?.images || undefined);
   }, [item]);
   useFocusEffect(useCallback(() => {
     if (item) {
@@ -124,6 +128,7 @@ export default function EditItemScreen() {
         ...prev,
         ...item
       }));
+      setItemImages(item?.images || undefined);
     }
   }, [item]));
   if (itemLoading || loading) return <LoadingSpinner visible={itemLoading || loading} />;
@@ -150,10 +155,21 @@ export default function EditItemScreen() {
         onFormData={updateFormData}
         onValidationStateChange={setValid}
       />
-      <ImagesView images={itemImages || []}
+      <ImagesView
+        images={itemImages || []}
+        assets={uploadedAssets}
         onUpdateImages={(images) => {
           setItemImages(images);
-        }} />
+          updateFormData('images', images);
+        }}
+        onUploadImages={(images) => {
+          setUploadedAssets(prev => [...prev, ...images]);
+        }}
+        onUpdateAssets={(images) => {
+          setUploadedAssets(images);
+        }}
+
+      />
       <View className='py-4 gap-4'>
         <AppButton variant="primary" onPress={handleUpdate} disabled={!valid}>Update Item</AppButton>
       </View>
@@ -164,10 +180,13 @@ export default function EditItemScreen() {
 
 interface ImagesViewProps {
   images: string[];
+  assets: ImagePicker.ImagePickerAsset[];
   onUpdateImages: (images: string[]) => void;
+  onUploadImages: (images: ImagePicker.ImagePickerAsset[]) => void;
+  onUpdateAssets: (images: ImagePicker.ImagePickerAsset[]) => void;
 }
 
-function ImagesView({ images, onUpdateImages }: ImagesViewProps) {
+function ImagesView({ images, onUpdateImages, onUploadImages, onUpdateAssets, assets }: ImagesViewProps) {
   const handleUploadImagesFromDevice = async () => {
     try {
       const { assets } = await ImagePicker.launchImageLibraryAsync({
@@ -176,8 +195,7 @@ function ImagesView({ images, onUpdateImages }: ImagesViewProps) {
         quality: 1,
       });
       if (!assets) return;
-      const assetsUris = assets.map((asset) => asset.uri);
-      onUpdateImages([...images, ...assetsUris])
+      onUploadImages(assets)
     } catch (error) {
       console.error('Error uploading images:', error);
     }
@@ -201,10 +219,27 @@ function ImagesView({ images, onUpdateImages }: ImagesViewProps) {
             }}
             className='absolute top-0 right-0 bg-red-600 p-2 rounded-full'
           >
-            <AntDesign name="delete" size={30} color="white" />
+            <AntDesign name="delete" size={22} color="white" />
           </TouchableOpacity>
         </View>
       ))}
+      {assets.map((asset, index) => (
+        <View key={index} className='relative'>
+          <Image
+            source={{ uri: asset.uri }}
+            style={{ width: 100, height: 100, borderRadius: 8 }}
+          />
+          <TouchableOpacity
+            onPress={() => {
+              const updatedImages = assets.filter((a) => a.uri !== asset.uri);
+              onUpdateAssets(updatedImages);
+            }}
+            className='absolute top-0 right-0 bg-red-600 p-2 rounded-full'
+          >
+            <AntDesign name="delete" size={22} color="white" />
+          </TouchableOpacity>
+        </View>))
+      }
     </View>
   </View>
 }
@@ -246,11 +281,9 @@ function ItemDetailsForm({ formData, onFormData, onValidationStateChange }: SubF
             className='web:p-4'
           >
             <Picker.Item label="Select category" value="" />
-            <Picker.Item label="Electronics" value="electronics" />
-            <Picker.Item label="Clothing" value="clothing" />
-            <Picker.Item label="Accessories" value="accessories" />
-            <Picker.Item label="Documents" value="documents" />
-            <Picker.Item label="Other" value="other" />
+            {getCategories().map((category) => (
+              <Picker.Item key={category} label={category} value={category.toLowerCase()} />
+            ))}
           </Picker>
         </View>
       </View>

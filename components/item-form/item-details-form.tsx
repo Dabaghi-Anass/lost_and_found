@@ -3,6 +3,7 @@ import AppColorPicker from '@/components/color-picker';
 import { Input } from '@/components/Input';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { getCategories } from '@/lib/utils';
 import { ItemDetailsSchema } from '@/zod-schemas/schemas';
 import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useState } from 'react';
@@ -12,7 +13,7 @@ import { ZodIssue } from 'zod';
 
 export function ItemDetailsForm({ formData, onFormData, onValidationStateChange }: SubFormProps) {
   const colorTheme = useColorScheme();
-  const [errors, setErrors] = useState<Record<string, string>>(new Map());
+  const [errors, setErrors] = useState<Map<string, string>>(new Map());
   const validateFormData = () => {
     try {
       setErrors(new Map());
@@ -20,7 +21,7 @@ export function ItemDetailsForm({ formData, onFormData, onValidationStateChange 
       onValidationStateChange!(true);
     } catch (e: any) {
       onValidationStateChange!(false);
-      const errorsMap: Record<string, string> = new Map();
+      const errorsMap: Map<string, string> = new Map();
       e.errors.forEach((error: ZodIssue) => {
         errorsMap.set(`${error.path[0]}`, `${error.path[0]} ${error.message}`);
         console.log(error);
@@ -38,6 +39,7 @@ export function ItemDetailsForm({ formData, onFormData, onValidationStateChange 
         <Text className="font-bold mb-2 text-foreground text-xl">Category</Text>
         <View className="border border-gray-300 rounded-md">
           <Picker
+            className='web:p-4'
             dropdownIconColor={Colors[colorTheme ?? 'light'].text}
             selectedValue={formData.category}
             mode='dropdown'
@@ -45,11 +47,9 @@ export function ItemDetailsForm({ formData, onFormData, onValidationStateChange 
             onValueChange={(value) => onFormData('category', value)}
           >
             <Picker.Item label="Select category" value="" />
-            <Picker.Item label="Electronics" value="electronics" />
-            <Picker.Item label="Clothing" value="clothing" />
-            <Picker.Item label="Accessories" value="accessories" />
-            <Picker.Item label="Documents" value="documents" />
-            <Picker.Item label="Other" value="other" />
+            {getCategories().map((category) => (
+              <Picker.Item key={category} label={category} value={category.toLowerCase()} />
+            ))}
           </Picker>
         </View>
       </View>

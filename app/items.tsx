@@ -1,10 +1,13 @@
 import { Input } from "@/components/Input";
 import ItemCard from "@/components/item-card";
+import ItemMinifiedCard from "@/components/item-minified-card";
+import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSearch } from "@/hooks/use-search";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useFetchAll } from "@/hooks/useFetch";
 import { FirebaseCollections } from "@/lib/constants";
+import { getCategories } from "@/lib/utils";
 import { setCurrentScreenName } from "@/redux/global/currentScreenName";
 import { setItems } from "@/redux/global/items";
 import { Item } from "@/types/entities.types";
@@ -12,6 +15,9 @@ import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
   FlatList,
+  Platform,
+  Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View
@@ -23,6 +29,7 @@ const LostItemPage: React.FC = () => {
   const dispatch = useDispatch()
   const theme = useColorScheme();
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const itemsFromStore: Record<string, Item> = useSelector((state: any) => state.items);
   const { data, error, loading, refetch } = useFetchAll<Item>({
     collection: FirebaseCollections.LOST_ITEMS,
@@ -46,7 +53,7 @@ const LostItemPage: React.FC = () => {
       found_lost_at: (value: any) => value.seconds * 1000,
     }
   });
-  const items = useSearch(data, searchQuery);
+  const items = useSearch(data, searchQuery).filter((item: Item) => selectedCategory === "all" || item?.item?.category === selectedCategory)
   const changeScreenName = useCallback(() => {
     dispatch(setCurrentScreenName('lost items'));
   }, []);
@@ -59,22 +66,61 @@ const LostItemPage: React.FC = () => {
       </View>
     );
   }
-
   return (
-    <View className="flex-1 p-2 bg-background items-start justify-start max-w-screen-lg">
+    <View className="flex-1 px-2 bg-background items-start justify-start">
       <LoadingSpinner visible={loading} />
       <Input
         placeholder="Search by title, category, color, owner name, anything..."
         placeholderTextColor={theme === "dark" ? "#ddd" : "#444"}
         value={searchQuery}
         onChangeText={setSearchQuery}
-        className="mb-4 w-full"
-        inputClasses="border-gray-600"
+        className="my-4 w-full"
+        inputClasses="rounded-full"
       />
+      <ScrollView
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        className="w-full">
+        <View className="pb-4 mb-4 gap-2 flex-row items-center justify-center h-16">
+          {getCategories().map((category) => (
+            <Pressable onPress={() => setSelectedCategory(category.toLowerCase())} key={category}>
+              <Badge className={`h-8 items-center justify-center ${selectedCategory === category.toLowerCase() ? "bg-primary" : "bg-background border border-input"}`}>
+                <Text
+                  onPress={() => setSelectedCategory(category.toLowerCase())}
+                  className={selectedCategory === category.toLowerCase() ? "text-white" : "text-foreground"}>
+                  {category}
+                </Text>
+              </Badge>
+            </Pressable>
+          ))}
+        </View>
+      </ScrollView>
+
       <FlatList
         refreshing={loading}
-
         onRefresh={refetch}
+        ListHeaderComponent={() => (
+          <View className="px-2 gap-4">
+            <Text className="text-2xl text-foreground text-semibold capitalize">last added items</Text>
+            <FlatList
+              ListEmptyComponent={() => (
+                <View style={styles.centered}>
+                  <Text className="text-foreground">No items found.</Text>
+                </View>
+              )}
+
+              scrollEnabled={true}
+              horizontal={true}
+              showsHorizontalScrollIndicator={Platform.OS === "web"}
+              data={data?.sort((a: any, b: any) => b.found_lost_at - a.found_lost_at).slice(0, 15)}
+              renderItem={({ item }) => (<ItemMinifiedCard item={item} />)}
+              keyExtractor={(item) => item.id as string}
+              contentContainerClassName="gap-4 overflow-x-scroll"
+              className="overflow-x-scroll"
+            />
+            <Text className="text-2xl text-foreground text-semibold capitalize">From Most Popular Users</Text>
+          </View>
+        )}
         ListEmptyComponent={() => (
           <View style={styles.centered}>
             <Text className="text-foreground">No items found.</Text>
@@ -82,6 +128,7 @@ const LostItemPage: React.FC = () => {
         )}
         scrollEnabled={true}
         showsVerticalScrollIndicator
+
         data={items}
         renderItem={({ item }) => (<ItemCard
           item={item}
@@ -93,7 +140,7 @@ const LostItemPage: React.FC = () => {
           }} />)}
         keyExtractor={(item) => item.id as string}
         className="w-full h-full"
-        contentContainerClassName="p-2 w-full"
+        contentContainerClassName="w-full web:flex-row web:flex-wrap gap-4 web:justify-center web:items-start md:web:justify-start"
       />
     </View>
   );
