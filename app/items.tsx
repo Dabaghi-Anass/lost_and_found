@@ -100,7 +100,7 @@ const LostItemPage: React.FC = () => {
         refreshing={loading}
         onRefresh={refetch}
         ListHeaderComponent={() => (
-          <View className="px-2 gap-4">
+          <View className="px-2 gap-4 w-screen">
             <Text className="text-2xl text-foreground text-semibold capitalize">last added items</Text>
             <FlatList
               ListEmptyComponent={() => (
@@ -115,8 +115,7 @@ const LostItemPage: React.FC = () => {
               data={data?.sort((a: any, b: any) => b.found_lost_at - a.found_lost_at).slice(0, 15)}
               renderItem={({ item }) => (<ItemMinifiedCard item={item} />)}
               keyExtractor={(item) => item.id as string}
-              contentContainerClassName="gap-4 overflow-x-scroll"
-              className="overflow-x-scroll"
+              contentContainerClassName="gap-4"
             />
             <Text className="text-2xl text-foreground text-semibold capitalize">From Most Popular Users</Text>
           </View>
@@ -140,7 +139,7 @@ const LostItemPage: React.FC = () => {
           }} />)}
         keyExtractor={(item) => item.id as string}
         className="w-full h-full"
-        contentContainerClassName="w-full web:flex-row web:flex-wrap gap-4 web:justify-center web:items-start md:web:justify-start"
+        contentContainerClassName="w-full pb-8 web:flex-row web:flex-wrap gap-4 web:justify-center web:items-start md:web:justify-start"
       />
     </View>
   );

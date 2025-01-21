@@ -5,18 +5,17 @@ import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 interface ItemCardProps {
   item: Item;
-  imageSize?: number;
 }
 
-export default function ItemMinifiedCard({ item, imageSize = 100 }: ItemCardProps) {
+export default function ItemMinifiedCard({ item }: ItemCardProps) {
   if (!item?.item) return null;
-  return (<TouchableOpacity className='flex flex-row gap-4 bg-card p-4 rounded-lg border border-muted elevation-sm '
+  return (<TouchableOpacity className='flex flex-row gap-4 bg-card p-4 rounded-lg border border-muted elevation-sm'
     onPress={() => {
       router.push(`/item-details/${item.id}`);
     }}>
     <Image
       source={{ uri: item?.item.images[0] }}
-      className={`rounded-lg w-[${imageSize}px] h-[${imageSize}px] web:w-[${imageSize * 1.5}px] web:h-[${imageSize * 1.5}px]`}
+      className='rounded-lg w-[100px] h-[100px]'
     />
     <View className='gap-2'>
       <Text className='text-xl font-bold text-foreground'>{item?.item.title}</Text>

@@ -18,15 +18,10 @@ body {
 	line-height: 2;
 }
 
-@media screen and (min-width: 640px) {
+@media screen and (max-width: 640px) {
 	html,
 	body {
-		font-size: 14px;
-		background: red;
-	}
-	* {
-		font-size: 14px;
-		background: red !important;
+		font-size: 14px !important;
 	}
 }
 
