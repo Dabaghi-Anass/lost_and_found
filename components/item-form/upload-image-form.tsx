@@ -4,7 +4,6 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
 import { Image, Pressable, View } from 'react-native';
-// import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 
 export function ImagesUploadForm({ formData, onFormData, onAssetsUploaded }: {
   onAssetsUploaded: (assets: ImagePicker.ImagePickerAsset[]) => void,

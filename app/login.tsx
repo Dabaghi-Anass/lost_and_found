@@ -11,11 +11,11 @@ import { setCurrentUser } from "@/redux/global/current-user";
 import { setCurrentScreenName } from "@/redux/global/currentScreenName";
 // import { auth } from "@/database/fire_base";
 // import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
-import { Link, useRouter } from "expo-router";
+import { Link, useFocusEffect, useRouter } from "expo-router";
 import { User } from "firebase/auth";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ColorSchemeName, Image, Text, useColorScheme, View } from "react-native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 function BgImageComponent() {
   const theme: ColorSchemeName = useColorScheme();
   return <Image source={theme === "dark" ? BgImageDark : BgImageLight} style={{ width: '100%', height: 300 }} />;
@@ -27,6 +27,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>();
   const [error, setError] = useState<string | null>(null);
+  const currentUser = useSelector((state: any) => state.user);
   const isValid = (): boolean => {
     if (userName.length === 0 || password.length === 0) return false;
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -59,6 +60,13 @@ export default function LoginScreen() {
     dispatch(setCurrentScreenName("auth"));
   }, [userName]);
 
+  useFocusEffect(useCallback(() => {
+    if (currentUser) {
+      setError(null);
+      setLoading(false);
+      router.replace("/items");
+    }
+  }, []));
   return (
     <ParallaxScrollView
       HEADER_HEIGHT={300}

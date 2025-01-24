@@ -684,3 +684,25 @@ export async function deleteItemById(itemId: string) {
 	}
 	return Promise.resolve(true);
 }
+
+export async function updateProfile(
+	id: string | undefined,
+	newProfile: Profile
+): Promise<Profile | null> {
+	if (!id || !newProfile || [...Object.keys(newProfile)].length === 0)
+		return Promise.resolve(null);
+	try {
+		await runTransaction(firestore, async (transaction: Transaction) => {
+			const profilesCollection = collection(
+				firestore,
+				FirebaseCollections.PROFILES
+			);
+			const profileRef = doc(profilesCollection, id);
+			await updateDoc(profileRef, { ...newProfile });
+		});
+		return Promise.resolve(newProfile);
+	} catch (e: any) {
+		console.log(e);
+		return Promise.resolve(null);
+	}
+}

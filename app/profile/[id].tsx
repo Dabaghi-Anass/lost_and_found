@@ -131,7 +131,7 @@ export default function UserProfile() {
               collectionName: FirebaseCollections.PROFILES
             }
           ]);
-          dispatch(setCurrentUser(currentUser));
+          dispatch(setCurrentUser({ ...(currentUser as any) } as any));
           if (currentUser) {
             setUser(currentUser);
             dispatch(saveUser(currentUser));
@@ -152,15 +152,11 @@ export default function UserProfile() {
     setLoading(false);
   }
   useEffect(() => {
-    initUser();
-  }, [id]);
-
-  useEffect(() => {
     dispatch(setCurrentScreenName('profile'));
   }, [user])
   useFocusEffect(useCallback(() => {
     initUser();
-  }, []));
+  }, [id]));
   if (!user || !currentUser || loading) return <LoadingSpinner visible={true} />
   return (
     <FlatList
@@ -168,7 +164,7 @@ export default function UserProfile() {
       onRefresh={async () => {
         await initUser(true);
       }}
-      keyExtractor={item => item.id || Math.random().toString()} data={[user]} renderItem={({ item }) => (<View className='w-full h-full'>
+      keyExtractor={item => item.id || Math.random().toString()} data={[user]} renderItem={({ item: user }) => (<View className='w-full h-full'>
         <View className='bg-transparent flex items-center justify-center py-4 px-4 relative' >
           <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto' />
           <Image
