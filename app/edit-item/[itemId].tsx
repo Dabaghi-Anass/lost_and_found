@@ -4,11 +4,12 @@ import AppColorPicker from '@/components/color-picker';
 import { ConfirmationModal } from '@/components/confirmation-modal';
 import { Input } from '@/components/Input';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFetch } from '@/hooks/useFetch';
 import { FirebaseCollections } from '@/lib/constants';
-import { getCategories } from '@/lib/utils';
+import { getCategories, getImageOrDefaultTo } from '@/lib/utils';
 import { removeItem, saveItem } from '@/redux/global/items';
 import { Item, ItemDetails } from '@/types/entities.types';
 import { ItemDetailsBuilder } from '@/types/entities/ItemDetails';
@@ -226,7 +227,7 @@ function ImagesView({ images, onUpdateImages, onUploadImages, onUpdateAssets, as
       {assets.map((asset, index) => (
         <View key={index} className='relative'>
           <Image
-            source={{ uri: asset.uri }}
+            source={getImageOrDefaultTo(asset.uri, DefaultUserImage)}
             style={{ width: 100, height: 100, borderRadius: 8 }}
           />
           <TouchableOpacity

@@ -1,3 +1,4 @@
+import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import DefaultItemImage from "@/assets/images/unknown-item.jpg";
 import { AppButton } from '@/components/AppButton';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -204,7 +205,7 @@ export default function ItemDetailsScreen() {
                 <Text className='text-foreground text-xl my-4'>founder</Text>
                 <View className='flex-row items-center gap-4' >
                   <Image
-                    source={{ uri: item.owner.imageUri || "" }}
+                    source={getImageOrDefaultTo(item.owner.imageUri, DefaultUserImage)}
                     style={{ width: 50, height: 50, borderRadius: 100, borderColor: "white", borderWidth: 2 }}
                   />
                   <Text className='text-xl font-secondary text-foreground'>{item.owner?.firstName + " " + item.owner?.lastName}</Text>
@@ -221,7 +222,7 @@ export default function ItemDetailsScreen() {
                 <Text className='text-foreground text-xl my-4'>real owner</Text>
                 <View className='flex-row items-center gap-4' >
                   <Image
-                    source={{ uri: item.realOwner.imageUri || "" }}
+                    source={getImageOrDefaultTo(item.realOwner.imageUri, DefaultUserImage)}
                     style={{ width: 50, height: 50, borderRadius: 100, borderColor: "white", borderWidth: 2 }}
                   />
                   <Text className='text-xl font-secondary text-foreground'>{item.realOwner?.firstName + " " + item.realOwner?.lastName}</Text>

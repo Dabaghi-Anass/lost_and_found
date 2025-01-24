@@ -8,7 +8,7 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { AppButton } from './AppButton';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-
+import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 interface ItemCardProps {
   item: Item;
   onViewDetails: (id: string) => void;
@@ -69,9 +69,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
           <View style={styles.avatar}>
             <Pressable onPress={() => onViewProfile(ownerId)}>
               <Avatar alt="user image">
-                <AvatarImage source={{
-                  uri: owner?.imageUri as any
-                }} />
+                <AvatarImage source={getImageOrDefaultTo(owner?.imageUri, DefaultUserImage)} />
                 <AvatarFallback>
                   <AntDesign name="user" size={20} color="#6B7280" />
                 </AvatarFallback>

@@ -1,4 +1,5 @@
 import { fetchDoc, makeItemDelivred } from '@/api/database';
+import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import { AppButton } from '@/components/AppButton';
 import { ConfirmationModal } from '@/components/confirmation-modal';
 import ItemMinifiedCard from '@/components/item-minified-card';
@@ -8,6 +9,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFetch } from '@/hooks/useFetch';
 import { useFirebaseSearch } from '@/hooks/useFirebaseSearch';
 import { FirebaseCollections } from '@/lib/constants';
+import { getImageOrDefaultTo } from '@/lib/utils';
 import { saveItem } from '@/redux/global/items';
 import { Item, Profile } from '@/types/entities.types';
 import { AntDesign, Feather } from '@expo/vector-icons';
@@ -109,9 +111,7 @@ export default function RealOwnerSearchScreen() {
                 <AvatarImage style={{
                   width: "100%",
                   height: "100%",
-                }} source={{
-                  uri: profile?.imageUri as any
-                }} />
+                }} source={getImageOrDefaultTo(profile?.imageUri, DefaultUserImage)} />
                 <AvatarFallback>
                   <AntDesign name="user" size={20} color="#6B7280" />
                 </AvatarFallback>

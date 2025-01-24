@@ -1,5 +1,5 @@
-
-
+import DefaultUserImage from "@/assets/images/default-user-image.jpg";
+import { getImageOrDefaultTo } from '@/lib/utils';
 import { Item } from '@/types/entities.types';
 import React from 'react';
 import { Image, Text, View } from 'react-native';
@@ -14,18 +14,14 @@ export default function SuccessStoryCard({ item }: Props) {
     <View className='gap-4 p-4 bg-card elevation-md border border-muted rounded-lg'>
       <View className='flex-row gap-4 items-center justify-between'>
         <Avatar alt="hello">
-          <AvatarImage source={{
-            uri: item?.owner?.imageUri || ''
-          }} />
+          <AvatarImage source={getImageOrDefaultTo(item?.owner?.imageUri, DefaultUserImage)} />
           <AvatarFallback>
             <Text style={{ color: '#fff', fontSize: 20 }}>{item?.owner?.firstName}</Text>
           </AvatarFallback>
         </Avatar>
         <Text className='text-foreground text-xl max-w-[70%]' lineBreakMode='middle' numberOfLines={1}>{item.owner.firstName} delivered {item.item.title} to {item.realOwner.firstName}</Text>
         <Avatar alt="hello">
-          <AvatarImage source={{
-            uri: item?.realOwner?.imageUri || ''
-          }} />
+          <AvatarImage source={getImageOrDefaultTo(item?.realOwner?.imageUri, DefaultUserImage)} />
           <AvatarFallback>
             <Text style={{ color: '#fff', fontSize: 20 }}>{item?.realOwner?.firstName}</Text>
           </AvatarFallback>

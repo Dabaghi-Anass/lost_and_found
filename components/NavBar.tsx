@@ -1,6 +1,8 @@
 import Logo from "@/assets/images/app_logo_small.png";
+import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { getImageOrDefaultTo } from "@/lib/utils";
 import { AntDesign } from "@expo/vector-icons";
 import { DrawerActions } from "@react-navigation/native";
 import { Link, useNavigation, useRouter } from "expo-router";
@@ -39,9 +41,7 @@ export default function NavBar() {
         }
         <Pressable onPress={() => expoRouter.push(`/profile/${currentUser?.id}`)}>
           <Avatar alt="user avatar">
-            <AvatarImage source={{
-              uri: currentUser?.profile?.imageUri
-            }} />
+            <AvatarImage source={getImageOrDefaultTo(currentUser?.profile?.imageUri, DefaultUserImage)} />
             <AvatarFallback className="text-foreground">
               <Text className="text-foreground">{userShortName}</Text>
             </AvatarFallback>

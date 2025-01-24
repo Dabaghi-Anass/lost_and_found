@@ -34,5 +34,5 @@ export function getImageOrDefaultTo(
 	image: string | null | undefined,
 	fallback: any
 ) {
-	return image ? { uri: image } : fallback;
+	return image?.length && image?.length > 0 ? { uri: image } : fallback;
 }

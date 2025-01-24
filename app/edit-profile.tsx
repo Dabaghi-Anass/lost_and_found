@@ -43,6 +43,9 @@ export default function UserProfileEditPage() {
       if (imageAsset) {
         imageUri = await uploadAsset(imageAsset);
       }
+      if (!userData?.imageUri || userData?.imageUri?.length === 0) {
+        imageUri = "";
+      }
       const newUserData = { ...userData, imageUri }
       const newProfile = await updateProfile(currentUser.profileId, newUserData as Profile);
       const cuClone = { ...currentUser } as any;

@@ -1,6 +1,7 @@
 import { registerUser } from "@/api/auth";
 import { uploadAsset } from "@/api/cloudinary";
 import { saveUser } from "@/api/database";
+import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import BgImageDark from "@/assets/images/bg_auth_dark.png";
 import BgImageLight from "@/assets/images/bg_auth_light.png";
 import { AppButton } from "@/components/AppButton";
@@ -19,6 +20,7 @@ import { useEffect, useState } from "react";
 import { ColorSchemeName, Image, StyleSheet, Text, useColorScheme, View } from "react-native";
 import { useDispatch } from "react-redux";
 import { ZodIssue } from "zod";
+import { getImageOrDefaultTo } from "@/lib/utils";
 
 function BgImageComponent() {
   const theme: ColorSchemeName = useColorScheme();
@@ -156,7 +158,7 @@ export default function LoginScreen() {
         </View> :
         <View style={styles.container} className={`${loading ? 'opacity-50 pointer-events-none' : ''}`}>
           {userImage && (
-            <Image source={{ uri: userImage.uri }} style={styles.image} />
+            <Image source={getImageOrDefaultTo(userImage.uri, DefaultUserImage)} style={styles.image} />
           )}
           <View className="flex gap-4 mt-4">
             <AppButton

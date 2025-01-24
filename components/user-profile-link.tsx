@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { useSelector } from "react-redux";
 import { Badge } from "./ui/badge";
+import { getImageOrDefaultTo } from "@/lib/utils";
 export function UserProfileLink() {
   const user = useSelector((state: any) => state.user);
   const router = useRouter();
@@ -17,7 +18,7 @@ export function UserProfileLink() {
           height: 150,
           borderRadius: 100,
         }}
-        source={{ uri: user?.profile?.imageUri || DefaultImage }} alt="user image" />
+        source={getImageOrDefaultTo(user?.profile?.imageUri, DefaultImage)} alt="user image" />
       <View className="flex-row gap-2 items-center">
         <Text className="text-foreground text-xl lg:text-3xl font-secondary font-bold my-4">{user?.profile?.firstName} {user?.profile?.lastName}</Text>
         <Badge variant="default">

@@ -1,5 +1,7 @@
 import { FormData } from '@/app/declare-item/[option]';
+import DefaultItemImage from "@/assets/images/unknown-item.jpg";
 import { AppButton } from '@/components/AppButton';
+import { getImageOrDefaultTo } from '@/lib/utils';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
@@ -98,7 +100,7 @@ function ImagesPreview({ images, onSelect, onDelete }: {
   }
   return (<View className='flex flex-col gap-2'>
     <Image
-      source={{ uri: images[0] ?? "/assets/images/unknown-item.jpg" }}
+      source={getImageOrDefaultTo(images[0], DefaultItemImage)}
       style={{
         width: "100%",
         aspectRatio: 16 / 9,
