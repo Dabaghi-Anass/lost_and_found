@@ -1,3 +1,5 @@
+import DefaultItemImage from "@/assets/images/unknown-item.jpg";
+import { getImageOrDefaultTo } from "@/lib/utils";
 import { Item } from '@/types/entities.types';
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import { format, parseISO } from 'date-fns';
@@ -35,7 +37,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
     <View className='card bg-card border border-muted w-full web:w-[270px] md:web:w-[350px] overflow-hidden rounded-2xl'>
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: itemDetails.images?.[0] || 'https://via.placeholder.com/300' }}
+          source={getImageOrDefaultTo(itemDetails.images?.[0], DefaultItemImage)}
           style={styles.image}
         />
         {isOwnItem && <View style={[styles.badge, {

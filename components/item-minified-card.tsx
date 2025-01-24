@@ -1,8 +1,9 @@
+import DefaultItemImage from "@/assets/images/unknown-item.jpg";
+import { getImageOrDefaultTo } from "@/lib/utils";
 import { Item } from '@/types/entities.types';
 import { router } from 'expo-router';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-
 interface ItemCardProps {
   item: Item;
 }
@@ -14,8 +15,8 @@ export default function ItemMinifiedCard({ item }: ItemCardProps) {
       router.push(`/item-details/${item.id}`);
     }}>
     <Image
-      source={{ uri: item?.item.images[0] }}
-      className='rounded-lg w-[100px] h-[100px]'
+      source={getImageOrDefaultTo(item?.item.images[0], DefaultItemImage)}
+      className='rounded-lg w-[100px] h-[100px] max-w-[100px] max-h-[100px]'
     />
     <View className='gap-2'>
       <Text className='text-xl font-bold text-foreground'>{item?.item.title}</Text>

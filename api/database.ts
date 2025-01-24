@@ -1,4 +1,5 @@
 import { firestore } from "@/database/fire_base";
+import { WhereClose } from "@/hooks/useFetch";
 import { FirebaseCollections } from "@/lib/constants";
 import { AppUser, Item, ItemDetails, Profile } from "@/types/entities.types";
 import { RecursiveFetcher } from "@/types/utils.types";
@@ -281,11 +282,18 @@ export async function fetchProfileById(
 export async function fetchAllDocs<T>(
 	collectionName: FirebaseCollections,
 	recursiveFetchers: RecursiveFetcher[] = [],
-	convertersMap: Record<string, (data: any) => any> = {}
+	convertersMap: Record<string, (data: any) => any> = {},
+	whereClose: WhereClose[] = []
 ): Promise<T[]> {
 	try {
 		const docsCollection = collection(firestore, collectionName);
-		const querySnapshot = await getDocs(docsCollection);
+		const q = query(
+			docsCollection,
+			...whereClose.map((whereClose) =>
+				where(whereClose.fieldPath, whereClose.opStr, whereClose.value)
+			)
+		);
+		const querySnapshot = await getDocs(q);
 		const items = await Promise.all(
 			querySnapshot.docs.map(async (document) => {
 				const data = document.data();
@@ -395,13 +403,19 @@ export async function fetchDoc<T>(
 	collectionName: FirebaseCollections,
 	id: string,
 	recursiveFetchers: RecursiveFetcher[] = [],
-	convertersMap: Record<string, (data: any) => any> = {}
+	convertersMap: Record<string, (data: any) => any> = {},
+	whereCloses: WhereClose[] = []
 ): Promise<T | undefined> {
 	try {
 		const docsCollection = collection(firestore, collectionName);
-		const q = query(docsCollection, where("id", "==", id));
+		whereCloses.push({ fieldPath: "id", opStr: "==", value: id });
+		let q = query(
+			docsCollection,
+			...whereCloses.map((whereClose) =>
+				where(whereClose.fieldPath, whereClose.opStr, whereClose.value)
+			)
+		);
 		const querySnapshot = await getDocs(q);
-
 		if (querySnapshot.empty) {
 			console.log("[fetchDoc] No matching documents found.");
 			const docRef = doc(docsCollection, id);

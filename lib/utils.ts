@@ -29,3 +29,10 @@ export function getCategories() {
 		"Phones",
 	];
 }
+
+export function getImageOrDefaultTo(
+	image: string | null | undefined,
+	fallback: any
+) {
+	return image ? { uri: image } : fallback;
+}

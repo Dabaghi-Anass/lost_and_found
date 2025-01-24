@@ -73,6 +73,11 @@ export default function RootLayout() {
                 drawerItemStyle: { display: "none" }
 
               }} />
+              <Drawer.Screen name="itemsofuser/[userId]" options={{
+                headerShown: false,
+                drawerItemStyle: { display: "none" }
+
+              }} />
               <Drawer.Screen name="register" options={{
                 headerShown: false,
                 drawerItemStyle: { display: "none" }

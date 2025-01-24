@@ -1,8 +1,10 @@
+import DefaultItemImage from "@/assets/images/unknown-item.jpg";
 import { AppButton } from '@/components/AppButton';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFetch } from '@/hooks/useFetch';
 import { FirebaseCollections } from '@/lib/constants';
+import { getImageOrDefaultTo } from "@/lib/utils";
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { saveItem } from '@/redux/global/items';
 import { Item } from '@/types/entities.types';
@@ -101,7 +103,6 @@ export default function ItemDetailsScreen() {
       console.error(error);
     }
   };
-
   useEffect(() => {
     dispatch(setCurrentScreenName('lost item'));
   }, [itemId])
@@ -118,7 +119,7 @@ export default function ItemDetailsScreen() {
           backgroundColor: item.item.color
         }]}>
           <Image
-            source={{ uri: item.item.images[selectedImage] }}
+            source={getImageOrDefaultTo(item.item.images[selectedImage], DefaultItemImage)}
             style={styles.mainImage}
             className={`w-full h-[${width * 0.75}px]  web:h-[50vh] web:w-full web:max-w-[500px] self-center `}
           />

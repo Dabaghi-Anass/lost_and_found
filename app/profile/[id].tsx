@@ -1,5 +1,6 @@
 import { logoutUser } from '@/api/auth';
 import { fetchDoc, fetchItemsOfUser } from '@/api/database';
+import DefaultUserImage from '@/assets/images/default-user-image.jpg';
 import bgPattern from "@/assets/images/pattern.png";
 import { AppButton } from '@/components/AppButton';
 import { ConfirmationModal } from '@/components/confirmation-modal';
@@ -8,15 +9,16 @@ import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { FirebaseCollections } from '@/lib/constants';
+import { getImageOrDefaultTo } from '@/lib/utils';
 import { setCurrentUser } from '@/redux/global/current-user';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { saveUser, saveUser as saveUserAction } from '@/redux/global/users';
 import { AppUser, Item } from '@/types/entities.types';
 import { AntDesign, Feather, FontAwesome5 } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Link, router, useLocalSearchParams } from 'expo-router';
+import { Link, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { Share2 } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, Image, Linking, Share, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 export default function UserProfile() {
@@ -118,26 +120,33 @@ export default function UserProfile() {
         setLoading(false);
       }
     } else if (!id) {
-      if (refresh) {
-        const currentUserId = await AsyncStorage.getItem('userID');
-        const currentUser = await fetchDoc<AppUser>(FirebaseCollections.USERS, currentUserId as string, [
-          {
-            idPropertyName: "profileId",
-            propertyName: "profile",
-            collectionName: FirebaseCollections.PROFILES
+      try {
+
+        if (refresh) {
+          const currentUserId = await AsyncStorage.getItem('userID');
+          const currentUser = await fetchDoc<AppUser>(FirebaseCollections.USERS, currentUserId as string, [
+            {
+              idPropertyName: "profileId",
+              propertyName: "profile",
+              collectionName: FirebaseCollections.PROFILES
+            }
+          ]);
+          dispatch(setCurrentUser(currentUser));
+          if (currentUser) {
+            setUser(currentUser);
+            dispatch(saveUser(currentUser));
+            getUserItems(currentUser as AppUser);
           }
-        ]);
-        dispatch(setCurrentUser(currentUser));
-        if (currentUser) {
-          setUser(currentUser);
-          dispatch(saveUser(currentUser));
-          getUserItems(currentUser as AppUser);
+        } else {
+          if (currentUser) {
+            getUserItems(currentUser as AppUser);
+            setUser(currentUser);
+          }
         }
-      } else {
-        if (currentUser) {
-          getUserItems(currentUser as AppUser);
-          setUser(currentUser);
-        }
+      } catch (e: any) {
+        Alert.alert('Error', e.message);
+      } finally {
+        setLoading(false);
       }
     }
     setLoading(false);
@@ -149,6 +158,9 @@ export default function UserProfile() {
   useEffect(() => {
     dispatch(setCurrentScreenName('profile'));
   }, [user])
+  useFocusEffect(useCallback(() => {
+    initUser();
+  }, []));
   if (!user || !currentUser || loading) return <LoadingSpinner visible={true} />
   return (
     <FlatList
@@ -160,7 +172,7 @@ export default function UserProfile() {
         <View className='bg-transparent flex items-center justify-center py-4 px-4 relative' >
           <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto' />
           <Image
-            source={{ uri: user?.profile?.imageUri || 'https://via.placeholder.com/150' }}
+            source={getImageOrDefaultTo(user?.profile?.imageUri, DefaultUserImage)}
             className='w-32 h-32 rounded-full border-4 border-white'
           />
         </View>
@@ -251,7 +263,7 @@ export default function UserProfile() {
                 )}
                 contentContainerClassName='gap-4 py-4'
               />
-              <Link href={`/`} asChild>
+              <Link href={`/itemsofuser/${user?.id}` as any} asChild>
                 <AppButton variant="link" size="sm">
                   <Text className='text-primary text-lg'>View all items</Text>
                 </AppButton>
