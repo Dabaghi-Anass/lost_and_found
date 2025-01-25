@@ -119,6 +119,7 @@ const LostItemPage: React.FC = () => {
               renderItem={({ item }) => (<ItemMinifiedCard item={item} />)}
               keyExtractor={(item) => item.id as string}
               contentContainerClassName="gap-4"
+              className="pr-4"
             />
             <Text className="text-2xl text-foreground text-semibold capitalize">From Most Popular Users</Text>
           </View>

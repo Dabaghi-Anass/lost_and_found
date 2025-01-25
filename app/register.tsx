@@ -123,7 +123,7 @@ export default function LoginScreen() {
     <ParallaxScrollView
       HEADER_HEIGHT={300}
       headerImage={<BgImageComponent />}
-      className="bg-background web:max-w-screen-md web:m-auto"
+      className="bg-background w-full web:max-w-screen-md web:m-auto"
       contentContainerClassName="bg-background"
     >
       {currentScreen === 0 ?

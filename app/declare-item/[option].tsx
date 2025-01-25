@@ -90,7 +90,8 @@ export default function DeclareItemScreen() {
         .setGeoCoordinates(formData.coordinates)
         .build();
       const savedItem = await saveItem(item);
-      dispatch(saveItemAction(savedItem));
+      router.replace("/items");
+      dispatch(saveItemAction({ ...savedItem } as any));
     } catch (error) {
       Alert.alert('Error', 'An error occurred while saving the item');
     }
@@ -132,7 +133,7 @@ export default function DeclareItemScreen() {
     <ScrollScreen className={`flex-1 bg-muted h-full px-4 py-6 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
       <View className="rounded-xl flex-1 overflow-hidden">
         <LinearGradient
-          className='h-full max-h-full px-2'
+          className='h-full max-h-full px-2 w-full web:max-w-screen-md m-auto'
           colors={['#233dfc', '#1e98fc']}
           start={[1, 0.9]}
         >
