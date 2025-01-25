@@ -55,7 +55,7 @@ export default function App() {
         onRefresh={refetch}
         keyExtractor={(item) => item.id || Math.random().toString()}
         renderItem={({ item }) => <SuccessStoryCard item={item} />}
-        contentContainerClassName='gap-2 p-4'
+        contentContainerClassName='gap-2 p-4 web:flex-row web:flex-wrap web:justify-center web:gap-4'
       />
     </Screen>
   );

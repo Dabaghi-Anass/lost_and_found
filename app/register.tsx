@@ -1,13 +1,14 @@
 import { registerUser } from "@/api/auth";
 import { uploadAsset } from "@/api/cloudinary";
 import { saveUser } from "@/api/database";
-import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import BgImageDark from "@/assets/images/bg_auth_dark.png";
 import BgImageLight from "@/assets/images/bg_auth_light.png";
+import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import { AppButton } from "@/components/AppButton";
 import { Input } from "@/components/Input";
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import Separator from "@/components/separator";
+import { getImageOrDefaultTo } from "@/lib/utils";
 import { setCurrentUser } from "@/redux/global/current-user";
 import { setCurrentScreenName } from "@/redux/global/currentScreenName";
 import { AppUserBuilder } from "@/types/entities/AppUser";
@@ -20,7 +21,6 @@ import { useEffect, useState } from "react";
 import { ColorSchemeName, Image, StyleSheet, Text, useColorScheme, View } from "react-native";
 import { useDispatch } from "react-redux";
 import { ZodIssue } from "zod";
-import { getImageOrDefaultTo } from "@/lib/utils";
 
 function BgImageComponent() {
   const theme: ColorSchemeName = useColorScheme();
@@ -92,7 +92,7 @@ export default function LoginScreen() {
         .build();
       const savedUser = await saveUser(user);
       dispatch(setCurrentUser(savedUser));
-      router.push("/profile/" + savedUser.id as any);
+      router.push("/profile/" + savedUser?.id as any);
     } catch (e: any) {
       setError(e.message);
     }
@@ -123,7 +123,7 @@ export default function LoginScreen() {
     <ParallaxScrollView
       HEADER_HEIGHT={300}
       headerImage={<BgImageComponent />}
-      className="bg-background"
+      className="bg-background web:max-w-screen-md web:m-auto"
       contentContainerClassName="bg-background"
     >
       {currentScreen === 0 ?

@@ -30,6 +30,7 @@ const LostItemPage: React.FC = () => {
   const theme = useColorScheme();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const currentUser = useSelector((state: any) => state.user);
   const itemsFromStore: Record<string, Item> = useSelector((state: any) => state.items);
   const { data, error, loading, refetch } = useFetchAll<Item>({
     collection: FirebaseCollections.LOST_ITEMS,
@@ -66,6 +67,8 @@ const LostItemPage: React.FC = () => {
       </View>
     );
   }
+
+
   return (
     <View className="flex-1 px-2 bg-background items-start justify-start">
       <LoadingSpinner visible={loading} />

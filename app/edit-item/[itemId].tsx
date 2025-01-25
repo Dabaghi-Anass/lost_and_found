@@ -1,10 +1,10 @@
 import { deleteItemById, updateItem, uploadImagesToServer } from '@/api/database';
+import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import { AppButton } from '@/components/AppButton';
 import AppColorPicker from '@/components/color-picker';
 import { ConfirmationModal } from '@/components/confirmation-modal';
 import { Input } from '@/components/Input';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFetch } from '@/hooks/useFetch';

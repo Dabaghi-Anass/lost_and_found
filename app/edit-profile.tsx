@@ -5,17 +5,18 @@ import bgPattern from "@/assets/images/pattern.png";
 import { AppButton } from '@/components/AppButton';
 import { ConfirmationModal } from '@/components/confirmation-modal';
 import { Input } from '@/components/Input';
+import ScrollScreen from '@/components/scroll-screen';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { getImageOrDefaultTo } from '@/lib/utils';
 import { setCurrentUser } from '@/redux/global/current-user';
-import { AppUser, Profile } from '@/types/entities.types';
+import { Profile } from '@/types/entities.types';
 import { AntDesign, Feather, FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { Alert, FlatList, Image, Text, View } from 'react-native';
+import { Alert, Image, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 export default function UserProfileEditPage() {
   const dispatch = useDispatch();
@@ -47,7 +48,7 @@ export default function UserProfileEditPage() {
         imageUri = "";
       }
       const newUserData = { ...userData, imageUri }
-      const newProfile = await updateProfile(currentUser.profileId, newUserData as Profile);
+      const newProfile = await updateProfile(currentUser?.profileId, newUserData as Profile);
       const cuClone = { ...currentUser } as any;
       cuClone.profile = newProfile;
       dispatch(setCurrentUser(cuClone as any));
@@ -100,19 +101,11 @@ export default function UserProfileEditPage() {
   }, [currentUser?.profile])
   useFocusEffect(initUserData)
 
+  const user = currentUser;
   if (!currentUser || loading) return <LoadingSpinner visible={true} />
   return (
-    <FlatList
-      refreshing={loading}
-      onRefresh={() => {
-        setLoading(true);
-        setTimeout(() => {
-          setLoading(false);
-        }, 2000);
-      }}
-      keyExtractor={item => item.id || Math.random().toString()}
-      data={[currentUser]}
-      renderItem={({ item: user }: { item: AppUser }) => (<View className='w-full h-full'>
+    <ScrollScreen>
+      <View className='w-full h-full'>
         <View className='bg-transparent flex items-center justify-center py-4 px-4 relative' >
           <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto' />
           <Image
@@ -137,7 +130,7 @@ export default function UserProfileEditPage() {
             </AppButton>
           </View>
         </View>
-        <View className='bg-background min-h-full rounded-t-3xl p-4'>
+        <View className='bg-background min-h-full rounded-t-3xl p-4 web:max-w-1/2 web:w-1/2 web:m-auto'>
           <View className='flex-row w-min items-center justify-between'>
             <Text className='text-foreground text-4xl font-bold font-secondary capitalize max-w-sm web:w-[300px] text-center'>{userData?.firstName} {userData?.lastName}</Text>
             <View className='p-2 gap-4 flex-row items-center justify-center'>
@@ -150,8 +143,8 @@ export default function UserProfileEditPage() {
 
           <View className='items-start justify-center gap-8 m-5'>
             <Text className="text-foreground text-2xl font-semibold">Contact Information</Text>
-            <View className='items-start justify-center gap-4'>
-              <View className='flex-row items-center justify-center gap-4'>
+            <View className='items-start justify-center gap-4 web:w-full'>
+              <View className='flex-row items-center justify-center gap-4 web:w-full'>
                 <Feather name="mail" size={20} color={theme === "dark" ? "white" : "black"} />
                 <Input editable={false}
                   placeholder='email' placeholderTextColor={
@@ -163,7 +156,7 @@ export default function UserProfileEditPage() {
                   className="text-foreground text-xl w-full opacity-50"
                   defaultValue={currentUser?.email || ""} />
               </View>
-              <View className='flex-row items-center justify-center gap-4'>
+              <View className='flex-row items-center justify-center gap-4 web:w-full'>
                 <FontAwesome name="vcard" size={20} color={theme === "dark" ? "white" : "black"} />
                 <Input
                   style={{
@@ -174,7 +167,7 @@ export default function UserProfileEditPage() {
                     theme === "dark" ? "#ddd" : "#444"
                   } className="text-foreground text-xl w-full" defaultValue={userData?.firstName || ""} />
               </View>
-              <View className='flex-row items-center justify-center gap-4'>
+              <View className='flex-row items-center justify-center gap-4 web:w-full'>
                 <FontAwesome name="vcard-o" size={20} color={theme === "dark" ? "white" : "black"} />
                 <Input
                   style={{
@@ -185,7 +178,7 @@ export default function UserProfileEditPage() {
                     theme === "dark" ? "#ddd" : "#444"
                   } className="text-foreground text-xl w-full" defaultValue={userData?.lastName || ""} />
               </View>
-              <View className='flex-row items-center justify-center gap-4'>
+              <View className='flex-row items-center justify-center gap-4 web:w-full'>
                 <Feather name="phone" size={20} color={theme === "dark" ? "white" : "black"} />
                 <Input
                   style={{
@@ -232,6 +225,6 @@ export default function UserProfileEditPage() {
           </View>
         </View>
       </View>
-      )} />
+    </ScrollScreen>
   );
 }

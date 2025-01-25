@@ -3,22 +3,32 @@ import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { getImageOrDefaultTo } from "@/lib/utils";
+import { refetchCurrentUser } from "@/redux/global/current-user";
 import { AntDesign } from "@expo/vector-icons";
 import { DrawerActions } from "@react-navigation/native";
 import { Link, useNavigation, useRouter } from "expo-router";
+import { useEffect } from "react";
 import { Image, Pressable, Text, View } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 export default function NavBar() {
   const currentUser = useSelector((state: any) => state.user);
+  const screenName = useSelector((state: any) => state.screenName);
   const expoRouter = useRouter()
   const userShortName = `${currentUser?.profile?.firstName?.charAt(0) ?? "N"}${currentUser?.profile?.lastName?.charAt(0) ?? "A"}`;
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const openOrCloseDrawer = () => {
     navigation.dispatch(DrawerActions.toggleDrawer());
   }
-  const screenName = useSelector((state: any) => state.screenName);
+  useEffect(() => {
+    if (screenName !== "auth") {
+      if (!currentUser?.email) {
+        dispatch(refetchCurrentUser())
+      }
+    }
+  }, [screenName])
   if (screenName === "auth") return null;
   return (
     <View className="p-4 border-b border-muted flex flex-row justify-between items-center bg-background w-full">

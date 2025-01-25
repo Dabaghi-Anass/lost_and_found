@@ -67,7 +67,7 @@ export default function ItemDetailsScreen() {
       found_lost_at: (value: any) => value.seconds * 1000,
     }
   });
-  const isOwnItem = currentUser.id === item?.ownerId;
+  const isOwnItem = currentUser?.id === item?.ownerId;
   const formatDate = (dateString: string) => {
     try {
       return format(parseISO(dateString), 'PPp');

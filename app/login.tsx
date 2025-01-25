@@ -14,7 +14,7 @@ import { setCurrentScreenName } from "@/redux/global/currentScreenName";
 import { Link, useFocusEffect, useRouter } from "expo-router";
 import { User } from "firebase/auth";
 import { useCallback, useEffect, useState } from "react";
-import { ColorSchemeName, Image, Text, useColorScheme, View } from "react-native";
+import { Alert, ColorSchemeName, Image, Text, useColorScheme, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 function BgImageComponent() {
   const theme: ColorSchemeName = useColorScheme();
@@ -40,17 +40,23 @@ export default function LoginScreen() {
       setLoading(false);
       return;
     };
-    const user: User | undefined = await loginUser(userName, password);
-    if (!user) {
-      setError("Invalid Email Or Password");
-    } else {
-      setError(null);
-      const userDocument = await getUserByAuthUserId(user?.uid);
-      dispatch(setCurrentUser(userDocument));
+    try {
+
+      const user: User | undefined = await loginUser(userName, password);
+      if (!user) {
+        setError("Invalid Email Or Password");
+      } else {
+        setError(null);
+        const userDocument = await getUserByAuthUserId(user?.uid);
+        dispatch(setCurrentUser(userDocument));
+        setLoading(false);
+        router.push("/home");
+      }
+    } catch (e: any) {
+      Alert.alert("Error", e.message);
+    } finally {
       setLoading(false);
-      router.push("/home");
     }
-    setLoading(false);
   }
 
   useEffect(() => {
@@ -61,51 +67,50 @@ export default function LoginScreen() {
   }, [userName]);
 
   useFocusEffect(useCallback(() => {
-    if (currentUser) {
-      setError(null);
-      setLoading(false);
+    setError(null);
+    setLoading(false);
+    if (currentUser?.email) {
       router.replace("/items");
     }
   }, []));
-  return (
-    <ParallaxScrollView
-      HEADER_HEIGHT={300}
-      headerImage={<BgImageComponent />}
-      className="bg-background"
-      contentContainerClassName="bg-background"
-    >
-      <View className={`${loading ? 'opacity-50 pointer-events-none' : ''}`}>
-        <Text className="text-2xl font-bold text-center mb-8 text-foreground">
-          Who Are You Sweet Heart?
-        </Text>
-        {error &&
-          <Text className="text-2xl font-bold text-center p-4 rounded-lg bg-red-600 text-white">{error}</Text>
-        }
-        <View className="flex gap-4 mt-4 ">
-          <Input placeholder="email or phone number"
-            value={userName}
-            onChangeText={setUserName}
-            className="rounded"
-            inputClasses="text-foreground" placeholderTextColor="gray" />
-          <Input placeholder="password"
-            value={password}
-            onChangeText={setPassword}
-            className="rounded"
-            secureTextEntry
-            inputClasses="text-foreground" placeholderTextColor="gray" />
-        </View>
-        <View className="mt-4">
-          <AppButton
-            loading={loading}
-            disabled={!isValid()}
-            onPress={handleLogin} variant="primary">Login</AppButton>
-        </View>
-        <Separator text="Or" />
-        <View className="flex flex-row items-center justify-center mt-8">
-          <Text className="text-center text-gray-500 dark:text-white text-xl">Don't have an account? </Text>
-          <Link href="/register" className="text-primary font-bold text-xl">Sign Up</Link>
-        </View>
+  return (<ParallaxScrollView
+    HEADER_HEIGHT={300}
+    headerImage={<BgImageComponent />}
+    className="bg-background web:max-w-screen-md web:m-auto"
+    contentContainerClassName="bg-background"
+  >
+
+    <View className={`${loading ? 'opacity-50 pointer-events-none' : ''}`}>
+      <Text className="text-2xl font-bold text-center mb-8 text-foreground">
+        Who Are You Sweet Heart?
+      </Text>
+      {error &&
+        <Text className="text-2xl font-bold text-center p-4 rounded-lg bg-red-600 text-white">{error}</Text>
+      }
+      <View className="flex gap-4 mt-4 ">
+        <Input placeholder="email or phone number"
+          value={userName}
+          onChangeText={setUserName}
+          className="rounded"
+          inputClasses="text-foreground" placeholderTextColor="gray" />
+        <Input placeholder="password"
+          value={password}
+          onChangeText={setPassword}
+          className="rounded"
+          secureTextEntry
+          inputClasses="text-foreground" placeholderTextColor="gray" />
       </View>
-    </ParallaxScrollView>
-  );
+      <View className="mt-4">
+        <AppButton
+          loading={loading}
+          disabled={!isValid()}
+          onPress={handleLogin} variant="primary">Login</AppButton>
+      </View>
+      <Separator text="Or" />
+      <View className="flex flex-row items-center justify-center mt-8">
+        <Text className="text-center text-gray-500 dark:text-white text-xl">Don't have an account? </Text>
+        <Link href="/register" className="text-primary font-bold text-xl">Sign Up</Link>
+      </View>
+    </View>
+  </ParallaxScrollView>);
 }

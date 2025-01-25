@@ -1,16 +1,16 @@
 import DefaultImage from "@/assets/images/default-user-image.jpg";
+import { getImageOrDefaultTo } from "@/lib/utils";
 import { useRouter } from "expo-router";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { useSelector } from "react-redux";
 import { Badge } from "./ui/badge";
-import { getImageOrDefaultTo } from "@/lib/utils";
 export function UserProfileLink() {
   const user = useSelector((state: any) => state.user);
   const router = useRouter();
   if (!user?.profile) return <></>;
   return (
     <TouchableOpacity onPress={() => {
-      router.push(`/profile/${user.id}`);
+      router.push(`/profile/${user?.id}`);
     }} className="w-full flex items-center justify-center p-8">
       <Image
         style={{
@@ -22,7 +22,7 @@ export function UserProfileLink() {
       <View className="flex-row gap-2 items-center">
         <Text className="text-foreground text-xl lg:text-3xl font-secondary font-bold my-4">{user?.profile?.firstName} {user?.profile?.lastName}</Text>
         <Badge variant="default">
-          <Text className="text-primary-foreground">{user.role}</Text>
+          <Text className="text-primary-foreground">{user?.role}</Text>
         </Badge>
       </View>
     </TouchableOpacity>

@@ -19,7 +19,7 @@ export default function SuccessStoryCard({ item }: Props) {
             <Text style={{ color: '#fff', fontSize: 20 }}>{item?.owner?.firstName}</Text>
           </AvatarFallback>
         </Avatar>
-        <Text className='text-foreground text-xl max-w-[70%]' lineBreakMode='middle' numberOfLines={1}>{item.owner.firstName} delivered {item.item.title} to {item.realOwner.firstName}</Text>
+        <Text className='text-foreground text-xl max-w-[70%]' lineBreakMode='middle' numberOfLines={1}>{item?.owner?.firstName} delivered {item?.item?.title} to {item?.realOwner?.firstName}</Text>
         <Avatar alt="hello">
           <AvatarImage source={getImageOrDefaultTo(item?.realOwner?.imageUri, DefaultUserImage)} />
           <AvatarFallback>
@@ -28,7 +28,7 @@ export default function SuccessStoryCard({ item }: Props) {
         </Avatar>
       </View>
       <View className='w-full flex-row items-center flex-wrap gap-4'>
-        {item.item.images.map((image, index) => (
+        {item?.item?.images.map((image, index) => (
           <Image
             key={index}
             source={{ uri: image as any }}

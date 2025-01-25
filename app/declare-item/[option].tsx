@@ -83,7 +83,7 @@ export default function DeclareItemScreen() {
         .builder()
         .setItem(itemDetails)
         .setDelivered(false)
-        .setOwnerId(currentUser.id)
+        .setOwnerId(currentUser?.id)
         .setLostAt(formData.date)
         .setType(formData.type)
         .setLocation(formData.location)

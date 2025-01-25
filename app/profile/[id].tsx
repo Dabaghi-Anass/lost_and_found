@@ -35,12 +35,10 @@ export default function UserProfile() {
   function openConfirmationModal() {
     setConfirmationModalVisible(true);
   }
-  const handleMessage = () => {
-    console.log('Message user:', user?.profile?.id);
-  };
   const handleLogout = () => {
     logoutUser().then(() => {
       dispatch(setCurrentUser(null));
+      setLoading(false)
       router.replace('/login');
     })
   };
@@ -76,11 +74,12 @@ export default function UserProfile() {
       })
     setUserItems(items);
   }
+
   async function initUser(refresh: boolean = false) {
     setLoading(true);
     setUserItems([]);
     setUser(null);
-    if (id) {
+    if (id && id !== "undefined") {
       try {
         let userFromDb
         if (refresh) {
@@ -119,9 +118,8 @@ export default function UserProfile() {
       } finally {
         setLoading(false);
       }
-    } else if (!id) {
+    } else {
       try {
-
         if (refresh) {
           const currentUserId = await AsyncStorage.getItem('userID');
           const currentUser = await fetchDoc<AppUser>(FirebaseCollections.USERS, currentUserId as string, [
@@ -138,9 +136,14 @@ export default function UserProfile() {
             getUserItems(currentUser as AppUser);
           }
         } else {
-          if (currentUser) {
+          console.log('current user', currentUser)
+          if (currentUser !== null) {
+            console.log('current user found', currentUser)
             getUserItems(currentUser as AppUser);
             setUser(currentUser);
+            dispatch(saveUser(currentUser));
+          } else {
+            router.replace("/login")
           }
         }
       } catch (e: any) {
@@ -157,30 +160,30 @@ export default function UserProfile() {
   useFocusEffect(useCallback(() => {
     initUser();
   }, [id]));
-  if (!user || !currentUser || loading) return <LoadingSpinner visible={true} />
+  if (!user || loading) return <LoadingSpinner visible={!user || loading} />
   return (
     <FlatList
       refreshing={loading}
       onRefresh={async () => {
         await initUser(true);
       }}
-      keyExtractor={item => item.id || Math.random().toString()} data={[user]} renderItem={({ item: user }) => (<View className='w-full h-full'>
+      keyExtractor={item => item.id || Math.random().toString()} data={[user]} renderItem={({ item: user }) => (<View className='w-full h-full web:max-w-1/2 web:m-auto'>
         <View className='bg-transparent flex items-center justify-center py-4 px-4 relative' >
           <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto' />
           <Image
             source={getImageOrDefaultTo(user?.profile?.imageUri, DefaultUserImage)}
-            className='w-32 h-32 rounded-full border-4 border-white'
+            className='w-32 h-32 rounded-full border-4 border-white max-w-32 max-h-32 object-center'
           />
         </View>
-        <View className='bg-background min-h-full rounded-t-3xl p-4'>
+        <View className='bg-background min-h-full rounded-t-3xl p-4 w-full'>
           <View className='flex-row w-min items-center justify-between'>
             <Text className='text-foreground text-4xl font-bold font-secondary capitalize max-w-sm web:w-[300px] text-center'>{user?.profile?.firstName} {user?.profile?.lastName}</Text>
             <View className='p-2 gap-4 flex-row items-center justify-center'>
               <Badge variant="secondary">
-                <Text className='text-secondary-foreground capitalize'>{user.role}</Text>
+                <Text className='text-secondary-foreground capitalize'>{user?.role}</Text>
               </Badge>
               <Badge variant="default">
-                <Text className='text-primary-foreground'>{user.items?.length} items</Text>
+                <Text className='text-primary-foreground'>{user?.items?.length} items</Text>
               </Badge>
             </View>
           </View>
@@ -190,7 +193,7 @@ export default function UserProfile() {
               <Text className='text-lg'>Email</Text>
             </AppButton>
           </View>
-          {currentUser.id === user.id &&
+          {currentUser?.id === user?.id &&
             <View className='flex flex-row items-center justify-center py-8 px-4 gap-4'>
               <Link href="/edit-profile" asChild>
                 <AppButton variant="outline" className='p-4 gap-4'>
@@ -225,7 +228,7 @@ export default function UserProfile() {
               </View>
               <View className='flex-row items-center justify-center gap-4'>
                 <Feather name="mail" size={20} color={theme === "dark" ? "white" : "black"} />
-                <Text className="text-foreground text-xl">{user.email}</Text>
+                <Text className="text-foreground text-xl">{user?.email}</Text>
               </View>
             </View>
           </View>
