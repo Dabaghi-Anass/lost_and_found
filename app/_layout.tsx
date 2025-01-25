@@ -31,7 +31,6 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-
   if (!loaded) {
     return null;
   }

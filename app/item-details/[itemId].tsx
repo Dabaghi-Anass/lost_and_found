@@ -115,7 +115,7 @@ export default function ItemDetailsScreen() {
     keyExtractor={(item) => item.id || '__'}
     data={[item]}
     renderItem={({ item }) => (
-      <View className='bg-background h-full'>
+      <View className='bg-background h-fullw-full web:max-w-screen-md m-auto'>
         <View style={[styles.imageContainer, {
           backgroundColor: item.item.color
         }]}>
