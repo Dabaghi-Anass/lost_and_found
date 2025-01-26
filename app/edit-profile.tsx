@@ -214,7 +214,7 @@ export default function UserProfileEditPage() {
               onClose={() => setConfirmationModalVisible(false)}>
               <View className='flex-row h-full items-center justify-center gap-4'>
                 <AppButton variant="secondary" className='gap-4 border border-muted' onPress={() => setConfirmationModalVisible(false)}>
-                  <Text className='text-xl text-slate-100'>Cancel</Text>
+                  <Text className='text-xl text-slate-800'>Cancel</Text>
                   <AntDesign name="close" size={20} color="black" />
                 </AppButton>
                 <AppButton variant="destructive" className='gap-4' onPress={async () => {

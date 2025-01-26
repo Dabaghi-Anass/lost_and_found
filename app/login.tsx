@@ -12,9 +12,9 @@ import { setCurrentUser } from "@/redux/global/current-user";
 import { setCurrentScreenName } from "@/redux/global/currentScreenName";
 // import { auth } from "@/database/fire_base";
 // import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
-import { Link, useFocusEffect, useNavigation, useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { User } from "firebase/auth";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, ColorSchemeName, Image, Text, useColorScheme, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 function BgImageComponent() {
@@ -43,7 +43,6 @@ export default function LoginScreen() {
       return;
     };
     try {
-
       const user: User | undefined = await loginUser(userName, password);
       if (!user) {
         setError("Invalid Email Or Password");
@@ -51,6 +50,8 @@ export default function LoginScreen() {
         setError(null);
         const userDocument = await getUserByAuthUserId(user?.uid);
         dispatch(setCurrentUser(userDocument));
+        setUserName("");
+        setPassword("");
         setLoading(false);
         router.push("/home");
       }
@@ -67,14 +68,6 @@ export default function LoginScreen() {
   useEffect(() => {
     dispatch(setCurrentScreenName("auth"));
   }, [userName]);
-
-  useFocusEffect(useCallback(() => {
-    setError(null);
-    setLoading(false);
-    if (currentUser?.email) {
-      router.replace("/items");
-    }
-  }, []));
   return (<ParallaxScrollView
     HEADER_HEIGHT={300}
     headerImage={<BgImageComponent />}

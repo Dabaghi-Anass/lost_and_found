@@ -5,6 +5,7 @@ import { UserProfileLink } from '@/components/user-profile-link';
 import { Colors } from '@/constants/Colors';
 import { store } from '@/redux/store';
 import { DrawerItemList } from '@react-navigation/drawer';
+import { useNavigationState } from '@react-navigation/native';
 import { PortalHost } from "@rn-primitives/portal";
 import { useFonts } from 'expo-font';
 import { Drawer } from 'expo-router/drawer';
@@ -41,6 +42,7 @@ export default function RootLayout() {
           <NavBar />
           <View className='bg-background flex-1 w-full'>
             <Drawer screenOptions={{
+
               headerShown: false,
               drawerActiveTintColor: Colors[colorScheme].primary,
               drawerLabelStyle: {
@@ -57,6 +59,13 @@ export default function RootLayout() {
 
             }}
               drawerContent={(props) => {
+                const state = useNavigationState((state) => state);
+                if (!state) return null;
+                const currentRouteName = state.routeNames?.[state.index];
+
+                if (["login", "register"].includes(currentRouteName)) {
+                  return null;
+                }
                 return (
                   <View className={`bg-background h-full p-4 text-sm web:max-w-none`}>
                     <UserProfileLink />
@@ -83,7 +92,7 @@ export default function RootLayout() {
               }} />
               <Drawer.Screen name="login" options={{
                 headerShown: false,
-                drawerItemStyle: { display: "none" }
+                drawerItemStyle: { display: "none" },
               }} />
               <Drawer.Screen name="profile/[id]" options={{
                 headerShown: false,

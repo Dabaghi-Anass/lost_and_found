@@ -94,11 +94,22 @@ export default function LoginScreen() {
         .build();
       const savedUser = await saveUser(user);
       dispatch(setCurrentUser(savedUser));
+      reset()
       router.push("/profile/" + savedUser?.id as any);
     } catch (e: any) {
       setError(e.message);
     }
     setLoading(false);
+  }
+  function reset() {
+    setUserDetails({
+      firstName: '',
+      lastName: '',
+      phoneNumber: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    });
   }
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({

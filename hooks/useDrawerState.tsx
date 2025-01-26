@@ -1,9 +1,9 @@
-import { useNavigation } from "expo-router";
-import { useEffect } from "react";
+import { useFocusEffect, useNavigation } from "expo-router";
+import { useCallback } from "react";
 
 export function useDrawerState(page: string) {
   const navigation = useNavigation()
-  useEffect(() => {
+  const init = useCallback(() => {
     const parent = navigation.getParent();
     if (!parent) return;
     if (page === "auth") {
@@ -16,4 +16,5 @@ export function useDrawerState(page: string) {
       })
     }
   }, [page])
+  useFocusEffect(init)
 }
