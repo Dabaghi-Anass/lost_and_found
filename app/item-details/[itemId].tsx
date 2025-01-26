@@ -65,6 +65,7 @@ export default function ItemDetailsScreen() {
     ],
     convertersMap: {
       found_lost_at: (value: any) => value.seconds * 1000,
+      deliveredAt: (value: any) => (value?.seconds || 0) * 1000,
     }
   });
   const isOwnItem = currentUser?.id === item?.ownerId;
@@ -115,7 +116,7 @@ export default function ItemDetailsScreen() {
     keyExtractor={(item) => item.id || '__'}
     data={[item]}
     renderItem={({ item }) => (
-      <View className='bg-background h-fullw-full web:max-w-screen-md m-auto'>
+      <View className='bg-background h-full w-full web:max-w-screen-md m-auto'>
         <View style={[styles.imageContainer, {
           backgroundColor: item.item.color
         }]}>
@@ -186,7 +187,7 @@ export default function ItemDetailsScreen() {
                 router.push(`/item-delivred/${item?.id}` as any)
               }}>
                 <Text className='text-white text-xl'>{
-                  item.delivered ? 'update receiver' : 'Mark as delivered '
+                  item.delivered ? 'update receiver' : 'Mark as delivered'
                 }</Text>
                 <Feather name="edit" size={20} color="white" />
               </AppButton>

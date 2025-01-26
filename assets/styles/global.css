@@ -11,6 +11,25 @@ body {
 	box-sizing: border-box;
 }
 
+/*custom scrollbar*/
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background: hsl(var(--muted) / 0.6);
+	border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: hsl(var(--muted));
+}
+
 .font-secondary {
 	font-family: "Galada", serif;
 	font-weight: 400;

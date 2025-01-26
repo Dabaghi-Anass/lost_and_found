@@ -16,6 +16,7 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState<boolean>(true);
   const initUser = async (userId: string) => {
     setLoading(true);
+    // reauthenticateWithCredential()
     const user = await fetchDoc<AppUser>(FirebaseCollections.USERS, userId as string, [
       {
         idPropertyName: "profileId",
@@ -23,6 +24,7 @@ export default function HomeScreen() {
         collectionName: FirebaseCollections.PROFILES
       }
     ]);
+
     if (user) {
       dispatch(setCurrentUser(user));
       router.replace("/items");

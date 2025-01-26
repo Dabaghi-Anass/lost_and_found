@@ -36,6 +36,7 @@ export default function App() {
     ],
     convertersMap: {
       found_lost_at: (value: any) => value.seconds * 1000,
+      deliveredAt: (value: any) => (value?.seconds || 0) * 1000,
     }
   });
   const data = items.filter((item) => item.delivered);

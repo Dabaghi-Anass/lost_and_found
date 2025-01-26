@@ -6,7 +6,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 export function LocationAndDateForm({ formData, onFormData, onValidationStateChange }: SubFormProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [error, setError] = useState<string>("");
@@ -125,24 +125,35 @@ export function LocationAndDateForm({ formData, onFormData, onValidationStateCha
         month: 'long',
         day: 'numeric'
       })}</Text>
-      <AppButton onPress={() => setShowDatePicker(true)}>
-        pick date
-      </AppButton>
-      {showDatePicker && (
-        <DateTimePicker
-          accentColor='yellow'
-          style={{ backgroundColor: 'white' }}
-          value={formData.date}
-          mode="date"
-          display="default"
-          onChange={(event, selectedDate) => {
-            setShowDatePicker(false);
-            if (selectedDate) {
-              onFormData('date', selectedDate);
-            }
-          }}
+      {Platform.OS === 'web' ? (
+        <input
+          type="date"
+          value={formData.date.toISOString().split('T')[0]}
+          onChange={(event) => onFormData('date', new Date(event.target.value))}
+          className="border-none rounded-md p-2 text-foreground"
         />
-      )}
-    </View>
-  </View>
+      ) :
+        <>
+          <AppButton onPress={() => setShowDatePicker(true)}>
+            pick date
+          </AppButton>
+          {showDatePicker && (
+            <DateTimePicker
+              accentColor='yellow'
+              style={{ backgroundColor: 'white' }}
+              value={formData.date}
+              mode="date"
+              display="default"
+              onChange={(event, selectedDate) => {
+                setShowDatePicker(false);
+                if (selectedDate) {
+                  onFormData('date', selectedDate);
+                }
+              }}
+            />
+          )}
+        </>
+      }
+    </View >
+  </View >
 }

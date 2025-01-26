@@ -1,13 +1,15 @@
+import { logoutUser } from '@/api/auth';
 import { uploadAsset } from '@/api/cloudinary';
-import { updateProfile } from '@/api/database';
+import { deleteAccount, updateProfile } from '@/api/database';
 import DefaultUserImage from '@/assets/images/default-user-image.jpg';
 import bgPattern from "@/assets/images/pattern.png";
 import { AppButton } from '@/components/AppButton';
-import { ConfirmationModal } from '@/components/confirmation-modal';
 import { Input } from '@/components/Input';
 import ScrollScreen from '@/components/scroll-screen';
 import { Badge } from '@/components/ui/badge';
+import BottomModal from '@/components/ui/bottomModal';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { auth } from '@/database/fire_base';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { getImageOrDefaultTo } from '@/lib/utils';
 import { setCurrentUser } from '@/redux/global/current-user';
@@ -59,14 +61,15 @@ export default function UserProfileEditPage() {
     }
   }
 
-  function handleDeleteAccount() {
+  async function handleDeleteAccount() {
     setLoading(true);
     try {
-      Alert.alert('Error', 'Failed to delete account');
+      await deleteAccount(currentUser);
     } catch (e: any) {
       Alert.alert('Error', e.message);
     } finally {
       setLoading(false);
+      router.replace("/login")
     }
   }
   async function handleUploadImageFromStorage() {
@@ -204,24 +207,38 @@ export default function UserProfileEditPage() {
             <AntDesign name="save" size={20} color="white" />
           </AppButton>
           <View className='flex flex-row items-center justify-center py-8 px-4 gap-4'>
-            <ConfirmationModal
-              title='Delete Account'
-              description='Are you sure you want to delete your account?'
-              onOpen={openConfirmationModal}
-              trigger={(open) => <AppButton variant="destructive" className='gap-4' onPress={() => open?.()}>
-                <Text className='text-white text-xl'>Delete Account</Text>
-                <AntDesign name="deleteuser" size={20} color="white" />
-              </AppButton>}
-              open={confirmationModalVisible}
-              onAccept={() => {
-                handleDeleteAccount();
-                setConfirmationModalVisible(false);
-                router.replace('/login')
-              }}
-              onClose={() => {
-                setConfirmationModalVisible(false);
-              }}
-            />
+            <BottomModal
+              title='Are you sure you want to delete your account?'
+              visible={confirmationModalVisible}
+              onClose={() => setConfirmationModalVisible(false)}>
+              <View className='flex-row h-full items-center justify-center gap-4'>
+                <AppButton variant="secondary" className='gap-4 border border-muted' onPress={() => setConfirmationModalVisible(false)}>
+                  <Text className='text-xl text-foreground'>Cancel</Text>
+                  <AntDesign name="close" size={20} color="black" />
+                </AppButton>
+                <AppButton variant="destructive" className='gap-4' onPress={async () => {
+                  try {
+                    if (auth.currentUser) {
+                      handleDeleteAccount();
+                    } else {
+                      Alert.alert('Error', 'You are not logged in please login and try again');
+                      await logoutUser()
+                      router.replace('/login')
+                    }
+                  } catch (e: any) {
+                    Alert.alert('Error', e.message);
+                  } finally {
+                    setConfirmationModalVisible(false);
+                  }
+                }}>
+                  <Text className='text-white text-xl'>Delete Account</Text>
+                </AppButton>
+              </View>
+            </BottomModal>
+            <AppButton variant="destructive" className='gap-4' onPress={() => setConfirmationModalVisible(true)}>
+              <Text className='text-white text-xl'>Delete Account</Text>
+              <AntDesign name="deleteuser" size={20} color="white" />
+            </AppButton>
           </View>
         </View>
       </View>

@@ -1,12 +1,15 @@
-import { firestore } from "@/database/fire_base";
+import { auth, firestore } from "@/database/fire_base";
 import { WhereClose } from "@/hooks/useFetch";
 import { FirebaseCollections } from "@/lib/constants";
 import { AppUser, Item, ItemDetails, Profile } from "@/types/entities.types";
 import { RecursiveFetcher } from "@/types/utils.types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ImagePickerAsset } from "expo-image-picker";
+import { deleteUser } from "firebase/auth";
 import {
 	addDoc,
 	collection,
+	CollectionReference,
 	deleteDoc,
 	doc,
 	DocumentData,
@@ -399,6 +402,37 @@ export async function fetchItemsOfUser(
 	}
 }
 
+export async function deleteAllItemsOfUser(
+	id: string | undefined
+): Promise<boolean> {
+	if (!id) return Promise.resolve(false);
+	try {
+		const docsCollection = collection(
+			firestore,
+			FirebaseCollections.LOST_ITEMS
+		);
+		const itemsDetailsCollection = collection(
+			firestore,
+			FirebaseCollections.ITEMS
+		);
+		const q = query(docsCollection, where("ownerId", "==", id));
+		const snapshot = await getDocs(q);
+		const itemsToDeleteIds = snapshot.docs.map(
+			(doc) => doc?.data()?.itemId || "test"
+		);
+		const itemsReferences = snapshot.docs
+			.map((doc) => doc.ref)
+			.concat(
+				itemsToDeleteIds.map((id) => doc(itemsDetailsCollection, id))
+			);
+		await Promise.all(itemsReferences.map((ref) => deleteDoc(ref)));
+		return Promise.resolve(true);
+	} catch (e: any) {
+		console.error("Error fetching items:", e);
+		return Promise.reject(e);
+	}
+}
+
 export async function fetchDoc<T>(
 	collectionName: FirebaseCollections,
 	id: string,
@@ -577,6 +611,7 @@ export async function makeItemDelivred(
 			if (docs.length > 0) {
 				await updateDoc(docs[0], {
 					delivered: true,
+					deliveredAt: new Date(),
 					realOwnerId: ownerId,
 				});
 			} else {
@@ -647,6 +682,7 @@ export async function deleteDocumentById(
 }
 
 export async function deleteItemById(itemId: string) {
+	if (!itemId) return Promise.resolve(undefined);
 	const q = query(
 		collection(firestore, FirebaseCollections.LOST_ITEMS),
 		where("id", "==", itemId)
@@ -705,4 +741,51 @@ export async function updateProfile(
 		console.log(e);
 		return Promise.resolve(null);
 	}
+}
+
+export async function deleteAccount(user?: AppUser) {
+	if (!user) return Promise.resolve(false);
+	try {
+		await runTransaction(firestore, async (transaction: Transaction) => {
+			if (auth.currentUser) {
+				await deleteUser(auth.currentUser);
+				await AsyncStorage.removeItem("userID");
+			}
+			const usersCollection = collection(
+				firestore,
+				FirebaseCollections.USERS
+			);
+			const profilesCollection = collection(
+				firestore,
+				FirebaseCollections.PROFILES
+			);
+			const [userRef, items] = await Promise.all([
+				findDocRefById(usersCollection, user.id),
+				fetchItemsOfUser(user.id),
+			]);
+			const profileRef = doc(profilesCollection, user.profileId);
+			await Promise.all([
+				deleteDoc(userRef),
+				deleteDoc(profileRef),
+				deleteAllItemsOfUser(user.id),
+			]);
+		});
+		return Promise.resolve(true);
+	} catch (e: any) {
+		console.error(e);
+		return Promise.resolve(false);
+	}
+}
+
+async function findDocRefById(coll: CollectionReference, id?: string) {
+	if (!id) return Promise.resolve(undefined);
+	const q = query(coll, where("id", "==", id));
+	const querySnapshot = await getDocs(q);
+	if (querySnapshot.empty) {
+		console.log("[findDocRefById] No matching documents found.");
+		return Promise.resolve(undefined);
+	}
+	const docs: any = [];
+	querySnapshot.forEach((doc) => docs.push(doc.ref));
+	return docs[0];
 }

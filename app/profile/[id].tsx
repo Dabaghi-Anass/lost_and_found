@@ -71,6 +71,7 @@ export default function UserProfile() {
     ],
       {
         found_lost_at: (value: any) => value.seconds * 1000,
+        deliveredAt: (value: any) => (value?.seconds || 0) * 1000,
       })
     setUserItems(items);
   }

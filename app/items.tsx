@@ -52,6 +52,7 @@ const LostItemPage: React.FC = () => {
     ],
     convertersMap: {
       found_lost_at: (value: any) => value.seconds * 1000,
+      deliveredAt: (value: any) => (value?.seconds || 0) * 1000,
     }
   });
   const items = useSearch(data, searchQuery).filter((item: Item) => selectedCategory === "all" || item?.item?.category === selectedCategory)
@@ -118,15 +119,15 @@ const LostItemPage: React.FC = () => {
               data={data?.sort((a: any, b: any) => b.found_lost_at - a.found_lost_at).slice(0, 15)}
               renderItem={({ item }) => (<ItemMinifiedCard item={item} />)}
               keyExtractor={(item) => item.id as string}
-              contentContainerClassName="gap-4"
+              contentContainerClassName="gap-4 py-2"
               className="pr-4"
             />
             <Text className="text-2xl text-foreground text-semibold capitalize">From Most Popular Users</Text>
           </View>
         )}
         ListEmptyComponent={() => (
-          <View style={styles.centered}>
-            <Text className="text-foreground">No items found.</Text>
+          <View className="w-full h-full items-center justify-center">
+            <Text className="text-foreground text-4xl">No items found.</Text>
           </View>
         )}
         scrollEnabled={true}

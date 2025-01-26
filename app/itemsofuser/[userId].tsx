@@ -50,6 +50,7 @@ const LostItemsOfUserPage: React.FC = () => {
     ],
     convertersMap: {
       found_lost_at: (value: any) => value.seconds * 1000,
+      deliveredAt: (value: any) => (value?.seconds || 0) * 1000,
     },
     where: [
       {

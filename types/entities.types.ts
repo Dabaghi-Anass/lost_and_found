@@ -6,6 +6,7 @@ interface AppUser {
 	id?: string;
 	authUserId: string;
 	email: string;
+	profileId?: string;
 	profile: Profile;
 	items: Array<Item>;
 	role?: Role;
@@ -35,6 +36,7 @@ interface Item {
 	item: ItemDetails;
 	delivered: boolean;
 	found_lost_at: Date;
+	deliveredAt?: Date;
 	ownerId: string;
 	realOwnerId: string;
 	owner: Profile;
