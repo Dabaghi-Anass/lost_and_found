@@ -5,6 +5,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSearch } from "@/hooks/use-search";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useFetchAll } from "@/hooks/useFetch";
+import { usePushScreen } from "@/hooks/usePushScreen";
 import { FirebaseCollections } from "@/lib/constants";
 import { getCategories } from "@/lib/utils";
 import { setCurrentScreenName } from "@/redux/global/currentScreenName";
@@ -27,6 +28,7 @@ const LostItemsOfUserPage: React.FC = () => {
   const dispatch = useDispatch()
   const theme = useColorScheme();
   const { userId } = useLocalSearchParams();
+  usePushScreen("itemsofuser", userId as string)
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const itemsFromStore: Record<string, Item> = useSelector((state: any) => state.items);

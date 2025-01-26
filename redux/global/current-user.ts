@@ -8,7 +8,6 @@ const currentUser = createSlice({
 	reducers: {
 		refetchCurrentUser: (state) => {
 			refetchCurrentUserFromDb();
-			console.log("Refetching user");
 		},
 		setCurrentUser: (state, action) => {
 			const user = action.payload;

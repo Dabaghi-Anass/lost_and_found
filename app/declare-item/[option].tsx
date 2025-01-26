@@ -5,6 +5,7 @@ import { FormStatusHeader } from '@/components/item-form/form-status-header';
 import { ItemDetailsForm } from '@/components/item-form/item-details-form';
 import { LocationAndDateForm } from '@/components/item-form/location-and-date-form';
 import { ImagesUploadForm } from '@/components/item-form/upload-image-form';
+import { usePushScreen } from '@/hooks/usePushScreen';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { saveItem as saveItemAction } from '@/redux/global/items';
 import { OptionType } from '@/types/entities.types';
@@ -45,6 +46,7 @@ export default function DeclareItemScreen() {
   const [validationState, setValidationState] = useState<Map<number, boolean>>(new Map());
   const currentUser = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
+  usePushScreen("declare-item", option as string)
   const [formData, setFormData] = useState<FormData>({
     type: option || "lost",
     category: '',

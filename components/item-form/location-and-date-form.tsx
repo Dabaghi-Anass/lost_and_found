@@ -14,7 +14,6 @@ export function LocationAndDateForm({ formData, onFormData, onValidationStateCha
   const getCurrentLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-      console.log('Permission to access location was denied');
       return;
     }
 
@@ -52,12 +51,10 @@ export function LocationAndDateForm({ formData, onFormData, onValidationStateCha
       if (formData.location) {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-          console.log('Permission to access location was denied');
           return;
         }
         const result: Location.LocationGeocodedLocation[] = await Location.geocodeAsync(formData.location);
         if (result.length === 0) return;
-        console.log(result[0])
         onFormData("coordinates", {
           latitude: result[0].latitude,
           longitude: result[0].longitude,

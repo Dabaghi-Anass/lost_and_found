@@ -8,6 +8,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFetch } from '@/hooks/useFetch';
 import { useFirebaseSearch } from '@/hooks/useFirebaseSearch';
+import { usePushScreen } from '@/hooks/usePushScreen';
 import { FirebaseCollections } from '@/lib/constants';
 import { getImageOrDefaultTo } from '@/lib/utils';
 import { saveItem } from '@/redux/global/items';
@@ -26,6 +27,7 @@ export default function RealOwnerSearchScreen() {
   const theme = useColorScheme();
   const dispatch = useDispatch();
   const itemMap: Record<string, Item> = useSelector((state: any) => state.items);
+  usePushScreen("item-delivred", id as string)
   const { data: item, loading: itemLoading } = useFetch<Item>({
     collection: FirebaseCollections.LOST_ITEMS,
     id: id.toString(),

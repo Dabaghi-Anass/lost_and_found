@@ -8,6 +8,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFetch } from '@/hooks/useFetch';
+import { usePushScreen } from '@/hooks/usePushScreen';
 import { FirebaseCollections } from '@/lib/constants';
 import { getCategories, getImageOrDefaultTo } from '@/lib/utils';
 import { removeItem, saveItem } from '@/redux/global/items';
@@ -40,6 +41,7 @@ export default function EditItemScreen() {
   const router = useRouter();
   const theme = useColorScheme();
   const dispatch = useDispatch()
+  usePushScreen("edit-item", itemId as string)
   const [valid, setValid] = useState(true);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);

@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import BottomModal from '@/components/ui/bottomModal';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { usePushScreen } from '@/hooks/usePushScreen';
 import { FirebaseCollections } from '@/lib/constants';
 import { getImageOrDefaultTo } from '@/lib/utils';
 import { refetchCurrentUser, setCurrentUser } from '@/redux/global/current-user';
@@ -30,7 +31,7 @@ export default function UserProfile() {
   const currentUser = useSelector((state: any) => state.user);
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
   const theme = useColorScheme();
-
+  usePushScreen("profile", id as string)
   const handleLogout = () => {
     logoutUser().then(() => {
       dispatch(setCurrentUser(null));
@@ -133,9 +134,7 @@ export default function UserProfile() {
             getUserItems(currentUser as AppUser);
           }
         } else {
-          console.log('current user', currentUser)
           if (currentUser !== null && currentUser?.email) {
-            console.log('current user found', currentUser)
             getUserItems(currentUser as AppUser);
             setUser(currentUser);
             dispatch(saveUser(currentUser));

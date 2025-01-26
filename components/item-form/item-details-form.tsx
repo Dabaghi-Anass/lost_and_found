@@ -24,7 +24,6 @@ export function ItemDetailsForm({ formData, onFormData, onValidationStateChange 
       const errorsMap: Map<string, string> = new Map();
       e.errors.forEach((error: ZodIssue) => {
         errorsMap.set(`${error.path[0]}`, `${error.path[0]} ${error.message}`);
-        console.log(error);
       });
       setErrors(errorsMap);
     }

@@ -252,7 +252,7 @@ export async function fetchProfileById(
 	id: string
 ): Promise<Profile | undefined> {
 	try {
-		console.log(`[fetchProfileById] Fetching profile with ID: ${id}`);
+		
 		let profile: Profile | undefined;
 		const profilesCollection = collection(
 			firestore,

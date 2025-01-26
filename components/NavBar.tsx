@@ -2,6 +2,7 @@ import Logo from "@/assets/images/app_logo_small.png";
 import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { usePushScreen } from "@/hooks/usePushScreen";
 import { getImageOrDefaultTo } from "@/lib/utils";
 import { refetchCurrentUser } from "@/redux/global/current-user";
 import { AntDesign } from "@expo/vector-icons";
@@ -18,8 +19,9 @@ export default function NavBar() {
   const userShortName = `${currentUser?.profile?.firstName?.charAt(0) ?? "N"}${currentUser?.profile?.lastName?.charAt(0) ?? "A"}`;
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
+  const { canGoBack, goBack } = usePushScreen()
   const dispatch = useDispatch();
-  const openOrCloseDrawer = () => {
+  function openOrCloseDrawer() {
     navigation.dispatch(DrawerActions.toggleDrawer());
   }
   useEffect(() => {
@@ -44,9 +46,11 @@ export default function NavBar() {
       <Text className="capitalize text-xl text-foreground font-bold">{screenName}</Text>
       <View className='flex-row items-center gap-4'>
         {
-          navigation.canGoBack() &&
-          <Pressable onPress={() => navigation.goBack()}>
-            <AntDesign name="arrowleft" size={24} color={Colors[colorScheme].text} />
+          canGoBack() &&
+          <Pressable onPress={() => goBack()}>
+            <View className="flex-row items-center justify-center bg-red-400 p-2">
+              <AntDesign name="arrowleft" size={30} color={Colors[colorScheme].text} />
+            </View>
           </Pressable>
         }
         <Pressable onPress={() => expoRouter.push(`/profile/${currentUser?.id}`)}>

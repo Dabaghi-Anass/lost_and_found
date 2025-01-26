@@ -4,6 +4,7 @@ import { AppButton } from '@/components/AppButton';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFetch } from '@/hooks/useFetch';
+import { usePushScreen } from "@/hooks/usePushScreen";
 import { FirebaseCollections } from '@/lib/constants';
 import { getImageOrDefaultTo } from "@/lib/utils";
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
@@ -35,6 +36,7 @@ export default function ItemDetailsScreen() {
   const { itemId } = useLocalSearchParams()
   const router = useRouter()
   const theme = useColorScheme();
+  usePushScreen("item-details", itemId as string)
   const currentUser = useSelector((state: any) => state.user);
   const itemsMap: Record<string, Item> = useSelector((state: any) => state.items);
   const dispatch = useDispatch();

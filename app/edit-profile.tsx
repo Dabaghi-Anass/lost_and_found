@@ -11,7 +11,7 @@ import BottomModal from '@/components/ui/bottomModal';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { auth } from '@/database/fire_base';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { useDrawerState } from '@/hooks/useDrawerState';
+import { usePushScreen } from '@/hooks/usePushScreen';
 import { getImageOrDefaultTo } from '@/lib/utils';
 import { setCurrentUser } from '@/redux/global/current-user';
 import { Profile } from '@/types/entities.types';
@@ -23,13 +23,13 @@ import { Alert, Image, Platform, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 export default function UserProfileEditPage() {
   const dispatch = useDispatch();
-  useDrawerState("e-profile")
   const [loading, setLoading] = useState<boolean>(false);
   const currentUser = useSelector((state: any) => state.user);
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
   const theme = useColorScheme();
   const [userData, setUserData] = useState<Profile | undefined>()
   const [imageAsset, setImageAsset] = useState<ImagePicker.ImagePickerAsset | undefined>();
+  usePushScreen("edit-profile")
 
   function updateUserData(key: string, value: string) {
     setUserData({
