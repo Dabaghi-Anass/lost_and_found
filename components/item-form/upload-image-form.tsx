@@ -3,7 +3,7 @@ import { AppButton } from '@/components/AppButton';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
-import { Image, Pressable, View } from 'react-native';
+import { Image, Platform, Pressable, View } from 'react-native';
 
 export function ImagesUploadForm({ formData, onFormData, onAssetsUploaded }: {
   onAssetsUploaded: (assets: ImagePicker.ImagePickerAsset[]) => void,
@@ -48,7 +48,7 @@ export function ImagesUploadForm({ formData, onFormData, onAssetsUploaded }: {
       onAssetsUploaded(result.assets);
     }
   };
-  return <View className="image-upload-form space-y-4 h-[60%] flex flex-start gap-4">
+  return <View className="image-upload-form space-y-4 flex flex-start gap-4">
     <ImagesPreview
       images={formData.images}
       onSelect={(index) => {
@@ -71,14 +71,16 @@ export function ImagesUploadForm({ formData, onFormData, onAssetsUploaded }: {
       className="px-4 py-2 rounded-md">
       Upload Images From Strorage
     </AppButton>
-    <AppButton
-      onPress={() => {
-        handleUploadImagesFromCamera()
-      }}
-      variant="default"
-      className="px-4 py-2 rounded-md">
-      Take A Picture
-    </AppButton>
+    {Platform.OS !== 'web' &&
+      <AppButton
+        onPress={() => {
+          handleUploadImagesFromCamera()
+        }}
+        variant="default"
+        className="px-4 py-2 rounded-md">
+        Take A Picture
+      </AppButton>
+    }
 
   </View>
 }

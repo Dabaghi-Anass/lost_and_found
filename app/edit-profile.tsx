@@ -18,7 +18,7 @@ import { AntDesign, Feather, FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { Alert, Image, Text, View } from 'react-native';
+import { Alert, Image, Platform, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 export default function UserProfileEditPage() {
   const dispatch = useDispatch();
@@ -28,9 +28,6 @@ export default function UserProfileEditPage() {
   const theme = useColorScheme();
   const [userData, setUserData] = useState<Profile | undefined>()
   const [imageAsset, setImageAsset] = useState<ImagePicker.ImagePickerAsset | undefined>();
-  function openConfirmationModal() {
-    setConfirmationModalVisible(true);
-  }
 
   function updateUserData(key: string, value: string) {
     setUserData({
@@ -121,11 +118,13 @@ export default function UserProfileEditPage() {
               variant="secondary" onPress={handleUploadImageFromStorage}>
               <Text className='text-secondary'>From Storage</Text>
             </AppButton>
-            <AppButton
-              className='border-2 border-primary'
-              variant="secondary" onPress={handleUploadImageFromCamera}>
-              <Text className='text-secondary'>From Camera</Text>
-            </AppButton>
+            {Platform.OS !== 'web' &&
+              <AppButton
+                className='border-2 border-primary'
+                variant="secondary" onPress={handleUploadImageFromCamera}>
+                <Text className='text-secondary'>From Camera</Text>
+              </AppButton>
+            }
             <AppButton
               variant="destructive"
               onPress={() => updateUserData('imageUri', '')}>
