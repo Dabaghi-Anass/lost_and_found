@@ -1,27 +1,22 @@
-import { getUserById } from "@/api/database";
+import { refetchCurrentUserFromDb } from "@/api/database";
 import { AppUser } from "@/types/entities.types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createSlice } from "@reduxjs/toolkit";
-import { router } from "expo-router";
 const currentUser = createSlice({
 	name: "current-user",
 	initialState: {} as AppUser,
 	reducers: {
 		refetchCurrentUser: (state) => {
-			AsyncStorage.getItem("userID").then((id) => {
-				if (id) {
-					getUserById(id).then((user) => {
-						state = user as AppUser;
-					});
-				} else {
-					router.replace("/login");
-				}
-			});
-			return state;
+			refetchCurrentUserFromDb();
+			console.log("Refetching user");
 		},
 		setCurrentUser: (state, action) => {
-			AsyncStorage.setItem("userID", action.payload?.id);
-			return action.payload;
+			const user = action.payload;
+			if (!user?.id) return state;
+			AsyncStorage.setItem("userID", user.id);
+			for (const key in user) {
+				state[key] = user[key];
+			}
 		},
 		removeCurrentUser: (state, action) => {
 			AsyncStorage.removeItem("userID");

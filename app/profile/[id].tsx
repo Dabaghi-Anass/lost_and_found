@@ -10,7 +10,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { FirebaseCollections } from '@/lib/constants';
 import { getImageOrDefaultTo } from '@/lib/utils';
-import { setCurrentUser } from '@/redux/global/current-user';
+import { refetchCurrentUser, setCurrentUser } from '@/redux/global/current-user';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { saveUser, saveUser as saveUserAction } from '@/redux/global/users';
 import { AppUser, Item } from '@/types/entities.types';
@@ -31,9 +31,6 @@ export default function UserProfile() {
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
   const theme = useColorScheme();
 
-  function openConfirmationModal() {
-    setConfirmationModalVisible(true);
-  }
   const handleLogout = () => {
     logoutUser().then(() => {
       dispatch(setCurrentUser(null));
@@ -137,13 +134,20 @@ export default function UserProfile() {
           }
         } else {
           console.log('current user', currentUser)
-          if (currentUser !== null) {
+          if (currentUser !== null && currentUser?.email) {
             console.log('current user found', currentUser)
             getUserItems(currentUser as AppUser);
             setUser(currentUser);
             dispatch(saveUser(currentUser));
           } else {
-            router.replace("/login")
+            const id = await AsyncStorage.getItem('userID')
+            if (!id || id === 'undefined') {
+              setLoading(false);
+              router.replace("/login")
+            } else {
+              dispatch(refetchCurrentUser())
+              setLoading(false);
+            }
           }
         }
       } catch (e: any) {
@@ -157,6 +161,13 @@ export default function UserProfile() {
   useEffect(() => {
     dispatch(setCurrentScreenName('profile'));
   }, [user])
+  useEffect(() => {
+    if (currentUser?.id === user?.id || id === "undefined") {
+      dispatch(setCurrentScreenName('profile'));
+      setUser(currentUser);
+      setLoading(false)
+    }
+  }, [currentUser])
   useFocusEffect(useCallback(() => {
     initUser();
   }, [id]));

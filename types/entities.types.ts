@@ -10,6 +10,7 @@ interface AppUser {
 	profile: Profile;
 	items: Array<Item>;
 	role?: Role;
+	[key: string]: any;
 }
 
 interface Profile {
