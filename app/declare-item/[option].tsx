@@ -89,8 +89,24 @@ export default function DeclareItemScreen() {
         .setGeoCoordinates(formData.coordinates)
         .build();
       const savedItem = await saveItem(item);
-      router.replace("/items");
+      setStep(1);
+      setFormData({
+        type: option || "lost",
+        category: '',
+        title: '',
+        description: '',
+        color: '#6366f1',
+        location: '',
+        images: [],
+        coordinates: {
+          latitude: 0,
+          longitude: 0
+        },
+        date: new Date(),
+      });
+
       dispatch(saveItemAction({ ...savedItem } as any));
+      router.replace("/items");
     } catch (error) {
       Alert.alert('Error', 'An error occurred while saving the item');
     }
@@ -130,7 +146,7 @@ export default function DeclareItemScreen() {
 
   return (
     <ScrollView className={`min-h-full w-full bg-muted px-4 py-6 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
-      <View className="overflow-hidden w-full h-screen items-center justify-center">
+      <View className="overflow-hidden w-full h-screen items-center justify-center web:h-full">
         <LinearGradient
           className='px-2 py-2 w-full web:max-w-screen-md m-auto rounded-xl overflow-hidden'
           colors={['#233dfc', '#1e98fc']}

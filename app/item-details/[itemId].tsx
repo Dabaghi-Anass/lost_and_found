@@ -12,7 +12,7 @@ import { Item } from '@/types/entities.types';
 import { Feather } from '@expo/vector-icons';
 import { format, parseISO } from 'date-fns';
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
-import { Calendar, MapPin, Package2, Share2, Tag } from 'lucide-react-native';
+import { Calendar, MapPin, Package2, Tag } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import {
   Dimensions,
@@ -20,7 +20,8 @@ import {
   Image,
   Linking,
   Platform,
-  ScrollView, Share, StyleSheet,
+  ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View
@@ -94,17 +95,6 @@ export default function ItemDetailsScreen() {
     Linking.openURL(url || "");
   };
 
-  const handleShare = async () => {
-    if (!item) return
-    try {
-      const itemLink = `https://lost-and-found-2b7b1.web.app/item-details/${item.id}`;
-      await Share.share({
-        message: `Check out this ${item.type} item: ${item.item.title} at ${item.location}\n${itemLink}`,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
   useEffect(() => {
     dispatch(setCurrentScreenName('lost item'));
   }, [itemId])
@@ -276,10 +266,6 @@ export default function ItemDetailsScreen() {
             >
               <Feather name="phone-call" size={20} color="#fff" />
               <Text className='text-white' style={styles.primaryButtonText}>Call Owner</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.secondaryButton} onPress={handleShare}>
-              <Share2 width={20} height={20} color="#000" />
-              <Text style={styles.secondaryButtonText}>Share</Text>
             </TouchableOpacity>
           </View>
         </View>

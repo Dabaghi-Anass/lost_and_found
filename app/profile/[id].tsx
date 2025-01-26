@@ -17,7 +17,6 @@ import { AppUser, Item } from '@/types/entities.types';
 import { AntDesign, Feather, FontAwesome5 } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Link, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { Share2 } from 'lucide-react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, Image, Linking, Share, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -188,12 +187,6 @@ export default function UserProfile() {
               </Badge>
             </View>
           </View>
-          <View className='flex-row items-center justify-center gap-4 mt-4'>
-            <AppButton size="sm" onPress={handleEmail}>
-              <Feather name="mail" size={20} color="#111" />
-              <Text className='text-lg'>Email</Text>
-            </AppButton>
-          </View>
           {currentUser?.id === user?.id &&
             <View className='flex flex-row items-center justify-center py-8 px-4 gap-4'>
               <Link href="/edit-profile" asChild>
@@ -235,16 +228,18 @@ export default function UserProfile() {
           </View>
           <View className='flex-row items-center gap-4 p-4'>
             <AppButton
+              variant="success"
               onPress={() => {
                 Linking.openURL(`tel:${user?.profile?.phoneNumber}`)
               }}
             >
-              <Feather name="phone-call" size={20} color="#333" />
-              <Text className='text-accent-foreground text-xl font-bold'>Call {user?.profile?.firstName}</Text>
+              <Feather name="phone-call" size={20} color="white" />
+              <Text className='text-white text-xl font-bold ml-2'>Call {user?.profile?.firstName}</Text>
             </AppButton>
-            <AppButton variant="primary" onPress={handleShareProfile}>
-              <Share2 size={20} color="white" />
-              <Text className='text-white text-xl font-bold'>Share Profile</Text>
+            <AppButton
+              onPress={handleEmail}>
+              <Feather name="mail" size={20} color="#111" />
+              <Text className='text-lg'>Email {user?.profile?.firstName}</Text>
             </AppButton>
           </View>
           {userItems.length > 0 &&

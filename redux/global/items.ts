@@ -19,6 +19,7 @@ const itemsReducer = createSlice({
 			const item = action.payload;
 			if (!item.id) return;
 			state[item.id] = item;
+			return state;
 		},
 		removeItem: (state, action) => {
 			const id = action.payload;
