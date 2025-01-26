@@ -2,8 +2,8 @@ import { deleteItemById, updateItem, uploadImagesToServer } from '@/api/database
 import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import { AppButton } from '@/components/AppButton';
 import AppColorPicker from '@/components/color-picker';
-import { ConfirmationModal } from '@/components/confirmation-modal';
 import { Input } from '@/components/Input';
+import BottomModal from '@/components/ui/bottomModal';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -138,18 +138,26 @@ export default function EditItemScreen() {
     <ScrollView className='bg-background h-full p-4'>
       <View className='my-8 flex-row justify-between items-center'>
         <Text className='text-foreground web:text-2xl text-3xl font-bold'>Edit Item</Text>
-        <ConfirmationModal
-          trigger={(show) => (<AppButton size="sm" variant="destructive" onPress={show}>
-            <Text className='text-white font-bold'>Delete Item</Text>
-          </AppButton>)}
-          title='Delete Item'
-          description='Are you sure you want to delete this item?'
-          onAccept={handleDelete}
-          onClose={() => setModalOpen(false)}
-          open={modalOpen}
-          onOpen={() => setModalOpen(true)}
-        />
-
+        <BottomModal
+          title='Are you sure you want to delete this item?'
+          visible={modalOpen}
+          onClose={() => setModalOpen(false)}>
+          <View className='flex-row h-full items-center justify-center gap-4'>
+            <AppButton variant="secondary" className='gap-4 border border-muted' onPress={() => setModalOpen(false)}>
+              <Text className='text-xl text-foreground'>Cancel</Text>
+              <AntDesign name="close" size={20} color="black" />
+            </AppButton>
+            <AppButton size="sm" variant="destructive" onPress={() => {
+              handleDelete();
+              setModalOpen(true)
+            }}>
+              <Text className='text-white font-bold'>Delete Item</Text>
+            </AppButton>
+          </View>
+        </BottomModal>
+        <AppButton size="sm" variant="destructive" onPress={() => setModalOpen(true)}>
+          <Text className='text-white font-bold'>Delete Item</Text>
+        </AppButton>
       </View>
       <ItemDetailsForm
         formData={formData}

@@ -1,9 +1,9 @@
 import { fetchDoc, makeItemDelivred } from '@/api/database';
 import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import { AppButton } from '@/components/AppButton';
-import { ConfirmationModal } from '@/components/confirmation-modal';
 import ItemMinifiedCard from '@/components/item-minified-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import BottomModal from '@/components/ui/bottomModal';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFetch } from '@/hooks/useFetch';
@@ -121,19 +121,27 @@ export default function RealOwnerSearchScreen() {
                 <Text className='text-lg font-bold capitalize text-foreground'>{profile.firstName} {profile.lastName}</Text>
                 <Text className='text-sm text-muted-foreground'>{profile.phoneNumber}</Text>
               </View>
+              <BottomModal
+                title={`Are you sure you want to select ${profile.firstName} ${profile.lastName} as the real owner of this item?`}
+                visible={confirmationModalOpen}
+                onClose={() => setConfirmationModalOpen(false)}>
+                <View className='flex-row h-full items-center justify-center gap-4'>
+                  <AppButton variant="secondary" className='gap-4 border border-muted' onPress={() => setConfirmationModalOpen(false)}>
+                    <Text className='text-xl text-foreground'>Cancel</Text>
+                    <AntDesign name="close" size={20} color="black" />
+                  </AppButton>
+                  <AppButton variant="success" onPress={() => {
+                    setConfirmationModalOpen(false)
+                    handleUpdateItemRealOwner(profile.id as string)
+                  }}>
+                    <Text className='text-white font-bold'>Mark As Item Owner</Text>
+                  </AppButton>
+                </View>
+              </BottomModal>
+              <AppButton onPress={() => setConfirmationModalOpen(true)} size="sm" variant="primary">Select</AppButton>
 
-              <ConfirmationModal
-                title='confirm real owner'
-                description={`Are you sure you want to select ${profile.firstName} ${profile.lastName} as the real owner of this item?`}
-                open={confirmationModalOpen}
-                onOpen={() => setConfirmationModalOpen(true)}
-                trigger={(onOpen) => <AppButton onPress={onOpen} size="sm" variant="primary">Select</AppButton>}
-                onClose={() => setConfirmationModalOpen(false)}
-                onAccept={() => {
-                  setConfirmationModalOpen(false)
-                  handleUpdateItemRealOwner(profile.id as string)
-                }}
-              />
+
+
             </View>
           }}
         />

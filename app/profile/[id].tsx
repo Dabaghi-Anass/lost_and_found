@@ -3,9 +3,9 @@ import { fetchDoc, fetchItemsOfUser } from '@/api/database';
 import DefaultUserImage from '@/assets/images/default-user-image.jpg';
 import bgPattern from "@/assets/images/pattern.png";
 import { AppButton } from '@/components/AppButton';
-import { ConfirmationModal } from '@/components/confirmation-modal';
 import ItemMinifiedCard from '@/components/item-minified-card';
 import { Badge } from '@/components/ui/badge';
+import BottomModal from '@/components/ui/bottomModal';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { FirebaseCollections } from '@/lib/constants';
@@ -195,22 +195,26 @@ export default function UserProfile() {
                   <FontAwesome5 name="user-edit" size={20} color={theme === 'dark' ? "white" : "#222"} />
                 </AppButton>
               </Link>
-              <ConfirmationModal
-                title='Logout'
-                description='Are you sure you want to logout?'
-                onOpen={openConfirmationModal}
-                trigger={(open) => <AppButton variant="destructive" className='gap-4' onPress={() => open?.()}>
-                  <Text className='text-white text-xl'>logout</Text>
-                  <AntDesign name="logout" size={20} color="white" />
-                </AppButton>}
-                open={confirmationModalVisible}
-                onAccept={() => {
-                  handleLogout();
-                }}
-                onClose={() => {
-                  setConfirmationModalVisible(false);
-                }}
-              />
+              <BottomModal
+                title='Are you sure you want to logout?'
+                visible={confirmationModalVisible}
+                onClose={() => setConfirmationModalVisible(false)}>
+                <View className='flex-row h-full items-center justify-center gap-4'>
+                  <AppButton variant="secondary" className='gap-4 border border-muted' onPress={() => setConfirmationModalVisible(false)}>
+                    <Text className='text-xl text-foreground'>Cancel</Text>
+                    <AntDesign name="close" size={20} color="black" />
+                  </AppButton>
+                  <AppButton variant="destructive" className='gap-4' onPress={handleLogout}>
+                    <Text className='text-white text-xl'>logout</Text>
+                    <AntDesign name="logout" size={20} color="white" />
+                  </AppButton>
+                </View>
+              </BottomModal>
+              <AppButton variant="destructive" className='gap-4' onPress={() => setConfirmationModalVisible(true)}>
+                <Text className='text-white text-xl'>logout</Text>
+                <AntDesign name="logout" size={20} color="white" />
+              </AppButton>
+
             </View>
           }
           <View className='items-start justify-center gap-8 m-5'>
