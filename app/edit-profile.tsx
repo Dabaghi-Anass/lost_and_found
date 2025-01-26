@@ -11,6 +11,7 @@ import BottomModal from '@/components/ui/bottomModal';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { auth } from '@/database/fire_base';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useDrawerState } from '@/hooks/useDrawerState';
 import { getImageOrDefaultTo } from '@/lib/utils';
 import { setCurrentUser } from '@/redux/global/current-user';
 import { Profile } from '@/types/entities.types';
@@ -22,6 +23,7 @@ import { Alert, Image, Platform, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 export default function UserProfileEditPage() {
   const dispatch = useDispatch();
+  useDrawerState("e-profile")
   const [loading, setLoading] = useState<boolean>(false);
   const currentUser = useSelector((state: any) => state.user);
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
@@ -212,7 +214,7 @@ export default function UserProfileEditPage() {
               onClose={() => setConfirmationModalVisible(false)}>
               <View className='flex-row h-full items-center justify-center gap-4'>
                 <AppButton variant="secondary" className='gap-4 border border-muted' onPress={() => setConfirmationModalVisible(false)}>
-                  <Text className='text-xl text-foreground'>Cancel</Text>
+                  <Text className='text-xl text-slate-100'>Cancel</Text>
                   <AntDesign name="close" size={20} color="black" />
                 </AppButton>
                 <AppButton variant="destructive" className='gap-4' onPress={async () => {

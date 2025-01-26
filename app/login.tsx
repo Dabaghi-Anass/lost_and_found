@@ -7,11 +7,12 @@ import { AppButton } from "@/components/AppButton";
 import { Input } from "@/components/Input";
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import Separator from '@/components/separator';
+import { useDrawerState } from "@/hooks/useDrawerState";
 import { setCurrentUser } from "@/redux/global/current-user";
 import { setCurrentScreenName } from "@/redux/global/currentScreenName";
 // import { auth } from "@/database/fire_base";
 // import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
-import { Link, useFocusEffect, useRouter } from "expo-router";
+import { Link, useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { User } from "firebase/auth";
 import { useCallback, useEffect, useState } from "react";
 import { Alert, ColorSchemeName, Image, Text, useColorScheme, View } from "react-native";
@@ -23,6 +24,7 @@ function BgImageComponent() {
 export default function LoginScreen() {
   const dispatch = useDispatch();
   const router = useRouter();
+  useDrawerState("auth")
   const [userName, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>();

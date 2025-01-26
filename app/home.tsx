@@ -1,5 +1,6 @@
 import Screen from '@/components/screen';
 import SuccessStoryCard from '@/components/success-story-card';
+import { useDrawerState } from '@/hooks/useDrawerState';
 import { useFetchAll } from '@/hooks/useFetch';
 import { FirebaseCollections } from '@/lib/constants';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
@@ -10,9 +11,15 @@ import React, { useEffect } from 'react';
 import { FlatList, Linking, StyleSheet, Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 export default function App() {
+  useDrawerState("home")
   const dispatch = useDispatch();
   const itemsFromStore = useSelector((state: any) => state.items);
-  const { data: items, loading, refetch } = useFetchAll<Item>({
+  const { data, loading, refetch } = useFetchAll<Item>({
+    where: [{
+      fieldPath: 'delivered',
+      opStr: '==',
+      value: true
+    }],
     collection: FirebaseCollections.LOST_ITEMS,
     cachedData: [...Object.values(itemsFromStore)],
     cache: (data) => {
@@ -39,7 +46,7 @@ export default function App() {
       deliveredAt: (value: any) => (value?.seconds || 0) * 1000,
     }
   });
-  const data = items.filter((item) => item.delivered);
+  console.log(data);
   useEffect(() => {
     dispatch(setCurrentScreenName('home'));
     Linking.addEventListener('url', (event) => {

@@ -1,6 +1,7 @@
 // import { auth } from "@/database/fire_base";
 import { fetchDoc } from '@/api/database';
 import Screen from '@/components/screen';
+import { useDrawerState } from '@/hooks/useDrawerState';
 import { FirebaseCollections } from '@/lib/constants';
 import { setCurrentUser } from '@/redux/global/current-user';
 import { AppUser } from '@/types/entities.types';
@@ -14,6 +15,7 @@ SplashScreen.preventAutoHideAsync();
 export default function HomeScreen() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState<boolean>(true);
+  useDrawerState("index")
   const initUser = async (userId: string) => {
     setLoading(true);
     // reauthenticateWithCredential()

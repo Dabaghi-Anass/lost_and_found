@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSearch } from "@/hooks/use-search";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useDrawerState } from "@/hooks/useDrawerState";
 import { useFetchAll } from "@/hooks/useFetch";
 import { FirebaseCollections } from "@/lib/constants";
 import { getCategories } from "@/lib/utils";
@@ -28,6 +29,7 @@ const LostItemPage: React.FC = () => {
   const router = useRouter()
   const dispatch = useDispatch()
   const theme = useColorScheme();
+  useDrawerState("items")
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const currentUser = useSelector((state: any) => state.user);

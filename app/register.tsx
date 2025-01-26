@@ -8,6 +8,7 @@ import { AppButton } from "@/components/AppButton";
 import { Input } from "@/components/Input";
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import Separator from "@/components/separator";
+import { useDrawerState } from "@/hooks/useDrawerState";
 import { getImageOrDefaultTo } from "@/lib/utils";
 import { setCurrentUser } from "@/redux/global/current-user";
 import { setCurrentScreenName } from "@/redux/global/currentScreenName";
@@ -32,6 +33,7 @@ export default function LoginScreen() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<Map<string, string>>(new Map());
+  useDrawerState("auth")
   const [userDetails, setUserDetails] = useState({
     firstName: '',
     lastName: '',

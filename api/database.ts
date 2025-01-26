@@ -610,10 +610,24 @@ export async function makeItemDelivred(
 			const docs: any = [];
 			querySnapshot.forEach((doc) => docs.push(doc.ref));
 			if (docs.length > 0) {
-				await updateDoc(docs[0], {
+				const profilesCollection = collection(
+					firestore,
+					FirebaseCollections.PROFILES
+				);
+				const userProfileSearchQuery = query(
+					profilesCollection,
+					where("id", "==", ownerId)
+				);
+
+				const snapshot = await getDocs(userProfileSearchQuery);
+				if (snapshot.empty) {
+					throw new Error(`Document ${itemId} has no data`);
+				}
+				const profileRef = snapshot.docs[0].ref;
+				const profile = await updateDoc(docs[0], {
 					delivered: true,
 					deliveredAt: new Date(),
-					realOwnerId: ownerId,
+					realOwnerId: profileRef.id,
 				});
 			} else {
 				throw new Error(`Document ${itemId} has no data`);

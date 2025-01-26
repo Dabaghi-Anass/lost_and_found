@@ -41,7 +41,7 @@ export default function SuccessStoryCard({ item }: Props) {
         </View>
       </View>
       <View className="flex-row items-center justify-between pl-2">
-        <Text className='text-gray-500'>{item?.deliveredAt ? new Date((item?.deliveredAt as any).seconds * 1000).toLocaleString("en-US", {
+        <Text className='text-gray-500'>{item?.deliveredAt ? new Date(item.deliveredAt).toLocaleString("en-US", {
           dateStyle: "full",
           timeStyle: "short"
         }) : "unknown"}</Text>

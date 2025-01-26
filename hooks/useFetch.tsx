@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 export type WhereClose = {
   fieldPath: string;
   opStr: WhereFilterOp;
-  value: string;
+  value: unknown;
 }
 type FetchProps = {
   collection: FirebaseCollections;
