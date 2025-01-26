@@ -5,7 +5,6 @@ import { FormStatusHeader } from '@/components/item-form/form-status-header';
 import { ItemDetailsForm } from '@/components/item-form/item-details-form';
 import { LocationAndDateForm } from '@/components/item-form/location-and-date-form';
 import { ImagesUploadForm } from '@/components/item-form/upload-image-form';
-import ScrollScreen from '@/components/scroll-screen';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { saveItem as saveItemAction } from '@/redux/global/items';
 import { OptionType } from '@/types/entities.types';
@@ -130,10 +129,10 @@ export default function DeclareItemScreen() {
   }, [option]);
 
   return (
-    <ScrollScreen className={`flex-1 bg-muted h-full px-4 py-6 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
-      <View className="rounded-xl flex-1 overflow-hidden">
+    <ScrollView className={`min-h-full w-full bg-muted px-4 py-6 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
+      <View className="overflow-hidden w-full h-screen items-center justify-center">
         <LinearGradient
-          className='h-full max-h-full px-2 w-full web:max-w-screen-md m-auto'
+          className='px-2 py-2 w-full web:max-w-screen-md m-auto rounded-xl overflow-hidden'
           colors={['#233dfc', '#1e98fc']}
           start={[1, 0.9]}
         >
@@ -142,7 +141,7 @@ export default function DeclareItemScreen() {
               {formData.type === 'lost' ? 'Report Lost Item' : 'Report Found Item'}
             </Text>
           </View>
-          <ScrollView contentContainerClassName="p-4 bg-background rounded-lg h-full flex justify-between">
+          <View className="p-4 bg-background rounded-lg flex justify-between">
             <FormStatusHeader step={step} />
             {step === 1 && <ChooseItemTypeForm
               formData={formData}
@@ -202,10 +201,10 @@ export default function DeclareItemScreen() {
                 </AppButton>
               )}
             </View>
-          </ScrollView>
+          </View>
         </LinearGradient>
-      </View >
-    </ScrollScreen >
+      </View>
+    </ScrollView>
   );
 }
 

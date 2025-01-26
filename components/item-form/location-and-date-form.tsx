@@ -81,6 +81,7 @@ export function LocationAndDateForm({ formData, onFormData, onValidationStateCha
           className="flex-1 border-none rounded-md mr-2 text-foreground opacity-50"
           placeholderTextColor={theme === 'dark' ? 'gray' : 'black'}
           editable={false}
+          style={{ color: "#ff9100", fontWeight: "bold" }}
         />
         <Input
           value={formData?.coordinates ? formData?.coordinates?.longitude?.toString() : ''}
@@ -88,6 +89,7 @@ export function LocationAndDateForm({ formData, onFormData, onValidationStateCha
           keyboardType="numeric"
           className="flex-1 border-none rounded-md mr-2 text-foreground opacity-50"
           placeholderTextColor={theme === 'dark' ? 'gray' : 'black'}
+          style={{ color: "#ff9100", fontWeight: "bold" }}
           editable={false}
         />
 
