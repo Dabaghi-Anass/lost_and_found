@@ -17,10 +17,10 @@ import { ProfileBuilder } from "@/types/entities/profile";
 import { Role } from "@/types/utils.types";
 import { UserSchema } from "@/zod-schemas/schemas";
 import * as ImagePicker from 'expo-image-picker';
-import { Link, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { Link, useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import { ColorSchemeName, Image, StyleSheet, Text, useColorScheme, View } from "react-native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ZodIssue } from "zod";
 
 function BgImageComponent() {
@@ -44,6 +44,7 @@ export default function LoginScreen() {
   });
   const [userImage, setUserImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
   const [currentScreen, setCurrentScreen] = useState<number>(0);
+  const currentUser = useSelector((state: any) => state.user);
   const isValid = () => {
     return errors.size === 0 && (userDetails.firstName && userDetails.lastName && userDetails.phoneNumber && userDetails.email && userDetails.password && userDetails.confirmPassword);
   }
@@ -132,6 +133,9 @@ export default function LoginScreen() {
     dispatch(setCurrentScreenName("auth"));
   }, [userDetails]);
 
+  useFocusEffect(useCallback(() => {
+    if (currentUser && Object.keys(currentUser).length > 0) router.replace("/items");
+  }, [currentUser]))
   return (
     <ParallaxScrollView
       HEADER_HEIGHT={300}

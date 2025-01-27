@@ -33,6 +33,7 @@ const LostItemsOfUserPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const itemsFromStore: Record<string, Item> = useSelector((state: any) => state.items);
+  const currentUser = useSelector((state: any) => state.user);
   const { data, error, loading, refetch } = useFetchAll<Item>({
     collection: FirebaseCollections.LOST_ITEMS,
     cachedData: [...Object.values(itemsFromStore)].filter((item) => item?.ownerId === userId),
@@ -68,7 +69,9 @@ const LostItemsOfUserPage: React.FC = () => {
     dispatch(setCurrentScreenName(`Items of ${userId?.slice(0, 4)}...`));
   }, []);
   useFocusEffect(changeScreenName);
-
+  useFocusEffect(useCallback(() => {
+    if (currentUser === null || Object.keys(currentUser).length === 0) router.replace("/login");
+  }, [currentUser]))
   if (error) {
     return (
       <View style={styles.centered}>

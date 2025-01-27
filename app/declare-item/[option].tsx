@@ -15,9 +15,9 @@ import { ItemDetailsBuilder } from '@/types/entities/ItemDetails';
 import { GeolocationCoordinates } from '@/types/utils.types';
 import { ImagePickerAsset } from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Toast } from 'toastify-react-native';
@@ -147,6 +147,9 @@ export default function DeclareItemScreen() {
     validationStateClone.set(1, true);
     setValidationState(validationStateClone);
   }, [option]);
+  useFocusEffect(useCallback(() => {
+    if (currentUser === null || Object.keys(currentUser).length === 0) router.replace("/login");
+  }, [currentUser]))
 
   return (
     <ScrollView className={`min-h-full w-full bg-muted px-4 py-6 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>

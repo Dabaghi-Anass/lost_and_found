@@ -13,9 +13,9 @@ import { saveItem } from '@/redux/global/items';
 import { Item } from '@/types/entities.types';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { format, parseISO } from 'date-fns';
-import { Link, useLocalSearchParams, useRouter } from 'expo-router';
+import { Link, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Calendar, MapPin, Package2, Tag } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Dimensions,
   FlatList,
@@ -115,6 +115,9 @@ export default function ItemDetailsScreen() {
       url: link,
     });
   };
+  useFocusEffect(useCallback(() => {
+    if (currentUser === null || Object.keys(currentUser).length === 0) router.replace("/login");
+  }, [currentUser]))
 
   useEffect(() => {
     dispatch(setCurrentScreenName('lost item'));

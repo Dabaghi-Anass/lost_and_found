@@ -27,6 +27,7 @@ export function usePushScreen(screenName?: string, param?: string, reset?: boole
     }
 
   }, [screenName])
+
   useFocusEffect(init)
   return { screens, goBack, canGoBack }
 }

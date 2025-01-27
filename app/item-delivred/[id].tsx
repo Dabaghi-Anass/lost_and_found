@@ -15,8 +15,9 @@ import { getImageOrDefaultTo } from '@/lib/utils';
 import { saveItem } from '@/redux/global/items';
 import { Item, Profile } from '@/types/entities.types';
 import { AntDesign, Feather } from '@expo/vector-icons';
-import { useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
+import { router } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Toast } from 'toastify-react-native';
@@ -28,6 +29,7 @@ export default function RealOwnerSearchScreen() {
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const theme = useColorScheme();
   const dispatch = useDispatch();
+  const currentUser = useSelector((state: any) => state.user);
   const itemMap: Record<string, Item> = useSelector((state: any) => state.items);
   usePushScreen("item-delivred", id as string)
   const { data: item, loading: itemLoading } = useFetch<Item>({
@@ -61,6 +63,9 @@ export default function RealOwnerSearchScreen() {
       setLoading(false);
     }
   }
+  useFocusEffect(useCallback(() => {
+    if (currentUser === null || Object.keys(currentUser).length === 0) router.replace("/login");
+  }, [currentUser]))
 
   if (loading) return <LoadingSpinner visible={loading} />
   return (

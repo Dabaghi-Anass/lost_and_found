@@ -10,9 +10,9 @@ import SEO from "@/components/seo";
 import Separator from '@/components/separator';
 import { setCurrentUser } from "@/redux/global/current-user";
 import { setCurrentScreenName } from "@/redux/global/currentScreenName";
-import { Link, useRouter } from "expo-router";
+import { Link, useFocusEffect, useRouter } from "expo-router";
 import { User } from "firebase/auth";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ColorSchemeName, Image, Platform, Text, useColorScheme, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
@@ -52,7 +52,7 @@ export default function LoginScreen() {
         setUserName("");
         setPassword("");
         setLoading(false);
-        if (Platform.OS === "web") router.replace("/home");
+        if (Platform.OS === "web") window.location.reload();
         else router.replace("/home");
       }
     } catch (e: any) {
@@ -68,6 +68,9 @@ export default function LoginScreen() {
   useEffect(() => {
     dispatch(setCurrentScreenName("auth"));
   }, [userName]);
+  useFocusEffect(useCallback(() => {
+    if (currentUser && Object.keys(currentUser).length > 0) router.replace("/items");
+  }, [currentUser]))
   return (<ParallaxScrollView
     HEADER_HEIGHT={300}
     headerImage={<BgImageComponent />}

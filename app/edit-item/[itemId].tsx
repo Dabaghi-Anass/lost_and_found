@@ -47,6 +47,7 @@ export default function EditItemScreen() {
   const [valid, setValid] = useState(true);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
+  const currentUser = useSelector((state: any) => state.user);
   const itemsFromStoreMap: Record<string, Item> = useSelector((state: any) => state.items);
   const { data: item, error, loading: itemLoading, refetch } = useFetch<ItemDetails>({
     id: itemId as string,
@@ -135,6 +136,9 @@ export default function EditItemScreen() {
       setItemImages(item?.images || undefined);
     }
   }, [item]));
+  useFocusEffect(useCallback(() => {
+    if (currentUser === null || Object.keys(currentUser).length === 0) router.replace("/login");
+  }, [currentUser]))
   if (itemLoading || loading) return <LoadingSpinner visible={itemLoading || loading} />;
   if (error) return <Text className='text-3xl font-bold text-red-600'>{error}</Text>;
   return (

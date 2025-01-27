@@ -178,6 +178,10 @@ export default function UserProfile() {
   useFocusEffect(useCallback(() => {
     initUser();
   }, [id]));
+  useFocusEffect(useCallback(() => {
+    if (currentUser === null || Object.keys(currentUser).length === 0) router.replace("/login");
+  }, [currentUser]))
+
   if (!user || loading) return <LoadingSpinner visible={!user || loading} />
   return (
     <FlatList

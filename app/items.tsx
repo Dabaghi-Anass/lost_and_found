@@ -62,7 +62,9 @@ const LostItemPage: React.FC = () => {
     dispatch(setCurrentScreenName('lost items'));
   }, []);
   useFocusEffect(changeScreenName);
-
+  useFocusEffect(useCallback(() => {
+    if (currentUser === null || Object.keys(currentUser).length === 0) router.replace("/login");
+  }, [currentUser]))
   if (error) {
     return (
       <View style={styles.centered}>
