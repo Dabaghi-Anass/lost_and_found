@@ -19,6 +19,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { Toast } from 'toastify-react-native';
 export interface SubFormProps {
   formData: FormData,
   onValidationStateChange?: (state: boolean) => void,
@@ -110,7 +111,7 @@ export default function DeclareItemScreen() {
       dispatch(saveItemAction({ ...savedItem } as any));
       router.replace("/items");
     } catch (error) {
-      Alert.alert('Error', 'An error occurred while saving the item');
+      Toast.error("An error occurred while saving the item", "bottom");
     }
     setLoading(false);
     Alert.alert('Success', 'Item has been saved successfully', [{

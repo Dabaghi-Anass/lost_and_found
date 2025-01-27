@@ -1,49 +1,31 @@
-import { useColorScheme } from '@/hooks/useColorScheme';
-// import 'dotenv/config';
 import NavBar from '@/components/NavBar';
 import { UserProfileLink } from '@/components/user-profile-link';
 import { Colors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { store } from '@/redux/store';
 import { DrawerItemList } from '@react-navigation/drawer';
 import { useNavigationState } from '@react-navigation/native';
 import { PortalHost } from "@rn-primitives/portal";
-
-// import 'core-js/features/promise';
-// import 'core-js/features/set';
-// import 'core-js/features/set-timeout';
-// import 'core-js/stable';
-// import 'core-js/web/timers';
-// import 'core-js/web/url';
-// import 'core-js/web/url-search-params';
 import { useFonts } from 'expo-font';
 import * as Linking from 'expo-linking';
 import { Drawer } from 'expo-router/drawer';
 import * as SplashScreen from 'expo-splash-screen';
 import { BadgePlus, FolderSearch, MailCheck } from 'lucide-react-native';
 import { useEffect } from 'react';
-import { Alert, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-get-random-values';
 import 'react-native-reanimated';
 import { Provider } from 'react-redux';
 import 'regenerator-runtime/runtime';
+import ToastManager from "toastify-react-native";
 import "../assets/styles/global.css";
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   console.log("Error preventing auto hide");
 });
 
-// if (typeof setImmediate === 'undefined') {
-//   global.setImmediate = Object.assign((fn: () => void) => {
-//     const handle = InteractionManager.runAfterInteractions(fn);
-//     return {
-//       then: (onfulfilled?: () => any, onrejected?: () => any) => Promise.resolve().then(onfulfilled, onrejected),
-//       done: (...args: any[]) => handle.done(...args),
-//       cancel: () => handle.cancel(),
-//       __promisify__: () => new Promise<void>((resolve) => InteractionManager.runAfterInteractions(resolve))
-//     }
-//   });
-// }
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded, error] = useFonts({
@@ -65,7 +47,8 @@ export default function RootLayout() {
   }, [loaded, error]);
   useEffect(() => {
     Linking.addEventListener('url', (event) => {
-      Alert.alert(`Linking event`, JSON.stringify(event));
+      const { path, queryParams } = Linking.parse(event.url);
+      console.log({ path, queryParams });
     });
   }, [])
   if (!loaded && !error) {
@@ -77,6 +60,7 @@ export default function RootLayout() {
       <Provider store={store}>
         <View className={`${colorScheme} flex-1 flex items-center bg-background`}>
           <NavBar />
+          <ToastManager textStyle={{ fontSize: 16 }} height={50} />
           <View className='bg-background flex-1 w-full'>
             <Drawer screenOptions={{
 

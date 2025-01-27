@@ -16,8 +16,9 @@ import { Item, Profile } from '@/types/entities.types';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { Toast } from 'toastify-react-native';
 
 export default function RealOwnerSearchScreen() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -52,7 +53,7 @@ export default function RealOwnerSearchScreen() {
       const realOwnerProfile = await fetchDoc<Profile>(FirebaseCollections.PROFILES, ownerId);
       if (realOwnerProfile) item.realOwner = realOwnerProfile;
       dispatch(saveItem(item as any))
-      Alert.alert('Success', 'Item real owner updated successfully');
+      Toast.success('Item real owner updated successfully', "bottom");
     } catch (error) {
       console.error('Error updating item real owner:', error);
     } finally {

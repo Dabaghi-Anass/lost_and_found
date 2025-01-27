@@ -36,3 +36,8 @@ export function getImageOrDefaultTo(
 ) {
 	return image?.length && image?.length > 0 ? { uri: image } : fallback;
 }
+
+export function formAppLink(path: string, param?: string | null): string {
+	const WEBSITE_URL = "https://lost-and-found-wisd.expo.app";
+	return `${WEBSITE_URL}/${path}${param ? "/" + param : ""}`;
+}

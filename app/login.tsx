@@ -14,6 +14,7 @@ import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { Alert, ColorSchemeName, Image, Text, useColorScheme, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { Toast } from "toastify-react-native";
 function BgImageComponent() {
   const theme: ColorSchemeName = useColorScheme();
   return <Image source={theme === "dark" ? BgImageDark : BgImageLight} style={{ width: '100%', height: 300 }} />;
@@ -53,7 +54,7 @@ export default function LoginScreen() {
         router.push("/home");
       }
     } catch (e: any) {
-      Alert.alert("Error", e.message);
+      Toast.error("Error occured please try again later", "bottom");
     } finally {
       setLoading(false);
     }

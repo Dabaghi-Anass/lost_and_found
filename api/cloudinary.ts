@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ImagePickerAsset } from "expo-image-picker";
 import { Alert, Platform } from "react-native";
+import { Toast } from "toastify-react-native";
 const manipulateAsync = require("expo-image-manipulator").manipulateAsync;
 /**
  * Uploads an image to cloudinary cloud storage and returns the url of the uploaded image
@@ -33,7 +34,7 @@ export async function uploadAsset(asset: ImagePickerAsset) {
 
 			return response.data.secure_url;
 		} catch (e: any) {
-			Alert.alert("Error", "Failed to upload image");
+			Toast.error("Failed to upload image", "bottom");
 			return "";
 		}
 	} else {
@@ -67,7 +68,7 @@ export async function uploadAsset(asset: ImagePickerAsset) {
 
 			return response.data.secure_url;
 		} catch (e: any) {
-			Alert.alert("Error", "Failed to upload image");
+			Toast.error("Failed to upload image", "bottom");
 		}
 	}
 }

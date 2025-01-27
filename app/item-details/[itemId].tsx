@@ -1,16 +1,17 @@
 import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import DefaultItemImage from "@/assets/images/unknown-item.jpg";
 import { AppButton } from '@/components/AppButton';
+import SEO from "@/components/seo";
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFetch } from '@/hooks/useFetch';
 import { usePushScreen } from "@/hooks/usePushScreen";
 import { FirebaseCollections } from '@/lib/constants';
-import { getImageOrDefaultTo } from "@/lib/utils";
+import { formAppLink, getImageOrDefaultTo } from "@/lib/utils";
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { saveItem } from '@/redux/global/items';
 import { Item } from '@/types/entities.types';
-import { Feather } from '@expo/vector-icons';
+import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { format, parseISO } from 'date-fns';
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import { Calendar, MapPin, Package2, Tag } from 'lucide-react-native';
@@ -22,12 +23,14 @@ import {
   Linking,
   Platform,
   ScrollView,
+  Share,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { Toast } from "toastify-react-native";
 const { width } = Dimensions.get('window');
 
 export default function ItemDetailsScreen() {
@@ -83,6 +86,9 @@ export default function ItemDetailsScreen() {
 
   const openMap = () => {
     if (!item) return
+    if (Platform.OS === "web") {
+
+    }
     const scheme = Platform.select({
       ios: 'maps:0,0?q=',
       android: 'geo:0,0?q='
@@ -97,6 +103,19 @@ export default function ItemDetailsScreen() {
     Linking.openURL(url || "");
   };
 
+  const handleShareProfile = () => {
+    const link = formAppLink("item-details", item?.id);
+    if (Platform.OS === 'web') {
+      navigator.clipboard.writeText(link);
+      Toast.success('Link copied to clipboard', "bottom");
+      return;
+    }
+    Share.share({
+      message: `Check out this ${item?.type} ${item?.item.title} on Lost & Found App: ${link}`,
+      url: link,
+    });
+  };
+
   useEffect(() => {
     dispatch(setCurrentScreenName('lost item'));
   }, [itemId])
@@ -109,6 +128,12 @@ export default function ItemDetailsScreen() {
     data={[item]}
     renderItem={({ item }) => (
       <View className='bg-background h-full md:web:h-screen w-full md:web:flex-row'>
+        <SEO
+          title={`${item?.item?.title} - Lost & Found`}
+          description={`Check out this ${item?.type} ${item?.item?.title} found at ${item?.location}, ${item?.item?.description}`}
+          image={item?.item?.images[0]}
+          url={formAppLink("item-details", item?.id)}
+        />
         <View style={[{
           backgroundColor: item.item.color
         }]} className="w-full md:web:w-1/2">
@@ -175,6 +200,10 @@ export default function ItemDetailsScreen() {
           {item.owner &&
             isOwnItem ?
             <View className='flex-row items-center gap-4'>
+              <AppButton variant="outline" className='gap-4 border-muted'
+                onPress={handleShareProfile}>
+                <FontAwesome5 name="share" size={20} color={theme === 'dark' ? "white" : "#222"} />
+              </AppButton>
               <AppButton variant="success" onPress={() => {
                 router.push(`/item-delivred/${item?.id}` as any)
               }}>

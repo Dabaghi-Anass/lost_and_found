@@ -22,6 +22,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { Toast } from 'toastify-react-native';
 import { ZodIssue } from 'zod';
 
 interface SubFormProps {
@@ -88,11 +89,11 @@ export default function EditItemScreen() {
         itemToSave.item = newDetails;
         dispatch(saveItem(itemToSave))
       }
-      Alert.alert('Success', 'Item updated successfully');
+      Toast.success("Item updated successfully", "bottom");
       router.back();
     } catch (error) {
       console.error('Error updating item:', error);
-      Alert.alert('Error', 'Failed to update item');
+      Toast.error('Failed to update item');
     } finally {
       setLoading(false);
     }
@@ -103,11 +104,10 @@ export default function EditItemScreen() {
     try {
       await deleteItemById(itemId as string);
       dispatch(removeItem(itemId as string));
-      Alert.alert('Success', 'Item deleted successfully');
+      Toast.success('Item deleted successfully')
       router.replace('/');
     } catch (error) {
-      console.error('Error deleting item:', error);
-      Alert.alert('Error', 'Failed to delete item');
+      Toast.error('Error Failed to delete item');
     } finally {
       setLoading(false);
     }

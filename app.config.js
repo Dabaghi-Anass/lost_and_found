@@ -26,6 +26,51 @@ export default {
 			bundler: "metro",
 			output: "static",
 			favicon: "./assets/images/favicon.png",
+			headTags: [
+				{
+					tag: "meta",
+					attributes: {
+						charset: "utf-8",
+					},
+				},
+				{
+					tag: "meta",
+					attributes: {
+						name: "viewport",
+						content: "width=device-width, initial-scale=1",
+					},
+				},
+				{
+					tag: "meta",
+					attributes: {
+						property: "og:title",
+						content: "Lost & Found App - Find your lost items",
+					},
+				},
+				{
+					tag: "meta",
+					attributes: {
+						property: "og:description",
+						content:
+							"A convenient app to help you find lost items and report a found item developed by WISD/EID2 master students (Anass Dabaghi, Bilal Bouizdouzene).",
+					},
+				},
+				{
+					tag: "meta",
+					attributes: {
+						property: "og:image",
+						content:
+							"https://res.cloudinary.com/dnf11wb1l/image/upload/f_auto,q_auto/open_graph_image",
+					},
+				},
+				{
+					tag: "meta",
+					attributes: {
+						property: "og:url",
+						content: "https://lost-and-found-wisd.expo.app",
+					},
+				},
+			],
 		},
 		plugins: [
 			"expo-router",

@@ -19,8 +19,9 @@ import { AntDesign, Feather, FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { Alert, Image, Platform, Text, View } from 'react-native';
+import { Image, Platform, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { Toast } from 'toastify-react-native';
 export default function UserProfileEditPage() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState<boolean>(false);
@@ -54,7 +55,7 @@ export default function UserProfileEditPage() {
       cuClone.profile = newProfile;
       dispatch(setCurrentUser(cuClone as any));
     } catch (e: any) {
-      Alert.alert('Error', e.message);
+      Toast.error("Error occured please try again later", "bottom");
     } finally {
       setLoading(false);
     }
@@ -65,7 +66,7 @@ export default function UserProfileEditPage() {
     try {
       await deleteAccount(currentUser);
     } catch (e: any) {
-      Alert.alert('Error', e.message);
+      Toast.error("Error occured please try again later", "bottom");
     } finally {
       setLoading(false);
       router.replace("/login")
@@ -108,7 +109,7 @@ export default function UserProfileEditPage() {
   return (
     <ScrollScreen>
       <View className='w-full h-full md:web:flex-row'>
-        <View className='bg-transparent flex items-center justify-center py-4 px-4 relative md:web:w-1/3 md:web:h-full' >
+        <View className='bg-transparent flex items-center justify-center py-16 px-4 relative md:web:w-1/3 md:web:h-full' >
           <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto max-h-[100vh]' />
           <Image
             source={getImageOrDefaultTo(userData?.imageUri, DefaultUserImage)}
@@ -221,12 +222,12 @@ export default function UserProfileEditPage() {
                     if (auth.currentUser) {
                       handleDeleteAccount();
                     } else {
-                      Alert.alert('Error', 'You are not logged in please login and try again');
+                      Toast.warn("You are not logged in please login and try again", "bottom");
                       await logoutUser()
                       router.replace('/login')
                     }
                   } catch (e: any) {
-                    Alert.alert('Error', e.message);
+                    Toast.error("Error occured please try again later", "bottom");
                   } finally {
                     setConfirmationModalVisible(false);
                   }

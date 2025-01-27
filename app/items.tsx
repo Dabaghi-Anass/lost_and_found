@@ -2,7 +2,6 @@ import { Input } from "@/components/Input";
 import ItemCard from "@/components/item-card";
 import ItemMinifiedCard from "@/components/item-minified-card";
 import { Badge } from "@/components/ui/badge";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSearch } from "@/hooks/use-search";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useFetchAll } from "@/hooks/useFetch";
@@ -74,7 +73,6 @@ const LostItemPage: React.FC = () => {
 
   return (
     <View className="flex-1 px-2 bg-background items-start justify-start">
-      <LoadingSpinner visible={loading} />
       <Input
         placeholder="Search by title, category, color, owner name, anything..."
         placeholderTextColor={theme === "dark" ? "#ddd" : "#444"}
@@ -149,7 +147,7 @@ const LostItemPage: React.FC = () => {
           }} />)}
         keyExtractor={(item) => item.id as string}
         className="w-full h-full"
-        contentContainerClassName="w-full pb-8 web:flex-row web:flex-wrap gap-4 web:items-start web:justify-center md:web:mx-4"
+        contentContainerClassName="w-full pb-8 web:flex-row web:flex-wrap gap-4 web:items-start md:web:mx-4"
       />
     </View>
   );

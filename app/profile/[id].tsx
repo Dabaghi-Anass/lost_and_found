@@ -4,13 +4,14 @@ import DefaultUserImage from '@/assets/images/default-user-image.jpg';
 import bgPattern from "@/assets/images/pattern.jpg";
 import { AppButton } from '@/components/AppButton';
 import ItemMinifiedCard from '@/components/item-minified-card';
+import SEO from '@/components/seo';
 import { Badge } from '@/components/ui/badge';
 import BottomModal from '@/components/ui/bottomModal';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { usePushScreen } from '@/hooks/usePushScreen';
 import { FirebaseCollections } from '@/lib/constants';
-import { getImageOrDefaultTo } from '@/lib/utils';
+import { formAppLink, getImageOrDefaultTo } from '@/lib/utils';
 import { setCurrentUser } from '@/redux/global/current-user';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { saveUser as saveUserAction } from '@/redux/global/users';
@@ -19,8 +20,9 @@ import { AntDesign, Feather, FontAwesome5 } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Link, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, FlatList, Image, Linking, Share, Text, View } from 'react-native';
+import { FlatList, Image, Linking, Platform, Share, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { Toast } from 'toastify-react-native';
 export default function UserProfile() {
   const { id } = useLocalSearchParams();
   const dispatch = useDispatch();
@@ -45,7 +47,12 @@ export default function UserProfile() {
   };
 
   const handleShareProfile = () => {
-    const link = `lostandfound://profile/${user?.id}`;
+    const link = formAppLink("profile", user?.id);
+    if (Platform.OS === 'web') {
+      navigator.clipboard.writeText(link);
+      Toast.success('Link copied to clipboard', "bottom");
+      return;
+    }
     Share.share({
       message: `Check out ${user?.profile?.firstName}'s profile on Lost & Found App: ${link}`,
       url: link,
@@ -107,7 +114,7 @@ export default function UserProfile() {
           setUser(userFromDb as AppUser);
         }
       } catch (e: any) {
-        Alert.alert('Error', e.message);
+        Toast.error("Error occured please try again later", "bottom");
       } finally {
         setLoading(false);
       }
@@ -146,7 +153,7 @@ export default function UserProfile() {
           }
         }
       } catch (e: any) {
-        Alert.alert('Error', e.message);
+        Toast.error("Error occured please try again later", "bottom");
       } finally {
         setLoading(false);
       }
@@ -180,11 +187,17 @@ export default function UserProfile() {
       }}
       keyExtractor={item => item?.id || Math.random().toString()} data={[user]}
       renderItem={({ item: user }) => (<View className='w-full h-full md:web:max-w-1/2 web:m-auto md:web:flex-row'>
-        <View className='bg-transparent flex items-center justify-center py-4 px-4 relative md:web:w-1/3 md:web:h-full' >
+        <SEO
+          title={`${user?.profile?.firstName} ${user?.profile?.lastName} Profile on Lost & Found`}
+          description={`View ${user?.profile?.firstName} ${user?.profile?.lastName} profile on Lost & Found App`}
+          image={getImageOrDefaultTo(user?.profile?.imageUri, DefaultUserImage)}
+          url={formAppLink("profile", user?.id)}
+        />
+        <View className='bg-transparent flex items-center native:justify-center py-16 px-4 relative md:web:w-1/3 md:web:h-full' >
           <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto max-h-[100vh] web:max-h-[100%]' />
           <Image
             source={getImageOrDefaultTo(user?.profile?.imageUri, DefaultUserImage)}
-            className='w-32 h-32 rounded-full border-4 border-white max-w-32 max-h-32 object-center aspect-square md:web:scale-150 scale-110'
+            className='w-32 h-32 rounded-full border-4 border-white max-w-32 max-h-32 object-center aspect-square md:web:scale-150 scale-110 md:web:mt-8'
           />
         </View>
         <View className='bg-background min-h-screen h-full native:rounded-t-3xl p-4 w-full md:web:w-2/3'>
@@ -201,6 +214,10 @@ export default function UserProfile() {
           </View>
           {currentUser?.id === user?.id &&
             <View className='flex flex-row items-center native:justify-center py-8 px-4 gap-4'>
+              <AppButton variant="outline" className='gap-4 border-muted'
+                onPress={handleShareProfile}>
+                <FontAwesome5 name="share" size={20} color={theme === 'dark' ? "white" : "#222"} />
+              </AppButton>
               <Link href="/edit-profile" asChild>
                 <AppButton variant="outline" className='gap-4 border-muted'>
                   <Text className='text-foreground text-xl'>edit profile</Text>
@@ -232,7 +249,7 @@ export default function UserProfile() {
 
             </View>
           }
-          <View className='items-start justify-center gap-8 m-5'>
+          <View className='items-start justify-center gap-8 mx-5 border-t border-muted py-8'>
             <Text className="text-foreground text-2xl font-semibold">Contact Information</Text>
             <View className='items-start justify-center gap-4'>
               <View className='flex-row items-center justify-center gap-4'>
@@ -245,7 +262,7 @@ export default function UserProfile() {
               </View>
             </View>
           </View>
-          <View className='flex-row items-center gap-4 p-4'>
+          <View className='flex-row items-center gap-4 p-4 border-b border-muted py-8'>
             <AppButton
               variant="success"
               onPress={() => {
@@ -262,8 +279,13 @@ export default function UserProfile() {
             </AppButton>
           </View>
           {userItems.length > 0 &&
-            <View className='native:items-center justify-center gap-2 w-full px-4'>
-              <Text className='native:text-3xl web:text-xl md:web:text-3xl font-bold text-foreground'>Items ({userItems.length})</Text>
+            <View className='justify-center gap-2 w-full px-4 my-4'>
+              <View className='flex-row gap-2 items-center'>
+                <Text className='text-2xl font-bold text-foreground'>Items</Text>
+                <View className='px-2 py-1 rounded-lg bg-rose-600'>
+                  <Text className='text-xl text-white font-bold'>{userItems.length}</Text>
+                </View>
+              </View>
               <FlatList
                 horizontal
                 scrollEnabled
