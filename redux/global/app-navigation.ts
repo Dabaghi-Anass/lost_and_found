@@ -5,8 +5,10 @@ const appNavigationSlice = createSlice({
 	reducers: {
 		push: (state, action) => {
 			state.push(action.payload);
+			console.log(state);
 		},
 		pop: (state) => {
+			state.pop();
 			state.pop();
 		},
 		resetScreens: (state) => {

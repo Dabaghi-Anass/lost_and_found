@@ -7,8 +7,11 @@ export function usePushScreen(screenName?: string, param?: string, reset?: boole
   const screens = useSelector((state: any) => state.appNavigation)
   const dispatch = useDispatch()
   function goBack() {
-    router.replace(`/${screens.at(-2)}` as any)
-    dispatch(pop())
+    if (canGoBack()) {
+      const path = `/${screens.at(-2)}` as any
+      dispatch(pop())
+      router.replace(path)
+    }
   }
   function canGoBack() {
     return screens.length > 1

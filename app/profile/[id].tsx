@@ -177,7 +177,7 @@ export default function UserProfile() {
       onRefresh={async () => {
         await initUser(true);
       }}
-      keyExtractor={item => item.id || Math.random().toString()} data={[user]} renderItem={({ item: user }) => (<View className='w-full h-full web:max-w-1/2 web:m-auto'>
+      keyExtractor={item => item?.id || Math.random().toString()} data={[user]} renderItem={({ item: user }) => (<View className='w-full h-full web:max-w-1/2 web:m-auto'>
         <View className='bg-transparent flex items-center justify-center py-4 px-4 relative' >
           <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto' />
           <Image
@@ -266,7 +266,7 @@ export default function UserProfile() {
                 horizontal
                 scrollEnabled
                 showsHorizontalScrollIndicator={false}
-                keyExtractor={item => item.id || Math.random().toString()}
+                keyExtractor={item => item?.id || Math.random().toString()}
                 data={userItems.slice(0, 3)}
                 renderItem={({ item }) => (
                   <ItemMinifiedCard

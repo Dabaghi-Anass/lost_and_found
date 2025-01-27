@@ -25,7 +25,6 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/Ubuntu-Regular.ttf'),
     Galada: require('../assets/fonts/Galada-Regular.ttf'),
   });
-
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
