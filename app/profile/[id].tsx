@@ -1,5 +1,5 @@
 import { logoutUser } from '@/api/auth';
-import { fetchDoc, fetchItemsOfUser } from '@/api/database';
+import { fetchDoc, fetchItemsOfUser, getUserById } from '@/api/database';
 import DefaultUserImage from '@/assets/images/default-user-image.jpg';
 import bgPattern from "@/assets/images/pattern.jpg";
 import { AppButton } from '@/components/AppButton';
@@ -11,7 +11,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { usePushScreen } from '@/hooks/usePushScreen';
 import { FirebaseCollections } from '@/lib/constants';
 import { getImageOrDefaultTo } from '@/lib/utils';
-import { refetchCurrentUser, setCurrentUser } from '@/redux/global/current-user';
+import { setCurrentUser } from '@/redux/global/current-user';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { saveUser as saveUserAction } from '@/redux/global/users';
 import { AppUser, Item } from '@/types/entities.types';
@@ -135,7 +135,12 @@ export default function UserProfile() {
               setLoading(false);
               router.replace("/login")
             } else {
-              dispatch(refetchCurrentUser())
+              const id = await AsyncStorage.getItem("userID");
+              if (id) {
+                const user = await getUserById(id);
+                dispatch(setCurrentUser(user))
+                setLoading(false);
+              }
               setLoading(false);
             }
           }
@@ -176,7 +181,7 @@ export default function UserProfile() {
       keyExtractor={item => item?.id || Math.random().toString()} data={[user]}
       renderItem={({ item: user }) => (<View className='w-full h-full md:web:max-w-1/2 web:m-auto md:web:flex-row'>
         <View className='bg-transparent flex items-center justify-center py-4 px-4 relative md:web:w-1/3 md:web:h-full' >
-          <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto max-h-[100vh]' />
+          <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto max-h-[100vh] web:max-h-[100%]' />
           <Image
             source={getImageOrDefaultTo(user?.profile?.imageUri, DefaultUserImage)}
             className='w-32 h-32 rounded-full border-4 border-white max-w-32 max-h-32 object-center aspect-square md:web:scale-150 scale-110'

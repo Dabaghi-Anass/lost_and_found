@@ -1,11 +1,13 @@
+import { getUserById } from "@/api/database";
 import Logo from "@/assets/images/app_logo_small.png";
 import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { usePushScreen } from "@/hooks/usePushScreen";
 import { getImageOrDefaultTo } from "@/lib/utils";
-import { refetchCurrentUser } from "@/redux/global/current-user";
+import { setCurrentUser } from "@/redux/global/current-user";
 import { AntDesign } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DrawerActions } from "@react-navigation/native";
 import { Link, useNavigation, useRouter } from "expo-router";
 import { useEffect } from "react";
@@ -24,10 +26,18 @@ export default function NavBar() {
   function openOrCloseDrawer() {
     navigation.dispatch(DrawerActions.toggleDrawer());
   }
+  async function refetchCurrentUser() {
+    const id = await AsyncStorage.getItem("userID");
+    if (id) {
+      const user = await getUserById(id);
+      dispatch(setCurrentUser(user))
+    }
+  }
+
   useEffect(() => {
     if (screenName !== "auth") {
       if (!currentUser?.email) {
-        dispatch(refetchCurrentUser())
+        refetchCurrentUser()
       }
     }
   }, [screenName])

@@ -8,7 +8,6 @@ import { DrawerItemList } from '@react-navigation/drawer';
 import { useNavigationState } from '@react-navigation/native';
 import { PortalHost } from "@rn-primitives/portal";
 import 'core-js/features/promise';
-import 'core-js/stable';
 import { useFonts } from 'expo-font';
 import * as Linking from 'expo-linking';
 import { Drawer } from 'expo-router/drawer';

@@ -1,4 +1,3 @@
-import { refetchCurrentUserFromDb } from "@/api/database";
 import { AppUser } from "@/types/entities.types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createSlice } from "@reduxjs/toolkit";
@@ -6,9 +5,6 @@ const currentUser = createSlice({
 	name: "current-user",
 	initialState: {} as AppUser,
 	reducers: {
-		refetchCurrentUser: (state) => {
-			refetchCurrentUserFromDb();
-		},
 		setCurrentUser: (state, action) => {
 			const user = action.payload;
 			if (!user?.id) return state;
@@ -24,6 +20,5 @@ const currentUser = createSlice({
 	},
 });
 
-export const { setCurrentUser, removeCurrentUser, refetchCurrentUser } =
-	currentUser.actions;
+export const { setCurrentUser, removeCurrentUser } = currentUser.actions;
 export default currentUser.reducer;

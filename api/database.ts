@@ -1,7 +1,6 @@
 import { auth, firestore } from "@/database/fire_base";
 import { WhereClose } from "@/hooks/useFetch";
 import { FirebaseCollections } from "@/lib/constants";
-import { setCurrentUser } from "@/redux/global/current-user";
 import { AppUser, Item, ItemDetails, Profile } from "@/types/entities.types";
 import { RecursiveFetcher } from "@/types/utils.types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -784,14 +783,4 @@ async function findDocRefById(coll: CollectionReference, id?: string) {
 	const docs: any = [];
 	querySnapshot.forEach((doc) => docs.push(doc.ref));
 	return docs[0];
-}
-
-export async function refetchCurrentUserFromDb(): Promise<AppUser | undefined> {
-	const id = await AsyncStorage.getItem("userID");
-	if (id) {
-		const user = await getUserById(id);
-		setCurrentUser(user);
-		return user;
-	}
-	return Promise.resolve(undefined);
 }
