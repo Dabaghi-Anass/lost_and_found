@@ -1,4 +1,3 @@
-// import { auth } from "@/database/fire_base";
 import { fetchDoc } from '@/api/database';
 import Screen from '@/components/screen';
 import { FirebaseCollections } from '@/lib/constants';
