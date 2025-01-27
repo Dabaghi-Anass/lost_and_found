@@ -1,7 +1,7 @@
 import { logoutUser } from '@/api/auth';
 import { fetchDoc, fetchItemsOfUser } from '@/api/database';
 import DefaultUserImage from '@/assets/images/default-user-image.jpg';
-import bgPattern from "@/assets/images/pattern.png";
+import bgPattern from "@/assets/images/pattern.jpg";
 import { AppButton } from '@/components/AppButton';
 import ItemMinifiedCard from '@/components/item-minified-card';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +13,7 @@ import { FirebaseCollections } from '@/lib/constants';
 import { getImageOrDefaultTo } from '@/lib/utils';
 import { refetchCurrentUser, setCurrentUser } from '@/redux/global/current-user';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
-import { saveUser, saveUser as saveUserAction } from '@/redux/global/users';
+import { saveUser as saveUserAction } from '@/redux/global/users';
 import { AppUser, Item } from '@/types/entities.types';
 import { AntDesign, Feather, FontAwesome5 } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -53,8 +53,6 @@ export default function UserProfile() {
   };
 
   async function getUserItems(user: AppUser) {
-    if (user?.items && user?.items?.length === 0) return;
-
     const items = await fetchItemsOfUser(user?.id, [{
       collectionName: FirebaseCollections.ITEMS,
       idPropertyName: "item",
@@ -93,7 +91,6 @@ export default function UserProfile() {
           if (usersMap[id as string]) {
             userFromDb = usersMap[id as string];
             setUser(usersMap[id as string] as AppUser);
-            getUserItems(usersMap[id as string] as AppUser);
             return
           } else {
             userFromDb = await fetchDoc<AppUser>(FirebaseCollections.USERS, id as string, [
@@ -108,8 +105,6 @@ export default function UserProfile() {
         }
         if (userFromDb) {
           setUser(userFromDb as AppUser);
-          dispatch(saveUser(userFromDb as any));
-          getUserItems(userFromDb as AppUser)
         }
       } catch (e: any) {
         Alert.alert('Error', e.message);
@@ -130,14 +125,10 @@ export default function UserProfile() {
           dispatch(setCurrentUser({ ...(currentUser as any) } as any));
           if (currentUser) {
             setUser(currentUser);
-            dispatch(saveUser(currentUser));
-            getUserItems(currentUser as AppUser);
           }
         } else {
           if (currentUser !== null && currentUser?.email) {
-            getUserItems(currentUser as AppUser);
             setUser(currentUser);
-            dispatch(saveUser(currentUser));
           } else {
             const id = await AsyncStorage.getItem('userID')
             if (!id || id === 'undefined') {
@@ -159,6 +150,11 @@ export default function UserProfile() {
   }
   useEffect(() => {
     dispatch(setCurrentScreenName('profile'));
+    if (user?.email) {
+      dispatch(saveUserAction(user as any));
+      getUserItems(user as AppUser);
+    }
+
   }, [user])
   useEffect(() => {
     if (currentUser?.id === user?.id || id === "undefined") {
@@ -179,14 +175,14 @@ export default function UserProfile() {
       }}
       keyExtractor={item => item?.id || Math.random().toString()} data={[user]}
       renderItem={({ item: user }) => (<View className='w-full h-full md:web:max-w-1/2 web:m-auto md:web:flex-row'>
-        <View className='bg-transparent flex items-center justify-center py-4 px-4 relative md:web:w-1/3' >
-          <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto max-h-[100vh]' />
+        <View className='bg-transparent flex items-center justify-center py-4 px-4 relative md:web:w-1/3 md:web:h-full' >
+          <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto max-h-[100%]' />
           <Image
             source={getImageOrDefaultTo(user?.profile?.imageUri, DefaultUserImage)}
             className='w-32 h-32 rounded-full border-4 border-white max-w-32 max-h-32 object-center aspect-square md:web:scale-150 scale-110'
           />
         </View>
-        <View className='bg-background min-h-full native:rounded-t-3xl p-4 w-full h-screen md:web:w-2/3'>
+        <View className='bg-background min-h-screen h-full native:rounded-t-3xl p-4 w-full md:web:w-2/3'>
           <View className='flex-row w-min items-center justify-between'>
             <Text className='text-foreground text-4xl font-bold font-secondary capitalize max-w-sm web:w-[300px] text-center'>{user?.profile?.firstName} {user?.profile?.lastName}</Text>
             <View className='p-2 gap-4 flex-row items-center justify-center'>
@@ -194,14 +190,14 @@ export default function UserProfile() {
                 <Text className='text-secondary-foreground capitalize'>{user?.role}</Text>
               </Badge>
               <Badge variant="default">
-                <Text className='text-primary-foreground'>{user?.items?.length} items</Text>
+                <Text className='text-primary-foreground'>{userItems?.length} items</Text>
               </Badge>
             </View>
           </View>
           {currentUser?.id === user?.id &&
-            <View className='flex flex-row items-center justify-center py-8 px-4 gap-4'>
+            <View className='flex flex-row items-center native:justify-center py-8 px-4 gap-4'>
               <Link href="/edit-profile" asChild>
-                <AppButton variant="outline" className='p-4 gap-4'>
+                <AppButton variant="outline" className='gap-4 border-muted'>
                   <Text className='text-foreground text-xl'>edit profile</Text>
                   <FontAwesome5 name="user-edit" size={20} color={theme === 'dark' ? "white" : "#222"} />
                 </AppButton>
@@ -261,8 +257,8 @@ export default function UserProfile() {
             </AppButton>
           </View>
           {userItems.length > 0 &&
-            <View className='items-center justify-center gap-2 w-full'>
-              <Text className='text-3xl font-bold text-foreground'>Items ({userItems.length})</Text>
+            <View className='native:items-center justify-center gap-2 w-full px-4'>
+              <Text className='native:text-3xl web:text-xl md:web:text-3xl font-bold text-foreground'>Items ({userItems.length})</Text>
               <FlatList
                 horizontal
                 scrollEnabled

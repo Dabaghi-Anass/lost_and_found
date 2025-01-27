@@ -52,15 +52,15 @@ const ItemCard: React.FC<ItemCardProps> = ({
       </View>
       <View style={styles.content}>
         <View style={styles.titleRow}>
-          <View>
-            <Text style={styles.title} className='text-card-foreground'>{itemDetails.title}</Text>
-            <Text style={styles.description}>{itemDetails.description}</Text>
+          <View className="max-w-[90%]">
+            <Text style={styles.title} className='text-card-foreground truncate max-w-[90%]'>{itemDetails.title} Lorem ipsum dolor sit amet consectetur, adipisicing elit. Tempore, nostrum corrupti eveniet beatae voluptate fugiat eligendi laborum. Expedita pariatur non explicabo aliquid, excepturi quasi, suscipit ipsa, laboriosam enim libero minus.</Text>
+            <Text style={styles.description} className="truncate">{itemDetails.description} Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quos, unde minima expedita culpa labore laboriosam fugit recusandae, odit blanditiis delectus exercitationem ipsam ducimus? Ipsam excepturi doloremque numquam quibusdam rem blanditiis.</Text>
           </View>
           <View style={[styles.colorIndicator, { backgroundColor: itemDetails.color }]} />
         </View>
         <View style={styles.locationRow}>
           <Entypo name="location-pin" size={14} color="#6B7280" />
-          <Text style={styles.locationText}>{location}</Text>
+          <Text style={styles.locationText} className="truncate">{location}</Text>
         </View>
         <Text style={styles.dateText}>{formatDate(new Date(found_lost_at).toISOString())}</Text>
       </View>

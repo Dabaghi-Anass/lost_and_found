@@ -7,17 +7,33 @@ import { store } from '@/redux/store';
 import { DrawerItemList } from '@react-navigation/drawer';
 import { useNavigationState } from '@react-navigation/native';
 import { PortalHost } from "@rn-primitives/portal";
+import 'core-js/features/promise';
+import 'core-js/stable';
 import { useFonts } from 'expo-font';
 import * as Linking from 'expo-linking';
 import { Drawer } from 'expo-router/drawer';
 import * as SplashScreen from 'expo-splash-screen';
 import { BadgePlus, FolderSearch, MailCheck } from 'lucide-react-native';
 import { useEffect } from 'react';
-import { Alert, Text, View } from "react-native";
+import { Alert, InteractionManager, Text, View } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import 'react-native-get-random-values';
 import 'react-native-reanimated';
 import { Provider } from 'react-redux';
+import 'regenerator-runtime/runtime';
 import "../assets/styles/global.css";
+
+if (typeof setImmediate === 'undefined') {
+  global.setImmediate = Object.assign((fn: () => void) => {
+    const handle = InteractionManager.runAfterInteractions(fn);
+    return {
+      then: (onfulfilled?: () => any, onrejected?: () => any) => Promise.resolve().then(onfulfilled, onrejected),
+      done: (...args: any[]) => handle.done(...args),
+      cancel: () => handle.cancel(),
+      __promisify__: () => new Promise<void>((resolve) => InteractionManager.runAfterInteractions(resolve))
+    }
+  });
+}
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {

@@ -2,7 +2,7 @@ import { logoutUser } from '@/api/auth';
 import { uploadAsset } from '@/api/cloudinary';
 import { deleteAccount, updateProfile } from '@/api/database';
 import DefaultUserImage from '@/assets/images/default-user-image.jpg';
-import bgPattern from "@/assets/images/pattern.png";
+import bgPattern from "@/assets/images/pattern.jpg";
 import { AppButton } from '@/components/AppButton';
 import { Input } from '@/components/Input';
 import ScrollScreen from '@/components/scroll-screen';

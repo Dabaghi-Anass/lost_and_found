@@ -13,12 +13,12 @@ export default {
 			bundleIdentifier: "com.anass.lostandfound",
 		},
 		android: {
+			compileSdkVersion: 33,
 			adaptiveIcon: {
 				foregroundImage: "./assets/images/adaptive-icon.png",
 				backgroundColor: "#ffffff",
 			},
 			package: "com.anass.lostandfound",
-			googleServicesFile: "./google-services.json",
 		},
 		web: {
 			bundler: "metro",
