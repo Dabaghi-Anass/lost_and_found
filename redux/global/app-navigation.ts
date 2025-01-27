@@ -4,11 +4,12 @@ const appNavigationSlice = createSlice({
 	initialState: [] as Array<string>,
 	reducers: {
 		push: (state, action) => {
-			state.push(action.payload);
-			console.log(state);
+			if (state.at(-1) !== action.payload) {
+				state.push(action.payload);
+				state = [...new Set(state)];
+			}
 		},
 		pop: (state) => {
-			state.pop();
 			state.pop();
 		},
 		resetScreens: (state) => {

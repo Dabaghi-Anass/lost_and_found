@@ -22,6 +22,9 @@ import { Provider } from 'react-redux';
 import 'regenerator-runtime/runtime';
 import "../assets/styles/global.css";
 
+SplashScreen.preventAutoHideAsync().catch(() => {
+  console.log("Error preventing auto hide");
+});
 if (typeof setImmediate === 'undefined') {
   global.setImmediate = Object.assign((fn: () => void) => {
     const handle = InteractionManager.runAfterInteractions(fn);
@@ -33,9 +36,6 @@ if (typeof setImmediate === 'undefined') {
     }
   });
 }
-SplashScreen.preventAutoHideAsync().catch(() => {
-  console.log("Error preventing auto hide");
-});
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded, error] = useFonts({
