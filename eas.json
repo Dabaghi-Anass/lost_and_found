@@ -6,6 +6,9 @@
 		"development": {
 			"developmentClient": true,
 			"distribution": "internal",
+			"android": {
+				"buildType": "apk"
+			},
 			"ios": {
 				"simulator": true
 			}
@@ -18,7 +21,8 @@
 		},
 		"preview2": {
 			"android": {
-				"gradleCommand": ":app:assembleRelease"
+				"gradleCommand": ":app:assembleRelease",
+				"buildType": "apk"
 			}
 		},
 		"preview3": {
@@ -27,7 +31,12 @@
 		"preview4": {
 			"distribution": "internal"
 		},
-		"production": {}
+		"production": {
+			"android": {
+				"buildType": "apk"
+			},
+			"distribution": "internal"
+		}
 	},
 	"submit": {
 		"production": {}
