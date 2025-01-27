@@ -80,7 +80,10 @@ const LostItemPage: React.FC = () => {
         placeholderTextColor={theme === "dark" ? "#ddd" : "#444"}
         value={searchQuery}
         onChangeText={setSearchQuery}
-        className="my-4 w-full"
+        className="my-4 w-full text-foreground web:max-w-[500px]"
+        style={{
+          color: theme === "dark" ? "#ddd" : "#444",
+        }}
         inputClasses="rounded-full"
       />
       <ScrollView
@@ -106,7 +109,7 @@ const LostItemPage: React.FC = () => {
         refreshing={loading}
         onRefresh={refetch}
         ListHeaderComponent={() => (
-          <View className="px-2 gap-4 w-screen">
+          <View className="px-2 gap-4 web:w-screen">
             <Text className="text-2xl text-foreground text-semibold capitalize">last added items</Text>
             <FlatList
               ListEmptyComponent={() => (
@@ -146,7 +149,7 @@ const LostItemPage: React.FC = () => {
           }} />)}
         keyExtractor={(item) => item.id as string}
         className="w-full h-full"
-        contentContainerClassName="w-full pb-8 web:flex-row web:flex-wrap gap-4 web:justify-center web:items-start md:web:justify-start"
+        contentContainerClassName="w-full pb-8 web:flex-row web:flex-wrap gap-4 web:justify-center web:items-start md:web:justify-center"
       />
     </View>
   );

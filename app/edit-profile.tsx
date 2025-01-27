@@ -107,12 +107,12 @@ export default function UserProfileEditPage() {
   if (!currentUser || loading) return <LoadingSpinner visible={true} />
   return (
     <ScrollScreen>
-      <View className='w-full h-full'>
-        <View className='bg-transparent flex items-center justify-center py-4 px-4 relative' >
-          <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto' />
+      <View className='w-full h-full md:web:flex-row'>
+        <View className='bg-transparent flex items-center justify-center py-4 px-4 relative md:web:w-1/3' >
+          <Image source={bgPattern} className='absolute top-0 max-h-[100vh] left-0 right-0 mx-auto' />
           <Image
             source={getImageOrDefaultTo(userData?.imageUri, DefaultUserImage)}
-            className='w-32 h-32 rounded-full border-4 border-white'
+            className='w-32 h-32 rounded-full border-4 border-white scale-110 md:web:scale-150 md:web:mb-8'
           />
           <View className='flex-row gap-4 mt-4'>
             <AppButton
@@ -134,7 +134,7 @@ export default function UserProfileEditPage() {
             </AppButton>
           </View>
         </View>
-        <View className='bg-background min-h-full rounded-t-3xl p-4 web:max-w-1/2 web:w-1/2 web:m-auto'>
+        <View className='bg-background min-h-full native:rounded-t-3xl p-4 md:web:w-2/3 w-full web:m-auto'>
           <View className='flex-row w-min items-center justify-between'>
             <Text className='text-foreground text-4xl font-bold font-secondary capitalize max-w-sm web:w-[300px] text-center'>{userData?.firstName} {userData?.lastName}</Text>
             <View className='p-2 gap-4 flex-row items-center justify-center'>

@@ -62,16 +62,16 @@ export default function RealOwnerSearchScreen() {
 
   if (loading) return <LoadingSpinner visible={loading} />
   return (
-    <View className='flex-1 items-center bg-background'>
+    <View className='flex-1 items-center bg-background md:web:flex-row'>
       {itemLoading && <View className='w-full h-48 items-center justify-center'>
         <ActivityIndicator size='large' color={theme === "dark" ? "white" : "black"} />
       </View>}
       {item &&
-        <View className='w-full h-48 p-4 items-center justify-center' style={{ backgroundColor: item?.item.color }}>
+        <View className='w-full md:web:w-1/3 md:web:h-full h-48 p-4 items-center justify-center' style={{ backgroundColor: item?.item.color }}>
           <ItemMinifiedCard item={item} />
         </View>
       }
-      <View className='w-full h-full p-4'>
+      <View className='w-full md:web:w-2/3 h-full p-4'>
         <Text className='text-3xl font-bold my-8 text-foreground text-center capitalize'>
           {item?.type === "found" ? "Tell Us the real owner" : "Tell Us who found your item"}
         </Text>

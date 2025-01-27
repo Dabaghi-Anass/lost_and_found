@@ -108,14 +108,14 @@ export default function ItemDetailsScreen() {
     keyExtractor={(item) => item.id || '__'}
     data={[item]}
     renderItem={({ item }) => (
-      <View className='bg-background h-full w-full web:max-w-screen-md m-auto'>
-        <View style={[styles.imageContainer, {
+      <View className='bg-background h-full md:web:h-screen w-full md:web:flex-row'>
+        <View style={[{
           backgroundColor: item.item.color
-        }]}>
+        }]} className="w-full md:web:w-1/2">
           <Image
             source={getImageOrDefaultTo(item.item.images[selectedImage], DefaultItemImage)}
             style={styles.mainImage}
-            className={`w-full h-[${width * 0.75}px]  web:h-[50vh] web:w-full web:max-w-[500px] self-center `}
+            className={`w-full h-[${width * 0.75}px]  web:h-[50vh] web:w-full web:max-w-[500px] self-center`}
           />
           <ScrollView
             horizontal
@@ -141,7 +141,7 @@ export default function ItemDetailsScreen() {
           </ScrollView>
         </View>
 
-        <View style={styles.detailsContainer}>
+        <View style={styles.detailsContainer} className="w-full md:web:w-1/2">
           <View style={styles.header}>
             <Text className='text-foreground' style={styles.title}>{item.item.title}</Text>
             <View style={styles.badgeContainer}>
@@ -277,10 +277,6 @@ export default function ItemDetailsScreen() {
 }
 
 const styles = StyleSheet.create({
-  imageContainer: {
-    width: '100%',
-    backgroundColor: '#f4f4f5',
-  },
   mainImage: {
     width: '100%',
     height: width * 0.75,

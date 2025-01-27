@@ -48,8 +48,8 @@ export default function NavBar() {
         {
           canGoBack() &&
           <Pressable onPress={() => goBack()}>
-            <View className="flex-row items-center justify-center bg-red-400 p-2">
-              <AntDesign name="arrowleft" size={30} color={Colors[colorScheme].text} />
+            <View className="flex-row items-center justify-center rounded-full bg-foreground px-2 py-1">
+              <AntDesign name="arrowleft" size={25} color={Colors[colorScheme].background} />
             </View>
           </Pressable>
         }

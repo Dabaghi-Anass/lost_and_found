@@ -38,7 +38,7 @@ export default function HomeScreen() {
   }
 
   useEffect(() => {
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+    BackHandler.addEventListener('hardwareBackPress', () => {
       goBack();
       return true;
     });
@@ -47,8 +47,6 @@ export default function HomeScreen() {
       if (userId) initUser(userId);
       else router.replace("/login");
     })()
-
-    return () => backHandler.remove();
   }, []);
 
   useFocusEffect(() => {

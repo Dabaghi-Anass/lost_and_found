@@ -177,15 +177,16 @@ export default function UserProfile() {
       onRefresh={async () => {
         await initUser(true);
       }}
-      keyExtractor={item => item?.id || Math.random().toString()} data={[user]} renderItem={({ item: user }) => (<View className='w-full h-full web:max-w-1/2 web:m-auto'>
-        <View className='bg-transparent flex items-center justify-center py-4 px-4 relative' >
-          <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto' />
+      keyExtractor={item => item?.id || Math.random().toString()} data={[user]}
+      renderItem={({ item: user }) => (<View className='w-full h-full md:web:max-w-1/2 web:m-auto md:web:flex-row'>
+        <View className='bg-transparent flex items-center justify-center py-4 px-4 relative md:web:w-1/3' >
+          <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto max-h-[100vh]' />
           <Image
             source={getImageOrDefaultTo(user?.profile?.imageUri, DefaultUserImage)}
-            className='w-32 h-32 rounded-full border-4 border-white max-w-32 max-h-32 object-center'
+            className='w-32 h-32 rounded-full border-4 border-white max-w-32 max-h-32 object-center aspect-square md:web:scale-150 scale-110'
           />
         </View>
-        <View className='bg-background min-h-full rounded-t-3xl p-4 w-full'>
+        <View className='bg-background min-h-full native:rounded-t-3xl p-4 w-full h-screen md:web:w-2/3'>
           <View className='flex-row w-min items-center justify-between'>
             <Text className='text-foreground text-4xl font-bold font-secondary capitalize max-w-sm web:w-[300px] text-center'>{user?.profile?.firstName} {user?.profile?.lastName}</Text>
             <View className='p-2 gap-4 flex-row items-center justify-center'>
