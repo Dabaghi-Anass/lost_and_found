@@ -1,7 +1,7 @@
 export default {
 	expo: {
-		name: "lost_and_found",
-		slug: "Lost & Found",
+		name: "Lost & Found",
+		slug: "lost_and_found",
 		version: "1.0.0",
 		orientation: "portrait",
 		icon: "./assets/images/icon.png",
