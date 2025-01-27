@@ -252,30 +252,19 @@ export async function fetchProfileById(
 	id: string
 ): Promise<Profile | undefined> {
 	try {
-		
 		let profile: Profile | undefined;
 		const profilesCollection = collection(
 			firestore,
 			FirebaseCollections.PROFILES
 		);
 		const profileRef = doc(profilesCollection, id);
-
-		console.log(`[fetchProfileById] Profile ref: ${profileRef.path}`);
 		const profileDoc = await getDoc(profileRef);
 
 		if (!profileDoc.exists()) {
-			console.log("[fetchProfileById] No such document!");
 			return Promise.resolve(undefined);
 		}
 
 		profile = profileDoc.data() as Profile;
-		console.log(
-			`[fetchProfileById] Profile data: ${JSON.stringify(
-				profile,
-				null,
-				2
-			)}`
-		);
 		return profile;
 	} catch (e: any) {
 		console.error(e);
@@ -330,7 +319,6 @@ export async function fetchDocsWithIds<T>(
 	recursiveFetchers: RecursiveFetcher[] = [],
 	convertersMap: Record<string, (data: any) => any> = {}
 ): Promise<T[]> {
-	console.log({ ids });
 	if (!ids || ids.length === 0) return Promise.resolve([]);
 	try {
 		const docsCollection = collection(firestore, collectionName);
@@ -452,7 +440,6 @@ export async function fetchDoc<T>(
 		);
 		const querySnapshot = await getDocs(q);
 		if (querySnapshot.empty) {
-			console.log("[fetchDoc] No matching documents found.");
 			const docRef = doc(docsCollection, id);
 			const docSnap = await getDoc(docRef);
 			if (docSnap.exists()) {
@@ -528,7 +515,6 @@ async function fetchInnerDocs(data: any, fetchers: RecursiveFetcher[]) {
 				const innerData = docSnap.data();
 				data[fetcher.propertyName] = innerData;
 			} else {
-				console.log(`Document ${data?.id} has no data`);
 			}
 		} else {
 			const innerData = querySnapshot.docs[0].data();
@@ -603,7 +589,6 @@ export async function makeItemDelivred(
 			const querySnapshot = await getDocs(q);
 
 			if (querySnapshot.empty) {
-				console.log("[item] No matching documents found.");
 				return Promise.resolve(undefined);
 			}
 
@@ -682,7 +667,6 @@ export async function deleteDocumentById(
 	);
 	const querySnapshot = await getDocs(q);
 	if (querySnapshot.empty) {
-		console.log("[deleteDocumentById] No matching documents found.");
 		return Promise.resolve(undefined);
 	}
 	const docs: any = [];
@@ -704,7 +688,6 @@ export async function deleteItemById(itemId: string) {
 	);
 	const querySnapshot = await getDocs(q);
 	if (querySnapshot.empty) {
-		console.log("[deleteDocumentById] No matching documents found.");
 		return Promise.resolve(undefined);
 	}
 	const docs: DocumentReference<DocumentData, DocumentData>[] = [];
@@ -753,7 +736,6 @@ export async function updateProfile(
 		});
 		return Promise.resolve(newProfile);
 	} catch (e: any) {
-		console.log(e);
 		return Promise.resolve(null);
 	}
 }
@@ -797,7 +779,6 @@ async function findDocRefById(coll: CollectionReference, id?: string) {
 	const q = query(coll, where("id", "==", id));
 	const querySnapshot = await getDocs(q);
 	if (querySnapshot.empty) {
-		console.log("[findDocRefById] No matching documents found.");
 		return Promise.resolve(undefined);
 	}
 	const docs: any = [];

@@ -8,11 +8,12 @@ import { DrawerItemList } from '@react-navigation/drawer';
 import { useNavigationState } from '@react-navigation/native';
 import { PortalHost } from "@rn-primitives/portal";
 import { useFonts } from 'expo-font';
+import * as Linking from 'expo-linking';
 import { Drawer } from 'expo-router/drawer';
 import * as SplashScreen from 'expo-splash-screen';
 import { BadgePlus, FolderSearch, MailCheck } from 'lucide-react-native';
 import { useEffect } from 'react';
-import { Text, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 import { Provider } from 'react-redux';
@@ -30,10 +31,15 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
-
+  useEffect(() => {
+    Linking.addEventListener('url', (event) => {
+      Alert.alert(`Linking event`, JSON.stringify(event));
+    });
+  }, [])
   if (!loaded) {
     return null;
   }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>
