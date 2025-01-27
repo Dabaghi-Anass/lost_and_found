@@ -19,10 +19,10 @@ export default function ItemMinifiedCard({ item }: ItemCardProps) {
       className='rounded-lg w-[100px] h-[100px] max-w-[100px] max-h-[100px]'
     />
     <View className='gap-2'>
-      <Text className='text-xl font-bold text-foreground'>{item?.item.title}</Text>
-      <View>
-        <Text className='text-sm text-muted-foreground'>{item?.item.description}</Text>
-        <Text className='text-sm text-muted-foreground'>{item?.type} on {new Date((item?.found_lost_at as any)?.seconds as any).toLocaleDateString("en-US", {
+      <Text className='text-xl font-bold text-foreground truncate max-w-[150px]' numberOfLines={1} >{item?.item.title}</Text>
+      <View className="w-full">
+        <Text className='text-sm text-muted-foreground max-w-[150px]' numberOfLines={1} ellipsizeMode="tail">{item?.item.description}</Text>
+        <Text className='text-sm text-muted-foreground'>{item?.type} on {new Date((item?.found_lost_at as any)).toLocaleDateString("en-US", {
           year: 'numeric',
           month: 'long',
           day: 'numeric'

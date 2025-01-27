@@ -1,6 +1,7 @@
 import { AppUser } from "@/types/entities.types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createSlice } from "@reduxjs/toolkit";
+import { router } from "expo-router";
 const currentUser = createSlice({
 	name: "current-user",
 	initialState: {} as AppUser,
@@ -17,8 +18,14 @@ const currentUser = createSlice({
 			AsyncStorage.removeItem("userID");
 			return {} as AppUser;
 		},
+		logout: (state) => {
+			AsyncStorage.removeItem("userID");
+			router.replace("/login");
+			return {} as AppUser;
+		},
 	},
 });
 
-export const { setCurrentUser, removeCurrentUser } = currentUser.actions;
+export const { setCurrentUser, removeCurrentUser, logout } =
+	currentUser.actions;
 export default currentUser.reducer;

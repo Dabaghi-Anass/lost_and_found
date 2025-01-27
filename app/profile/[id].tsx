@@ -12,7 +12,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { usePushScreen } from '@/hooks/usePushScreen';
 import { FirebaseCollections } from '@/lib/constants';
 import { formAppLink, getImageOrDefaultTo } from '@/lib/utils';
-import { setCurrentUser } from '@/redux/global/current-user';
+import { logout, setCurrentUser } from '@/redux/global/current-user';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { saveUser as saveUserAction } from '@/redux/global/users';
 import { AppUser, Item } from '@/types/entities.types';
@@ -36,10 +36,16 @@ export default function UserProfile() {
   usePushScreen("profile", id as string)
   const handleLogout = () => {
     logoutUser().then(() => {
-      dispatch(setCurrentUser(null));
+      if (Platform.OS === 'web') window.location.href = '/login';
+      dispatch(logout());
       setLoading(false)
-      router.replace('/login');
+    }).catch(err => {
+      Toast.error("Error occured please try again later", "bottom");
+      if (Platform.OS === 'web') window.location.href = '/login';
+      dispatch(logout());
+      setLoading(false)
     })
+    setLoading(false)
   };
 
   const handleEmail = () => {
