@@ -186,7 +186,7 @@ export default function UserProfile() {
         await initUser(true);
       }}
       keyExtractor={item => item?.id || Math.random().toString()} data={[user]}
-      renderItem={({ item: user }) => (<View className='w-full h-full md:web:max-w-1/2 web:m-auto md:web:flex-row'>
+      renderItem={({ item: user }) => (<View className='w-full h-full md:web:max-w-1/2 web:m-auto md:web:flex-row bg-background'>
         <SEO
           title={`${user?.profile?.firstName} ${user?.profile?.lastName} Profile on Lost & Found`}
           description={`View ${user?.profile?.firstName} ${user?.profile?.lastName} profile on Lost & Found App`}

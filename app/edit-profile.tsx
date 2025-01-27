@@ -5,7 +5,6 @@ import DefaultUserImage from '@/assets/images/default-user-image.jpg';
 import bgPattern from "@/assets/images/pattern.jpg";
 import { AppButton } from '@/components/AppButton';
 import { Input } from '@/components/Input';
-import ScrollScreen from '@/components/scroll-screen';
 import SEO from '@/components/seo';
 import { Badge } from '@/components/ui/badge';
 import BottomModal from '@/components/ui/bottomModal';
@@ -20,7 +19,7 @@ import { AntDesign, Feather, FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { Image, Platform, Text, View } from 'react-native';
+import { Image, Platform, ScrollView, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Toast } from 'toastify-react-native';
 export default function UserProfileEditPage() {
@@ -108,7 +107,7 @@ export default function UserProfileEditPage() {
   const user = currentUser;
   if (!currentUser || loading) return <LoadingSpinner visible={true} />
   return (
-    <ScrollScreen>
+    <ScrollView className='h-full w-full bg-background'>
       <SEO />
       <View className='w-full h-full md:web:flex-row'>
         <View className='bg-transparent flex items-center justify-center py-16 px-4 relative md:web:w-1/3 md:web:h-full' >
@@ -245,6 +244,6 @@ export default function UserProfileEditPage() {
           </View>
         </View>
       </View>
-    </ScrollScreen>
+    </ScrollView>
   );
 }

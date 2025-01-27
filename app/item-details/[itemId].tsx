@@ -168,8 +168,14 @@ export default function ItemDetailsScreen() {
 
         <View style={styles.detailsContainer} className="w-full md:web:w-1/2">
           <View style={styles.header}>
-            <Text className='text-foreground' style={styles.title}>{item.item.title}</Text>
-            <View style={styles.badgeContainer}>
+            <View className="flex-row items-center justify-between py-2">
+              <Text className='text-foreground' style={styles.title}>{item.item.title}</Text>
+              <AppButton size="sm" variant="outline" className='gap-4 border-muted'
+                onPress={handleShareProfile}>
+                <FontAwesome5 name="share" size={20} color={theme === 'dark' ? "white" : "#222"} />
+              </AppButton>
+            </View>
+            <View style={styles.badgeContainer} className="my-4">
               <View style={[styles.badge, {
                 backgroundColor: theme === "dark" ? "#2c2536" : "#f4f4f5",
               }]}>
@@ -199,18 +205,14 @@ export default function ItemDetailsScreen() {
 
           {item.owner &&
             isOwnItem ?
-            <View className='flex-row items-center gap-4'>
-              <AppButton variant="outline" className='gap-4 border-muted'
-                onPress={handleShareProfile}>
-                <FontAwesome5 name="share" size={20} color={theme === 'dark' ? "white" : "#222"} />
-              </AppButton>
+            <ScrollView horizontal contentContainerClassName='flex-row items-center gap-4'>
               <AppButton variant="success" onPress={() => {
                 router.push(`/item-delivred/${item?.id}` as any)
               }}>
                 <Text className='text-white text-xl'>{
                   item.delivered ? 'update receiver' : 'Mark as delivered'
                 }</Text>
-                <Feather name="edit" size={20} color="white" />
+                <Feather name="check-circle" size={20} color="white" />
               </AppButton>
               <Link href={`/edit-item/${item.id}` as any} asChild>
                 <AppButton variant="primary">
@@ -218,7 +220,7 @@ export default function ItemDetailsScreen() {
                   <Feather name="edit" size={20} color="white" />
                 </AppButton>
               </Link>
-            </View>
+            </ScrollView>
             :
             <TouchableOpacity onPress={() => {
               router.push(`/profile/${item.ownerId}`)
