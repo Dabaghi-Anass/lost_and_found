@@ -19,6 +19,7 @@ export default {
 				backgroundColor: "#ffffff",
 			},
 			package: "com.anass.lostandfound",
+			buildType: "apk",
 		},
 		web: {
 			bundler: "metro",

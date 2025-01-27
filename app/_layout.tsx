@@ -7,14 +7,21 @@ import { store } from '@/redux/store';
 import { DrawerItemList } from '@react-navigation/drawer';
 import { useNavigationState } from '@react-navigation/native';
 import { PortalHost } from "@rn-primitives/portal";
-import 'core-js/features/promise';
+
+// import 'core-js/features/promise';
+// import 'core-js/features/set';
+// import 'core-js/features/set-timeout';
+// import 'core-js/stable';
+// import 'core-js/web/timers';
+// import 'core-js/web/url';
+// import 'core-js/web/url-search-params';
 import { useFonts } from 'expo-font';
 import * as Linking from 'expo-linking';
 import { Drawer } from 'expo-router/drawer';
 import * as SplashScreen from 'expo-splash-screen';
 import { BadgePlus, FolderSearch, MailCheck } from 'lucide-react-native';
 import { useEffect } from 'react';
-import { Alert, InteractionManager, Text, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-get-random-values';
 import 'react-native-reanimated';
@@ -25,17 +32,18 @@ import "../assets/styles/global.css";
 SplashScreen.preventAutoHideAsync().catch(() => {
   console.log("Error preventing auto hide");
 });
-if (typeof setImmediate === 'undefined') {
-  global.setImmediate = Object.assign((fn: () => void) => {
-    const handle = InteractionManager.runAfterInteractions(fn);
-    return {
-      then: (onfulfilled?: () => any, onrejected?: () => any) => Promise.resolve().then(onfulfilled, onrejected),
-      done: (...args: any[]) => handle.done(...args),
-      cancel: () => handle.cancel(),
-      __promisify__: () => new Promise<void>((resolve) => InteractionManager.runAfterInteractions(resolve))
-    }
-  });
-}
+
+// if (typeof setImmediate === 'undefined') {
+//   global.setImmediate = Object.assign((fn: () => void) => {
+//     const handle = InteractionManager.runAfterInteractions(fn);
+//     return {
+//       then: (onfulfilled?: () => any, onrejected?: () => any) => Promise.resolve().then(onfulfilled, onrejected),
+//       done: (...args: any[]) => handle.done(...args),
+//       cancel: () => handle.cancel(),
+//       __promisify__: () => new Promise<void>((resolve) => InteractionManager.runAfterInteractions(resolve))
+//     }
+//   });
+// }
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded, error] = useFonts({
