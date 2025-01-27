@@ -13,6 +13,7 @@ export default {
 			bundleIdentifier: "com.anass.lostandfound",
 		},
 		android: {
+			compileSdkVersion: 33,
 			adaptiveIcon: {
 				foregroundImage: "./assets/images/adaptive-icon.png",
 				backgroundColor: "#ffffff",
