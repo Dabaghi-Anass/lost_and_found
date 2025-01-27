@@ -47,6 +47,7 @@ export default function RootLayout() {
     }
     prepare();
   }, [loaded, error]);
+
   useEffect(() => {
     Linking.addEventListener('url', async (event) => {
       const { path } = Linking.parse(event.url);
@@ -56,6 +57,8 @@ export default function RootLayout() {
         } else {
           const deepLink = formAppNativeLink(path);
           const hasApp = await isAppInstalled(deepLink);
+          console.log({ deepLink, hasApp });
+          alert("hasApp: " + hasApp);
           if (hasApp) {
             window.location.href = deepLink;
           }

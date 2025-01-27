@@ -6,6 +6,7 @@ import bgPattern from "@/assets/images/pattern.jpg";
 import { AppButton } from '@/components/AppButton';
 import { Input } from '@/components/Input';
 import ScrollScreen from '@/components/scroll-screen';
+import SEO from '@/components/seo';
 import { Badge } from '@/components/ui/badge';
 import BottomModal from '@/components/ui/bottomModal';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -108,6 +109,7 @@ export default function UserProfileEditPage() {
   if (!currentUser || loading) return <LoadingSpinner visible={true} />
   return (
     <ScrollScreen>
+      <SEO />
       <View className='w-full h-full md:web:flex-row'>
         <View className='bg-transparent flex items-center justify-center py-16 px-4 relative md:web:w-1/3 md:web:h-full' >
           <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto max-h-[100vh]' />

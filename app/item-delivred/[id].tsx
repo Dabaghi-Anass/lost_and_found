@@ -2,6 +2,7 @@ import { fetchDoc, makeItemDelivred } from '@/api/database';
 import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import { AppButton } from '@/components/AppButton';
 import ItemMinifiedCard from '@/components/item-minified-card';
+import SEO from '@/components/seo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import BottomModal from '@/components/ui/bottomModal';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -64,6 +65,7 @@ export default function RealOwnerSearchScreen() {
   if (loading) return <LoadingSpinner visible={loading} />
   return (
     <View className='flex-1 items-center bg-background md:web:flex-row'>
+      <SEO />
       {itemLoading && <View className='w-full h-48 items-center justify-center'>
         <ActivityIndicator size='large' color={theme === "dark" ? "white" : "black"} />
       </View>}

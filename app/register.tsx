@@ -7,6 +7,7 @@ import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import { AppButton } from "@/components/AppButton";
 import { Input } from "@/components/Input";
 import ParallaxScrollView from '@/components/ParallaxScrollView';
+import SEO from "@/components/seo";
 import Separator from "@/components/separator";
 import { getImageOrDefaultTo } from "@/lib/utils";
 import { setCurrentUser } from "@/redux/global/current-user";
@@ -138,6 +139,7 @@ export default function LoginScreen() {
       className="bg-background w-full web:max-w-screen-md web:m-auto"
       contentContainerClassName="bg-background"
     >
+      <SEO />
       {currentScreen === 0 ?
         <View className={`${loading ? 'opacity-50 pointer-events-none' : ''}`}>
           <Text className="text-2xl font-bold text-center text-foreground mb-8">

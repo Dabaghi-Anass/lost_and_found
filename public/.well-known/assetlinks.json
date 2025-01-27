@@ -1,0 +1,12 @@
+[
+	{
+		"relation": ["delegate_permission/common.handle_all_urls"],
+		"target": {
+			"namespace": "android_app",
+			"package_name": "com.anass.lostandfound",
+			"sha256_cert_fingerprints": [
+				"08:29:78:2C:07:63:70:E2:1B:B1:E5:29:14:61:69:3B:C8:B9:F3:BB:79:C9:88:4B:DF:AD:AB:BA:33:15:BC:01"
+			]
+		}
+	}
+]

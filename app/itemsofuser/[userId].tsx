@@ -1,5 +1,6 @@
 import { Input } from "@/components/Input";
 import ItemCard from "@/components/item-card";
+import SEO from "@/components/seo";
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useSearch } from "@/hooks/use-search";
@@ -77,6 +78,7 @@ const LostItemsOfUserPage: React.FC = () => {
   }
   return (
     <View className="flex-1 px-2 bg-background items-start justify-start">
+      <SEO />
       <LoadingSpinner visible={loading} />
       <Input
         placeholder="Search by title, category, color, owner name, anything..."

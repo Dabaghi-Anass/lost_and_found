@@ -3,6 +3,7 @@ import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import { AppButton } from '@/components/AppButton';
 import AppColorPicker from '@/components/color-picker';
 import { Input } from '@/components/Input';
+import SEO from '@/components/seo';
 import BottomModal from '@/components/ui/bottomModal';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Colors } from '@/constants/Colors';
@@ -20,7 +21,7 @@ import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Toast } from 'toastify-react-native';
 import { ZodIssue } from 'zod';
@@ -138,6 +139,7 @@ export default function EditItemScreen() {
   if (error) return <Text className='text-3xl font-bold text-red-600'>{error}</Text>;
   return (
     <ScrollView className='bg-background h-full p-4'>
+      <SEO />
       <View className='my-8 flex-row justify-between items-center'>
         <Text className='text-foreground web:text-2xl text-3xl font-bold'>Edit Item</Text>
         <BottomModal

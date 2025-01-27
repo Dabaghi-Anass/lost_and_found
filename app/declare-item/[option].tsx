@@ -5,6 +5,7 @@ import { FormStatusHeader } from '@/components/item-form/form-status-header';
 import { ItemDetailsForm } from '@/components/item-form/item-details-form';
 import { LocationAndDateForm } from '@/components/item-form/location-and-date-form';
 import { ImagesUploadForm } from '@/components/item-form/upload-image-form';
+import SEO from '@/components/seo';
 import { usePushScreen } from '@/hooks/usePushScreen';
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
 import { saveItem as saveItemAction } from '@/redux/global/items';
@@ -149,6 +150,7 @@ export default function DeclareItemScreen() {
 
   return (
     <ScrollView className={`min-h-full w-full bg-muted px-4 py-6 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
+      <SEO />
       <View className="overflow-hidden w-full h-screen items-center justify-center web:h-full">
         <LinearGradient
           className='px-2 py-2 w-full web:max-w-screen-md m-auto rounded-xl overflow-hidden'

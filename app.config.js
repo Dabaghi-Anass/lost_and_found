@@ -14,6 +14,19 @@ export default {
 			icon: "./assets/icons/adaptive-icon.png",
 		},
 		android: {
+			intentFilters: [
+				{
+					autoVerify: true,
+					action: "VIEW",
+					data: [
+						{
+							scheme: "lostandfound",
+							host: "*",
+						},
+					],
+					category: ["BROWSABLE", "DEFAULT"],
+				},
+			],
 			compileSdkVersion: 33,
 			adaptiveIcon: {
 				foregroundImage: "./assets/icons/adaptive-icon.png",

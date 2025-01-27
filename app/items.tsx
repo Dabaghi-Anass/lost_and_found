@@ -1,6 +1,7 @@
 import { Input } from "@/components/Input";
 import ItemCard from "@/components/item-card";
 import ItemMinifiedCard from "@/components/item-minified-card";
+import SEO from "@/components/seo";
 import { Badge } from "@/components/ui/badge";
 import { useSearch } from "@/hooks/use-search";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -73,6 +74,7 @@ const LostItemPage: React.FC = () => {
 
   return (
     <View className="flex-1 px-2 bg-background items-start justify-start">
+      <SEO />
       <Input
         placeholder="Search by title, category, color, owner name, anything..."
         placeholderTextColor={theme === "dark" ? "#ddd" : "#444"}

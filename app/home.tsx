@@ -1,4 +1,5 @@
 import Screen from '@/components/screen';
+import SEO from '@/components/seo';
 import SuccessStoryCard from '@/components/success-story-card';
 import { useFetchAll } from '@/hooks/useFetch';
 import { usePushScreen } from '@/hooks/usePushScreen';
@@ -51,6 +52,7 @@ export default function App() {
   }, []);
   return (
     <Screen className='bg-background'>
+      <SEO />
       <Text className='text-foreground text-4xl font-bold font-secondary text-center pt-8 pb-4'>Success Stories</Text>
       <FlatList
         data={data}

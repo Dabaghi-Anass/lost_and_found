@@ -6,13 +6,14 @@ import BgImageLight from "@/assets/images/bg_auth_light.png";
 import { AppButton } from "@/components/AppButton";
 import { Input } from "@/components/Input";
 import ParallaxScrollView from '@/components/ParallaxScrollView';
+import SEO from "@/components/seo";
 import Separator from '@/components/separator';
 import { setCurrentUser } from "@/redux/global/current-user";
 import { setCurrentScreenName } from "@/redux/global/currentScreenName";
 import { Link, useRouter } from "expo-router";
 import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { Alert, ColorSchemeName, Image, Text, useColorScheme, View } from "react-native";
+import { ColorSchemeName, Image, Text, useColorScheme, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
 function BgImageComponent() {
@@ -72,8 +73,8 @@ export default function LoginScreen() {
     className="bg-background w-full web:max-w-screen-md web:m-auto"
     contentContainerClassName="bg-background"
   >
-
     <View className={`${loading ? 'opacity-50 pointer-events-none' : ''}`}>
+      <SEO />
       <Text className="text-2xl font-bold text-center mb-8 text-foreground">
         Who Are You Sweet Heart?
       </Text>
