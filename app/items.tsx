@@ -149,7 +149,7 @@ const LostItemPage: React.FC = () => {
           }} />)}
         keyExtractor={(item) => item.id as string}
         className="w-full h-full"
-        contentContainerClassName="w-full pb-8 web:flex-row web:flex-wrap gap-4 web:items-start web:justify-center mx-4"
+        contentContainerClassName="w-full pb-8 web:flex-row web:flex-wrap gap-4 web:items-start web:justify-center md:web:mx-4"
       />
     </View>
   );

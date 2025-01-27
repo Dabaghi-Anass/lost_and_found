@@ -53,8 +53,8 @@ const ItemCard: React.FC<ItemCardProps> = ({
       <View style={styles.content}>
         <View style={styles.titleRow}>
           <View className="max-w-[90%]">
-            <Text style={styles.title} className='text-card-foreground truncate max-w-[90%]'>{itemDetails.title} Lorem ipsum dolor sit amet consectetur, adipisicing elit. Tempore, nostrum corrupti eveniet beatae voluptate fugiat eligendi laborum. Expedita pariatur non explicabo aliquid, excepturi quasi, suscipit ipsa, laboriosam enim libero minus.</Text>
-            <Text style={styles.description} className="truncate">{itemDetails.description} Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quos, unde minima expedita culpa labore laboriosam fugit recusandae, odit blanditiis delectus exercitationem ipsam ducimus? Ipsam excepturi doloremque numquam quibusdam rem blanditiis.</Text>
+            <Text style={styles.title} className='text-card-foreground truncate max-w-[90%]' numberOfLines={1} ellipsizeMode='tail'>{itemDetails.title}</Text>
+            <Text style={styles.description} className="truncate py-4" numberOfLines={4} ellipsizeMode='tail'>{itemDetails.description}</Text>
           </View>
           <View style={[styles.colorIndicator, { backgroundColor: itemDetails.color }]} />
         </View>

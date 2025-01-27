@@ -34,25 +34,36 @@ if (typeof setImmediate === 'undefined') {
     }
   });
 }
-SplashScreen.preventAutoHideAsync();
-
+SplashScreen.preventAutoHideAsync().catch(() => {
+  console.log("Error preventing auto hide");
+});
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
+  const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/Ubuntu-Regular.ttf'),
     Galada: require('../assets/fonts/Galada-Regular.ttf'),
   });
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    async function prepare() {
+      try {
+        // Keep splash screen visible while we fetch initial data
+        await SplashScreen.preventAutoHideAsync();
+        if (loaded) {
+          await SplashScreen.hideAsync();
+        }
+      } catch (e) {
+        console.warn(e);
+      }
     }
-  }, [loaded]);
+
+    prepare();
+  }, [loaded, error]);
   useEffect(() => {
     Linking.addEventListener('url', (event) => {
       Alert.alert(`Linking event`, JSON.stringify(event));
     });
   }, [])
-  if (!loaded) {
+  if (!loaded && !error) {
     return null;
   }
 
