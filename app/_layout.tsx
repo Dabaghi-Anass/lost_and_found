@@ -46,7 +46,6 @@ export default function RootLayout() {
   useEffect(() => {
     async function prepare() {
       try {
-        // Keep splash screen visible while we fetch initial data
         await SplashScreen.preventAutoHideAsync();
         if (loaded) {
           await SplashScreen.hideAsync();
@@ -55,7 +54,6 @@ export default function RootLayout() {
         console.warn(e);
       }
     }
-
     prepare();
   }, [loaded, error]);
   useEffect(() => {

@@ -176,7 +176,7 @@ export default function UserProfile() {
       keyExtractor={item => item?.id || Math.random().toString()} data={[user]}
       renderItem={({ item: user }) => (<View className='w-full h-full md:web:max-w-1/2 web:m-auto md:web:flex-row'>
         <View className='bg-transparent flex items-center justify-center py-4 px-4 relative md:web:w-1/3 md:web:h-full' >
-          <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto max-h-[100%]' />
+          <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto max-h-[100vh]' />
           <Image
             source={getImageOrDefaultTo(user?.profile?.imageUri, DefaultUserImage)}
             className='w-32 h-32 rounded-full border-4 border-white max-w-32 max-h-32 object-center aspect-square md:web:scale-150 scale-110'

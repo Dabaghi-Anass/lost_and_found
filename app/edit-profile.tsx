@@ -108,8 +108,8 @@ export default function UserProfileEditPage() {
   return (
     <ScrollScreen>
       <View className='w-full h-full md:web:flex-row'>
-        <View className='bg-transparent flex items-center justify-center py-4 px-4 relative md:web:w-1/3' >
-          <Image source={bgPattern} className='absolute top-0 max-h-[100vh] left-0 right-0 mx-auto' />
+        <View className='bg-transparent flex items-center justify-center py-4 px-4 relative md:web:w-1/3 md:web:h-full' >
+          <Image source={bgPattern} className='absolute top-0 left-0 right-0 mx-auto max-h-[100vh]' />
           <Image
             source={getImageOrDefaultTo(userData?.imageUri, DefaultUserImage)}
             className='w-32 h-32 rounded-full border-4 border-white scale-110 md:web:scale-150 md:web:mb-8'
