@@ -2,17 +2,19 @@ import NavBar from '@/components/NavBar';
 import { UserProfileLink } from '@/components/user-profile-link';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { formAppNativeLink, isAppInstalled } from '@/lib/utils';
 import { store } from '@/redux/store';
 import { DrawerItemList } from '@react-navigation/drawer';
 import { useNavigationState } from '@react-navigation/native';
 import { PortalHost } from "@rn-primitives/portal";
 import { useFonts } from 'expo-font';
 import * as Linking from 'expo-linking';
+import { router } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import * as SplashScreen from 'expo-splash-screen';
 import { BadgePlus, FolderSearch, MailCheck } from 'lucide-react-native';
 import { useEffect } from 'react';
-import { Text, View } from "react-native";
+import { Platform, Text, View } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-get-random-values';
 import 'react-native-reanimated';
@@ -46,9 +48,19 @@ export default function RootLayout() {
     prepare();
   }, [loaded, error]);
   useEffect(() => {
-    Linking.addEventListener('url', (event) => {
-      const { path, queryParams } = Linking.parse(event.url);
-      console.log({ path, queryParams });
+    Linking.addEventListener('url', async (event) => {
+      const { path } = Linking.parse(event.url);
+      if (path) {
+        if (Platform.OS !== "web") {
+          router.push(`/${path}` as any);
+        } else {
+          const deepLink = formAppNativeLink(path);
+          const hasApp = await isAppInstalled(deepLink);
+          if (hasApp) {
+            window.location.href = deepLink;
+          }
+        }
+      }
     });
   }, [])
   if (!loaded && !error) {

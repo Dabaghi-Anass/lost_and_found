@@ -41,3 +41,24 @@ export function formAppLink(path: string, param?: string | null): string {
 	const WEBSITE_URL = "https://lost-and-found-wisd.expo.app";
 	return `${WEBSITE_URL}/${path}${param ? "/" + param : ""}`;
 }
+export function formAppNativeLink(path: string, param?: string | null): string {
+	const APP_SCHEME = "lostandfound://";
+	return `${APP_SCHEME}${path}${param ? "/" + param : ""}`;
+}
+
+export const isAppInstalled = async (
+	customScheme: string
+): Promise<boolean> => {
+	return new Promise((resolve) => {
+		const timeout = setTimeout(() => {
+			resolve(false);
+		}, 2500);
+
+		window.addEventListener("blur", () => {
+			clearTimeout(timeout);
+			resolve(true);
+		});
+
+		window.location.href = customScheme;
+	});
+};
