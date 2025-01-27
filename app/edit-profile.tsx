@@ -144,7 +144,6 @@ export default function UserProfileEditPage() {
             </View>
           </View>
 
-
           <View className='items-start justify-center gap-8 m-5'>
             <Text className="text-foreground text-2xl font-semibold">Contact Information</Text>
             <View className='items-start justify-center gap-4 web:w-full'>

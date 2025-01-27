@@ -190,7 +190,7 @@ export default function UserProfile() {
           <View className='flex-row w-min items-center justify-between'>
             <Text className='text-foreground text-4xl font-bold font-secondary capitalize max-w-sm web:w-[300px] text-center'>{user?.profile?.firstName} {user?.profile?.lastName}</Text>
             <View className='p-2 gap-4 flex-row items-center justify-center'>
-              <Badge variant="secondary">
+              <Badge variant="secondary" className={`${user?.role === 'admin' ? 'bg-orange-600' : ''}`}>
                 <Text className='text-secondary-foreground capitalize'>{user?.role}</Text>
               </Badge>
               <Badge variant="default">
