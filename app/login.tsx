@@ -13,7 +13,7 @@ import { setCurrentScreenName } from "@/redux/global/currentScreenName";
 import { Link, useRouter } from "expo-router";
 import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { ColorSchemeName, Image, Text, useColorScheme, View } from "react-native";
+import { ColorSchemeName, Image, Platform, Text, useColorScheme, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
 function BgImageComponent() {
@@ -52,7 +52,8 @@ export default function LoginScreen() {
         setUserName("");
         setPassword("");
         setLoading(false);
-        router.push("/home");
+        if (Platform.OS === "web") router.replace("/home");
+        else router.replace("/home");
       }
     } catch (e: any) {
       Toast.error("Error occured please try again later", "bottom");
