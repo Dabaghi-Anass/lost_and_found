@@ -25,7 +25,7 @@ export function DownloadAppModal({ visible, onClose }: Props) {
           <Text className='text-lg text-center text-foreground'>scan to download</Text>
           <Text className='text-lg text-center text-foreground'>OR</Text>
           <AppButton onPress={() => {
-            const appLink = "https://expo.dev/artifacts/eas/d4TdFVfaQkzCoGe2Jcypon.apk";
+            const appLink = "https://expo.dev/artifacts/eas/6YqxwwBFGxV9oktwMfJXuZ.apk";
             window.location.href = appLink;
             onClose()
           }} className='mt-4'>
