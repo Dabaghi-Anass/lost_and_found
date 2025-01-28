@@ -10,6 +10,7 @@ import SEO from "@/components/seo";
 import Separator from '@/components/separator';
 import { setCurrentUser } from "@/redux/global/current-user";
 import { setCurrentScreenName } from "@/redux/global/currentScreenName";
+import * as Linking from 'expo-linking';
 import { Link, useFocusEffect, useRouter } from "expo-router";
 import { User } from "firebase/auth";
 import { useCallback, useEffect, useState } from "react";
@@ -23,12 +24,12 @@ function BgImageComponent() {
 export default function LoginScreen() {
   const dispatch = useDispatch();
   const router = useRouter();
-
   const [userName, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>();
   const [error, setError] = useState<string | null>(null);
   const currentUser = useSelector((state: any) => state.user);
+  const { url: initialUrl } = useSelector((state: any) => state.initialUrl);
   const isValid = (): boolean => {
     if (userName.length === 0 || password.length === 0) return false;
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -69,7 +70,19 @@ export default function LoginScreen() {
     dispatch(setCurrentScreenName("auth"));
   }, [userName]);
   useFocusEffect(useCallback(() => {
-    if (currentUser && Object.keys(currentUser).length > 0) router.replace("/items");
+    if (currentUser && Object.keys(currentUser).length > 0) {
+      const url = initialUrl;
+      if (url) {
+        const { path } = Linking.parse(url);
+        if (path) {
+          router.replace(`/${path}` as any);
+        } else {
+          router.replace("/items");
+        }
+      } else {
+        router.replace("/items");
+      }
+    }
   }, [currentUser]))
   return (<ParallaxScrollView
     HEADER_HEIGHT={300}

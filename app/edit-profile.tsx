@@ -104,7 +104,7 @@ export default function UserProfileEditPage() {
   }, [currentUser?.profile])
   useFocusEffect(initUserData)
   useFocusEffect(useCallback(() => {
-    if (currentUser === null || Object.keys(currentUser).length === 0) router.replace("/login");
+    if (currentUser === null || Object.keys(currentUser).length === 0) router.push("/login");
   }, [currentUser]))
   const user = currentUser;
   if (!currentUser || loading) return <LoadingSpinner visible={true} />

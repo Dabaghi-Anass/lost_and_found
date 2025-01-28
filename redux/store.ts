@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import appNavigationSlice from "./global/app-navigation";
+import appInitialUrl from "./global/appInitialUrl";
 import currentUser from "./global/current-user";
 import currentScreenName from "./global/currentScreenName";
 import itemsReducer from "./global/items";
@@ -11,5 +12,6 @@ export const store = configureStore({
 		items: itemsReducer,
 		users: usersReducer,
 		appNavigation: appNavigationSlice,
+		initialUrl: appInitialUrl,
 	},
 });

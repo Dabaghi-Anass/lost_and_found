@@ -15,8 +15,7 @@ import { getImageOrDefaultTo } from '@/lib/utils';
 import { saveItem } from '@/redux/global/items';
 import { Item, Profile } from '@/types/entities.types';
 import { AntDesign, Feather } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -64,7 +63,7 @@ export default function RealOwnerSearchScreen() {
     }
   }
   useFocusEffect(useCallback(() => {
-    if (currentUser === null || Object.keys(currentUser).length === 0) router.replace("/login");
+    if (currentUser === null || Object.keys(currentUser).length === 0) router.push("/login");
   }, [currentUser]))
 
   if (loading) return <LoadingSpinner visible={loading} />

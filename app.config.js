@@ -11,7 +11,7 @@ export default {
 		ios: {
 			supportsTablet: true,
 			bundleIdentifier: "com.anass.lostandfound",
-			icon: "./assets/icons/adaptive-icon.png",
+			icon: "./assets/icons/adaptive-icon.jpg",
 		},
 		android: {
 			intentFilters: [
@@ -29,7 +29,7 @@ export default {
 			],
 			compileSdkVersion: 33,
 			adaptiveIcon: {
-				foregroundImage: "./assets/icons/adaptive-icon.png",
+				foregroundImage: "./assets/icons/adaptive-icon.jpg",
 				backgroundColor: "#FFF8E3",
 			},
 			package: "com.anass.lostandfound",

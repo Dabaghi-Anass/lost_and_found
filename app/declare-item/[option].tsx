@@ -148,7 +148,7 @@ export default function DeclareItemScreen() {
     setValidationState(validationStateClone);
   }, [option]);
   useFocusEffect(useCallback(() => {
-    if (currentUser === null || Object.keys(currentUser).length === 0) router.replace("/login");
+    if (currentUser === null || Object.keys(currentUser).length === 0) router.push("/login");
   }, [currentUser]))
 
   return (

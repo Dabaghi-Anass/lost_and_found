@@ -137,7 +137,7 @@ export default function EditItemScreen() {
     }
   }, [item]));
   useFocusEffect(useCallback(() => {
-    if (currentUser === null || Object.keys(currentUser).length === 0) router.replace("/login");
+    if (currentUser === null || Object.keys(currentUser).length === 0) router.push("/login");
   }, [currentUser]))
   if (itemLoading || loading) return <LoadingSpinner visible={itemLoading || loading} />;
   if (error) return <Text className='text-3xl font-bold text-red-600'>{error}</Text>;

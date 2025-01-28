@@ -57,7 +57,6 @@ export default function RootLayout() {
         } else {
           const deepLink = formAppNativeLink(path);
           const hasApp = await isAppInstalled(deepLink);
-          console.log({ hasApp });
           if (hasApp) {
             window.location.href = deepLink;
           }

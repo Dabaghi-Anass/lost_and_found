@@ -116,7 +116,7 @@ export default function ItemDetailsScreen() {
     });
   };
   useFocusEffect(useCallback(() => {
-    if (currentUser === null || Object.keys(currentUser).length === 0) router.replace("/login");
+    if (currentUser === null || Object.keys(currentUser).length === 0) router.push("/login");
   }, [currentUser]))
 
   useEffect(() => {
