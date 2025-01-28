@@ -208,7 +208,7 @@ export default function ItemDetailsScreen() {
 
           {item.owner &&
             isOwnItem ?
-            <ScrollView horizontal contentContainerClassName='flex-row items-center gap-4'>
+            <View className='flex-row items-center gap-4'>
               <AppButton variant="success" onPress={() => {
                 router.push(`/item-delivred/${item?.id}` as any)
               }}>
@@ -223,7 +223,7 @@ export default function ItemDetailsScreen() {
                   <Feather name="edit" size={20} color="white" />
                 </AppButton>
               </Link>
-            </ScrollView>
+            </View>
             :
             <TouchableOpacity onPress={() => {
               router.push(`/profile/${item.ownerId}`)

@@ -21,7 +21,6 @@ export default {
 					data: [
 						{
 							scheme: "lostandfound",
-							host: "*",
 						},
 					],
 					category: ["BROWSABLE", "DEFAULT"],

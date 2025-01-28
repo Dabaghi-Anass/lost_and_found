@@ -21,7 +21,6 @@
 		},
 		"preview2": {
 			"android": {
-				"gradleCommand": ":app:assembleRelease",
 				"buildType": "apk"
 			}
 		},
