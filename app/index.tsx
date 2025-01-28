@@ -22,13 +22,13 @@ export default function HomeScreen() {
         collectionName: FirebaseCollections.PROFILES
       }
     ]);
-
-    if (user) {
+    if (user === undefined) return;
+    if (user !== null && user?.email) {
       dispatch(setCurrentUser(user));
-      SplashScreen.hideAsync();
+      setTimeout(() => SplashScreen.hideAsync(), 500);
       router.replace("/items");
     } else {
-      SplashScreen.hideAsync();
+      setTimeout(() => SplashScreen.hideAsync(), 500);
       router.replace("/login");
     }
     setLoading(false);

@@ -34,19 +34,6 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/Ubuntu-Regular.ttf'),
     Galada: require('../assets/fonts/Galada-Regular.ttf'),
   });
-  useEffect(() => {
-    async function prepare() {
-      try {
-        await SplashScreen.preventAutoHideAsync();
-        if (loaded) {
-          await SplashScreen.hideAsync();
-        }
-      } catch (e) {
-        console.warn(e);
-      }
-    }
-    prepare();
-  }, [loaded, error]);
 
   useEffect(() => {
     Linking.addEventListener('url', async (event) => {
@@ -76,7 +63,6 @@ export default function RootLayout() {
           <ToastManager textStyle={{ fontSize: 16 }} height={50} />
           <View className='bg-background flex-1 w-full'>
             <Drawer screenOptions={{
-
               headerShown: false,
               drawerActiveTintColor: Colors[colorScheme].primary,
               drawerLabelStyle: {

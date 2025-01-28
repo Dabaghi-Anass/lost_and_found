@@ -59,7 +59,7 @@ export default function LoginScreen() {
         setUserName("");
         setPassword("");
         setLoading(false);
-        if (Platform.OS === "web") window.location.reload();
+        if (Platform.OS === "web") window.location.href = "/items"
         else router.replace("/home");
       }
     } catch (e: any) {
@@ -76,6 +76,7 @@ export default function LoginScreen() {
     dispatch(setCurrentScreenName("auth"));
   }, [userName]);
   useFocusEffect(useCallback(() => {
+    if (currentUser === undefined) return;
     if (currentUser && Object.keys(currentUser).length > 0) {
       const url = initialUrl;
       if (url) {

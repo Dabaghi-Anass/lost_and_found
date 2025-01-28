@@ -1,3 +1,4 @@
+import { DownloadAppModal } from "@/components/download-app-modal";
 import { Input } from "@/components/Input";
 import ItemCard from "@/components/item-card";
 import ItemMinifiedCard from "@/components/item-minified-card";
@@ -8,12 +9,13 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { useFetchAll } from "@/hooks/useFetch";
 import { usePushScreen } from "@/hooks/usePushScreen";
 import { FirebaseCollections } from "@/lib/constants";
-import { getCategories } from "@/lib/utils";
+import { formAppNativeLink, getCategories, isAppInstalled } from "@/lib/utils";
 import { setCurrentScreenName } from "@/redux/global/currentScreenName";
 import { setItems } from "@/redux/global/items";
 import { Item } from "@/types/entities.types";
+import * as Linking from "expo-linking";
 import { useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   FlatList,
   Platform,
@@ -31,9 +33,11 @@ const LostItemPage: React.FC = () => {
   const theme = useColorScheme();
   usePushScreen("items")
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [showModal, setShowDownloadAppModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const currentUser = useSelector((state: any) => state.user);
   const itemsFromStore: Record<string, Item> = useSelector((state: any) => state.items);
+  const { url } = useSelector((state: any) => state.initialUrl);
   const { data, error, loading, refetch } = useFetchAll<Item>({
     collection: FirebaseCollections.LOST_ITEMS,
     cachedData: [...Object.values(itemsFromStore)],
@@ -65,6 +69,24 @@ const LostItemPage: React.FC = () => {
   useFocusEffect(useCallback(() => {
     if (currentUser === null || Object.keys(currentUser).length === 0) router.push("/login");
   }, [currentUser]))
+  useEffect(() => {
+    (async () => {
+      if (url) {
+        const { path } = Linking.parse(url);
+        if (path && Platform.OS === "web") {
+          const deepLink = formAppNativeLink(path);
+          const hasApp = await isAppInstalled(deepLink);
+          if (hasApp) {
+            window.location.href = deepLink;
+          } else {
+            setShowDownloadAppModal(true)
+          }
+        } else if (path && Platform.OS !== "web") {
+          router.navigate(`/${path}` as any)
+        }
+      }
+    })()
+  }, [])
   if (error) {
     return (
       <View style={styles.centered}>
@@ -73,10 +95,12 @@ const LostItemPage: React.FC = () => {
     );
   }
 
-
   return (
     <View className="flex-1 px-2 bg-background items-start justify-start">
       <SEO />
+      {Platform.OS === "web" &&
+        <DownloadAppModal visible={showModal} onClose={() => setShowDownloadAppModal(false)} />
+      }
       <Input
         placeholder="Search by title, category, color, owner name, anything..."
         placeholderTextColor={theme === "dark" ? "#ddd" : "#444"}
