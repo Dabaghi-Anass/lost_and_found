@@ -24,7 +24,7 @@ export function usePushScreen(screenName?: string, param?: string, reset?: boole
     if (reset) {
       dispatch(resetScreens())
     }
-    if (screens.at(-1) !== screenName) {
+    if (screens[screens.length - 1] !== screenName) {
       const path = param ? "/" + param : ""
       dispatch(push(screenName + path));
     }

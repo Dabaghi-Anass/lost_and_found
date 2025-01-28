@@ -20,7 +20,9 @@ const currentUser = createSlice({
 		},
 		logout: (state) => {
 			AsyncStorage.removeItem("userID");
-			router.replace("/login");
+			setTimeout(() => {
+				router.replace("/login");
+			}, 10);
 			return {} as AppUser;
 		},
 	},

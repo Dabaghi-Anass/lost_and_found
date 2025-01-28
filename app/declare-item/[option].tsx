@@ -110,7 +110,9 @@ export default function DeclareItemScreen() {
       });
 
       dispatch(saveItemAction({ ...savedItem } as any));
-      router.replace("/items");
+      setTimeout(() => {
+        router.replace("/items");
+      }, 10)
     } catch (error) {
       Toast.error("An error occurred while saving the item", "bottom");
     }
@@ -118,7 +120,9 @@ export default function DeclareItemScreen() {
     Alert.alert('Success', 'Item has been saved successfully', [{
       text: 'OK',
       onPress: () => {
-        router.replace("/items");
+        setTimeout(() => {
+          router.replace("/items");
+        }, 10)
         setStep(1);
         setFormData({
           type: option || "lost",

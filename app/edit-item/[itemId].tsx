@@ -107,7 +107,9 @@ export default function EditItemScreen() {
       await deleteItemById(itemId as string);
       dispatch(removeItem(itemId as string));
       Toast.success('Item deleted successfully')
-      router.replace('/');
+      setTimeout(() => {
+        router.replace('/');
+      }, 10)
     } catch (error) {
       Toast.error('Error Failed to delete item');
     } finally {

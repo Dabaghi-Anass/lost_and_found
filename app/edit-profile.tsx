@@ -69,7 +69,9 @@ export default function UserProfileEditPage() {
       Toast.error("Error occured please try again later", "bottom");
     } finally {
       setLoading(false);
-      router.replace("/login")
+      setTimeout(() => {
+        router.replace("/login")
+      }, 10)
     }
   }
   async function handleUploadImageFromStorage() {
@@ -140,7 +142,7 @@ export default function UserProfileEditPage() {
         </View>
         <View className='bg-background min-h-full native:rounded-t-3xl p-4 md:web:w-2/3 w-full web:m-auto'>
           <View className='flex-row w-min items-center justify-between'>
-            <Text className='text-foreground text-4xl font-bold font-secondary capitalize max-w-sm web:w-[300px] text-center'>{userData?.firstName} {userData?.lastName}</Text>
+            <Text className='text-foreground text-4xl font-bold font-secondary capitalize max-w-sm web:w-[300px]'>{userData?.firstName} {userData?.lastName}</Text>
             <View className='p-2 gap-4 flex-row items-center justify-center'>
               <Badge variant="secondary">
                 <Text className='text-secondary-foreground capitalize'>{user?.role}</Text>
@@ -227,7 +229,9 @@ export default function UserProfileEditPage() {
                     } else {
                       Toast.warn("You are not logged in please login and try again", "bottom");
                       await logoutUser()
-                      router.replace('/login')
+                      setTimeout(() => {
+                        router.replace("/login")
+                      }, 10)
                     }
                   } catch (e: any) {
                     Toast.error("Error occured please try again later", "bottom");

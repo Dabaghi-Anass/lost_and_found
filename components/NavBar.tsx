@@ -7,6 +7,7 @@ import { usePushScreen } from "@/hooks/usePushScreen";
 import { getImageOrDefaultTo } from "@/lib/utils";
 import { setCurrentUser } from "@/redux/global/current-user";
 import { AntDesign } from "@expo/vector-icons";
+import Feather from '@expo/vector-icons/Feather';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DrawerActions } from "@react-navigation/native";
 import { Link, useNavigation, useRouter } from "expo-router";
@@ -47,7 +48,7 @@ export default function NavBar() {
       {/*hamburger menu*/}
       <View className="flex-row items-center max-w-min max-h-min gap-4">
         <Pressable onPress={openOrCloseDrawer}>
-          <AntDesign name="menu-fold" size={24} color={Colors[colorScheme].text} />
+          <Feather name="menu" size={24} color={Colors[colorScheme].text} />
         </Pressable>
         <Link href="/home" className="flex-row place-items-end max-w-min max-h-min">
           <Image source={Logo} alt="lost and found" className="w-[50px] h-[25px] mt-1" />
