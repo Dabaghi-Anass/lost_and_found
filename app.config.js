@@ -1,6 +1,6 @@
 export default {
 	expo: {
-		name: "Lost & Found",
+		name: "Lost And Found",
 		slug: "lost_and_found",
 		version: "1.0.0",
 		orientation: "portrait",
@@ -11,7 +11,7 @@ export default {
 		ios: {
 			supportsTablet: true,
 			bundleIdentifier: "com.anass.lostandfound",
-			icon: "./assets/icons/adaptive-icon.jpg",
+			icon: "./assets/images/adaptive-icon.jpg",
 		},
 		android: {
 			intentFilters: [
@@ -28,7 +28,7 @@ export default {
 			],
 			compileSdkVersion: 33,
 			adaptiveIcon: {
-				foregroundImage: "./assets/icons/adaptive-icon.jpg",
+				foregroundImage: "./assets/images/adaptive-icon.jpg",
 				backgroundColor: "#FFF8E3",
 			},
 			package: "com.anass.lostandfound",
