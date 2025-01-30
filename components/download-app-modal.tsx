@@ -28,21 +28,21 @@ export function DownloadAppModal({ visible, onClose }: Props) {
   }
   useEffect(() => {
     if (canvasRef.current) generateQrCode();
-  }, [canvasRef])
+  }, [canvasRef.current])
   return <Dialog
     open={visible}
     onOpenChange={open => {
       if (!open) onClose();
     }}
   >
-    <DialogContent className='sm:max-w-[425px]'>
+    <DialogContent className='sm:max-w-[525px]'>
       <DialogTitle>
         <Text className='text-foreground text-lg'>Download App</Text>
       </DialogTitle>
       <ScrollView contentContainerClassName='flex justify-center items-center' className="w-full bg-background max-h-[80vh] flex justify-center items-center">
         <View className='rounded-lg p-4 h-full'>
           <Text className='text-lg text-center text-foreground'>Please download the app for better experience</Text>
-          <canvas ref={canvasRef as any} width={500} height={500} className='my-1 mx-auto border-2 border-primary rounded-xl'></canvas>
+          <canvas ref={canvasRef as any} width={400} height={400} className='my-1 mx-auto border-2 border-primary rounded-xl max-w-full aspect-square'></canvas>
           <Text className='text-lg text-center text-foreground'>scan to download</Text>
           <Text className='text-lg text-center text-foreground'>OR</Text>
           <AppButton onPress={handleDownloadApp} className='mt-4'>
