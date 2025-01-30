@@ -157,7 +157,7 @@ export default function EditItemScreen() {
               <Text className='text-xl text-slate-800'>Cancel</Text>
               <AntDesign name="close" size={20} color="black" />
             </AppButton>
-            <AppButton size="sm" variant="destructive" onPress={() => {
+            <AppButton variant="destructive" onPress={() => {
               handleDelete();
               setModalOpen(true)
             }}>

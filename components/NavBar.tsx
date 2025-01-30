@@ -11,13 +11,14 @@ import Feather from '@expo/vector-icons/Feather';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DrawerActions } from "@react-navigation/native";
 import { Link, useNavigation, useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Image, Pressable, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 export default function NavBar() {
   const currentUser = useSelector((state: any) => state.user);
-  const screenName = useSelector((state: any) => state.screenName);
+  const ss = useSelector((state: any) => state.screenName);
+  const [screenName, setScreenName] = useState()
   const expoRouter = useRouter()
   const userShortName = `${currentUser?.profile?.firstName?.charAt(0) ?? "N"}${currentUser?.profile?.lastName?.charAt(0) ?? "A"}`;
   const colorScheme = useColorScheme();
@@ -42,10 +43,12 @@ export default function NavBar() {
       }
     }
   }, [screenName])
+  useEffect(() => {
+    setScreenName(ss)
+  }, [ss])
   if (screenName === "auth") return null;
   return (
     <View className="p-4 border-b border-muted flex flex-row justify-between items-center bg-background w-full">
-      {/*hamburger menu*/}
       <View className="flex-row items-center max-w-min max-h-min gap-4">
         <Pressable onPress={openOrCloseDrawer}>
           <Feather name="menu" size={24} color={Colors[colorScheme].text} />

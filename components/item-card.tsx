@@ -34,8 +34,8 @@ const ItemCard: React.FC<ItemCardProps> = ({
   const isOwnItem = currentUser?.id === ownerId
 
   return (
-    <View className='card bg-card border border-muted w-full web:w-[270px] md:web:w-[350px] overflow-hidden rounded-2xl'>
-      <View style={styles.imageContainer}>
+    <View className='card bg-card border border-muted w-full web:min-w-[270px] md:web:min-w-[350px] overflow-hidden rounded-2xl'>
+      <View style={styles.imageContainer} className="w-full">
         <Image
           source={getImageOrDefaultTo(itemDetails.images?.[0], DefaultItemImage)}
           style={styles.image}

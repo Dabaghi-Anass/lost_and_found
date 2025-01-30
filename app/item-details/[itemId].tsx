@@ -1,7 +1,9 @@
+import { deleteItemById } from "@/api/database";
 import DefaultUserImage from "@/assets/images/default-user-image.jpg";
 import DefaultItemImage from "@/assets/images/unknown-item.jpg";
 import { AppButton } from '@/components/AppButton';
 import SEO from "@/components/seo";
+import BottomModal from "@/components/ui/bottomModal";
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFetch } from '@/hooks/useFetch';
@@ -9,9 +11,9 @@ import { usePushScreen } from "@/hooks/usePushScreen";
 import { FirebaseCollections } from '@/lib/constants';
 import { formAppLink, getImageOrDefaultTo } from "@/lib/utils";
 import { setCurrentScreenName } from '@/redux/global/currentScreenName';
-import { saveItem } from '@/redux/global/items';
+import { clearItems, saveItem } from '@/redux/global/items';
 import { Item } from '@/types/entities.types';
-import { Feather, FontAwesome5 } from '@expo/vector-icons';
+import { AntDesign, Feather, FontAwesome5 } from '@expo/vector-icons';
 import { format, parseISO } from 'date-fns';
 import { Link, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Calendar, MapPin, Package2, Tag } from 'lucide-react-native';
@@ -36,6 +38,7 @@ const { width } = Dimensions.get('window');
 export default function ItemDetailsScreen() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
   const { itemId } = useLocalSearchParams()
   const router = useRouter()
   const theme = useColorScheme();
@@ -103,6 +106,23 @@ export default function ItemDetailsScreen() {
     Linking.openURL(url || "");
   };
 
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      await deleteItemById(itemId as string);
+      dispatch(clearItems());
+      Toast.success('Item deleted successfully')
+      setTimeout(() => {
+        router.replace('/');
+      }, 10)
+    } catch (error) {
+      Toast.error('Error Failed to delete item');
+    } finally {
+      setLoading(false);
+    }
+
+  };
+
   const handleShareProfile = () => {
     const link = formAppLink("item-details", item?.id);
     if (Platform.OS === 'web') {
@@ -137,6 +157,23 @@ export default function ItemDetailsScreen() {
           image={item?.item?.images[0]}
           url={formAppLink("item-details", item?.id)}
         />
+        <BottomModal
+          title='Are you sure you want to delete this item?'
+          visible={modalOpen}
+          onClose={() => setModalOpen(false)}>
+          <View className='flex-row h-full items-center justify-center gap-4'>
+            <AppButton variant="secondary" className='gap-4 border border-muted' onPress={() => setModalOpen(false)}>
+              <Text className='text-xl text-slate-800'>Cancel</Text>
+              <AntDesign name="close" size={20} color="black" />
+            </AppButton>
+            <AppButton variant="destructive" onPress={() => {
+              handleDelete();
+              setModalOpen(true)
+            }}>
+              <Text className='text-white font-bold'>Delete Item</Text>
+            </AppButton>
+          </View>
+        </BottomModal>
         <View style={[{
           backgroundColor: item.item.color
         }]} className="w-full md:web:w-1/2">
@@ -303,6 +340,11 @@ export default function ItemDetailsScreen() {
               <Feather name="phone-call" size={20} color="#fff" />
               <Text className='text-white' style={styles.primaryButtonText}>Call Owner</Text>
             </TouchableOpacity>
+            {currentUser?.role === "admin" &&
+              <AppButton variant="destructive" onPress={() => setModalOpen(true)}>
+                <Text className='text-white font-bold'>Delete Item</Text>
+              </AppButton>
+            }
           </View>
         </View>
       </View>)

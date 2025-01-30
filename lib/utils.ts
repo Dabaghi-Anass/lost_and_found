@@ -46,19 +46,23 @@ export function formAppNativeLink(path: string, param?: string | null): string {
 	return `${APP_SCHEME}${path}${param ? "/" + param : ""}`;
 }
 
-export const isAppInstalled = async (
-	customScheme: string
-): Promise<boolean> => {
+export async function isAppInstalled(path: string) {
+	const timeout = 2000;
+	const appUrl = formAppNativeLink(path);
 	return new Promise((resolve) => {
-		const timeout = setTimeout(() => {
-			resolve(false);
-		}, 2500);
+		const start = Date.now();
+		const redirect = () => {
+			const timePassed = Date.now() - start;
+			if (document.hidden) {
+				resolve(true);
+			} else if (timePassed < timeout) {
+				resolve(false);
+			} else {
+				resolve(false);
+			}
+		};
 
-		window.addEventListener("blur", () => {
-			clearTimeout(timeout);
-			resolve(true);
-		});
-
-		window.location.href = customScheme;
+		window.location.href = appUrl;
+		setTimeout(redirect, timeout);
 	});
-};
+}

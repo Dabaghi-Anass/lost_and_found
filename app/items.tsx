@@ -1,3 +1,5 @@
+import { AppButton } from "@/components/AppButton";
+import { DetectedInstalledAppModal } from "@/components/detected-app-modal";
 import { DownloadAppModal } from "@/components/download-app-modal";
 import { Input } from "@/components/Input";
 import ItemCard from "@/components/item-card";
@@ -9,13 +11,13 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { useFetchAll } from "@/hooks/useFetch";
 import { usePushScreen } from "@/hooks/usePushScreen";
 import { FirebaseCollections } from "@/lib/constants";
-import { formAppNativeLink, getCategories, isAppInstalled } from "@/lib/utils";
+import { getCategories, isAppInstalled } from "@/lib/utils";
 import { setCurrentScreenName } from "@/redux/global/currentScreenName";
 import { setItems } from "@/redux/global/items";
 import { Item } from "@/types/entities.types";
-import * as Linking from "expo-linking";
+import { AntDesign } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   FlatList,
   Platform,
@@ -26,6 +28,7 @@ import {
   View
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { UrlContext } from "./_layout";
 
 const LostItemPage: React.FC = () => {
   const router = useRouter()
@@ -33,11 +36,12 @@ const LostItemPage: React.FC = () => {
   const theme = useColorScheme();
   usePushScreen("items")
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [showModal, setShowDownloadAppModal] = useState(false);
+  const [showModal, setShowDownloadAppModalState] = useState(false);
+  const [showModalAppInstalled, setShowModalAppInstalledState] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const currentUser = useSelector((state: any) => state.user);
   const itemsFromStore: Record<string, Item> = useSelector((state: any) => state.items);
-  const { url } = useSelector((state: any) => state.initialUrl);
+  const path = useContext(UrlContext);
   const { data, error, loading, refetch } = useFetchAll<Item>({
     collection: FirebaseCollections.LOST_ITEMS,
     cachedData: [...Object.values(itemsFromStore)],
@@ -62,6 +66,43 @@ const LostItemPage: React.FC = () => {
     }
   });
   const items = useSearch(data, searchQuery).filter((item: Item) => selectedCategory === "all" || item?.item?.category === selectedCategory)
+
+  function setShowDownloadAppModal(value: boolean) {
+    if (Platform.OS !== "web") return
+    const hide = localStorage.getItem('hideDownloadAppModal');
+    if (hide === 'true') return;
+    setShowDownloadAppModalState(value)
+  }
+  function setShowModalAppInstalled(value: boolean) {
+    if (Platform.OS !== "web") return
+    const hide = localStorage.getItem('hideDownloadAppModal');
+    if (hide === 'true') return;
+    setShowModalAppInstalledState(value)
+  }
+  const initInstallApp = async () => {
+    if (!path) return;
+    if (path && Platform.OS === "web") {
+      const hasApp = await isAppInstalled(path);
+      if (hasApp) {
+        setShowModalAppInstalled(true)
+      } else {
+        setShowDownloadAppModal(true)
+      }
+    } else if (path && Platform.OS !== "web") {
+      router.navigate(`/${path}` as any)
+    }
+    else if (!path) {
+      setShowDownloadAppModal(true)
+    }
+
+  }
+
+  useEffect(() => {
+    initInstallApp()
+  }, [])
+  useFocusEffect(useCallback(() => {
+    refetch()
+  }, [[...Object.values(itemsFromStore)].length]))
   const changeScreenName = useCallback(() => {
     dispatch(setCurrentScreenName('lost items'));
   }, []);
@@ -69,24 +110,6 @@ const LostItemPage: React.FC = () => {
   useFocusEffect(useCallback(() => {
     if (currentUser === null || Object.keys(currentUser).length === 0) router.push("/login");
   }, [currentUser]))
-  useEffect(() => {
-    (async () => {
-      if (url) {
-        const { path } = Linking.parse(url);
-        if (path && Platform.OS === "web") {
-          const deepLink = formAppNativeLink(path);
-          const hasApp = await isAppInstalled(deepLink);
-          if (hasApp) {
-            window.location.href = deepLink;
-          } else {
-            setShowDownloadAppModal(true)
-          }
-        } else if (path && Platform.OS !== "web") {
-          router.navigate(`/${path}` as any)
-        }
-      }
-    })()
-  }, [])
   if (error) {
     return (
       <View style={styles.centered}>
@@ -99,19 +122,27 @@ const LostItemPage: React.FC = () => {
     <View className="flex-1 px-2 bg-background items-start justify-start">
       <SEO />
       {Platform.OS === "web" &&
-        <DownloadAppModal visible={showModal} onClose={() => setShowDownloadAppModal(false)} />
+        <>
+          <DownloadAppModal visible={showModal} onClose={() => setShowDownloadAppModal(false)} />
+          <DetectedInstalledAppModal visible={showModalAppInstalled} onClose={() => setShowModalAppInstalled(false)} />
+        </>
       }
-      <Input
-        placeholder="Search by title, category, color, owner name, anything..."
-        placeholderTextColor={theme === "dark" ? "#ddd" : "#444"}
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        className="my-4 w-full text-foreground web:max-w-[500px]"
-        style={{
-          color: theme === "dark" ? "#ddd" : "#444",
-        }}
-        inputClasses="rounded-full"
-      />
+      <View className="w-full gap-2 flex-row items-center">
+        <Input
+          placeholder="Search by title, category, color, owner name, anything..."
+          placeholderTextColor={theme === "dark" ? "#ddd" : "#444"}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          className="my-4 text-foreground md:web:max-w-[500px] web:min-w-[80%] md:web:min-w-[500px]"
+          style={{
+            color: theme === "dark" ? "#ddd" : "#444",
+          }}
+          inputClasses="rounded-full"
+        />
+        <AppButton size="icon" variant="secondary" className="rounded-full" onPress={refetch}>
+          <AntDesign name="reload1" size={24} color={theme === "dark" ? "white" : "#222"} />
+        </AppButton>
+      </View>
       <ScrollView
         horizontal={true}
         showsHorizontalScrollIndicator={false}
@@ -175,7 +206,7 @@ const LostItemPage: React.FC = () => {
           }} />)}
         keyExtractor={(item) => item.id as string}
         className="w-full h-full"
-        contentContainerClassName="w-full pb-8 web:flex-row web:flex-wrap gap-4 web:items-start md:web:mx-4"
+        contentContainerClassName="w-full pb-8 web:flex-row items-container web:flex-wrap gap-4 web:items-start md:web:mx-4"
       />
     </View>
   );

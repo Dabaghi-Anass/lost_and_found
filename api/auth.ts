@@ -19,7 +19,7 @@ export async function loginUser(
 }
 
 export async function logoutUser(): Promise<void> {
-	await Promise.all([AsyncStorage.removeItem("userID"), auth.signOut()]);
+	Promise.all([AsyncStorage.removeItem("userID"), auth.signOut()]);
 }
 
 export async function registerUser(
