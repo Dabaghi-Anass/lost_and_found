@@ -1,6 +1,8 @@
-import QrCode from "@/assets/images/qrcode.png";
-import { useCallback } from "react";
-import { Image, ScrollView, Text, View } from "react-native";
+// import QrCode from "@/assets/images/qrcode.png";
+import QRCode from 'qrcode';
+import { useCallback, useEffect, useRef } from "react";
+import { ScrollView, Text, View } from "react-native";
+import { Toast } from 'toastify-react-native';
 import {
   Dialog,
   DialogContent,
@@ -12,12 +14,21 @@ type Props = {
   visible: boolean;
 }
 export function DownloadAppModal({ visible, onClose }: Props) {
+  const canvasRef = useRef<HTMLCanvasElement | undefined>()
+  const appLink = "https://expo.dev/artifacts/eas/wKHsqEdS9VTZidiFbqDAj4.apk";
   const handleDownloadApp = useCallback(() => {
-    const appLink = "https://expo.dev/artifacts/eas/6YqxwwBFGxV9oktwMfJXuZ.apk";
     window.location.href = appLink;
     onClose()
   }, []);
 
+  const generateQrCode = async () => {
+    QRCode.toCanvas(canvasRef.current, appLink, function (error) {
+      if (error) Toast.error('Failed to generate QR code');
+    })
+  }
+  useEffect(() => {
+    if (canvasRef.current) generateQrCode();
+  }, [canvasRef])
   return <Dialog
     open={visible}
     onOpenChange={open => {
@@ -28,10 +39,10 @@ export function DownloadAppModal({ visible, onClose }: Props) {
       <DialogTitle>
         <Text className='text-foreground text-lg'>Download App</Text>
       </DialogTitle>
-      <ScrollView className="w-full max-h-[70vh] bg-background flex justify-center items-center">
-        <View className='p-4 rounded-lg'>
+      <ScrollView contentContainerClassName='flex justify-center items-center' className="w-full bg-background max-h-[80vh] flex justify-center items-center">
+        <View className='rounded-lg p-4 h-full'>
           <Text className='text-lg text-center text-foreground'>Please download the app for better experience</Text>
-          <Image source={QrCode} className='w-40 h-40 max-w-52 max-h-52 mx-auto my-8' />
+          <canvas ref={canvasRef as any} width={500} height={500} className='my-1 mx-auto border-2 border-primary rounded-xl'></canvas>
           <Text className='text-lg text-center text-foreground'>scan to download</Text>
           <Text className='text-lg text-center text-foreground'>OR</Text>
           <AppButton onPress={handleDownloadApp} className='mt-4'>
