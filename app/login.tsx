@@ -60,7 +60,7 @@ export default function LoginScreen() {
         setPassword("");
         setLoading(false);
         if (Platform.OS === "web") window.location.href = "/items"
-        else router.replace("/home");
+        else setTimeout(() => { router.push("/items"); }, 500);
       }
     } catch (e: any) {
       Toast.error("Error occured please try again later", "bottom");

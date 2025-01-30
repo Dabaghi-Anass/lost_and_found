@@ -136,7 +136,7 @@ export default function RealOwnerSearchScreen() {
                 onClose={() => setConfirmationModalOpen(false)}>
                 <View className='flex-row h-full items-center justify-center gap-4'>
                   <AppButton variant="secondary" className='gap-4 border border-muted' onPress={() => setConfirmationModalOpen(false)}>
-                    <Text className='text-xl text-slate-800'>Cancel</Text>
+                    <Text className='text-slate-800'>Cancel</Text>
                     <AntDesign name="close" size={20} color="black" />
                   </AppButton>
                   <AppButton variant="success" onPress={() => {

@@ -163,7 +163,7 @@ export default function ItemDetailsScreen() {
           onClose={() => setModalOpen(false)}>
           <View className='flex-row h-full items-center justify-center gap-4'>
             <AppButton variant="secondary" className='gap-4 border border-muted' onPress={() => setModalOpen(false)}>
-              <Text className='text-xl text-slate-800'>Cancel</Text>
+              <Text className=' text-slate-800'>Cancel</Text>
               <AntDesign name="close" size={20} color="black" />
             </AppButton>
             <AppButton variant="destructive" onPress={() => {
