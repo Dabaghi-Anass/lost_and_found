@@ -1,4 +1,3 @@
-// import QrCode from "@/assets/images/qrcode.png";
 import QRCode from 'qrcode';
 import { useCallback, useEffect, useRef } from "react";
 import { ScrollView, Text, View } from "react-native";
